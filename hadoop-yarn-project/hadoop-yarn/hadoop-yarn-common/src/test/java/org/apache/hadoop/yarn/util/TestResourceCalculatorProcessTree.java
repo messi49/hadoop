@@ -56,6 +56,9 @@ public class TestResourceCalculatorProcessTree {
     public boolean checkPidPgrpidForMatch() {
       return false;
     }
+
+    @Override
+    public int getGpumem(int gpuNumber) { return 0; }
   }
 
   @Test

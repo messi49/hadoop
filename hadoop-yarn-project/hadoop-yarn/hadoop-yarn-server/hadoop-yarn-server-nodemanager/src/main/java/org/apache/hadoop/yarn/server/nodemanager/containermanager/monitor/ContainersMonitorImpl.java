@@ -410,6 +410,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit));
 
+              LOG.info("GPU Memory usage : " + pTree.getGpumem(0) + " B");
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;

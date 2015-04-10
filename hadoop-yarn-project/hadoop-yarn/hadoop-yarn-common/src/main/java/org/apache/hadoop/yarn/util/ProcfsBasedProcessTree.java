@@ -18,11 +18,7 @@
 
 package org.apache.hadoop.yarn.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -283,6 +279,46 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
   @Override
   public boolean checkPidPgrpidForMatch() {
     return checkPidPgrpidForMatch(pid, PROCFS);
+  }
+
+  @Override
+  public int getGpumem(int gpuNumber) {
+    String command = "nvidia-smi -q -d MEMORY,UTILIZATION";
+    Process process = null;
+    String line = null;
+    int memTotal = 0, memUsed = 0;
+    double memUsage = 0;
+
+    Pattern gpuPattern = Pattern.compile("([\\x20\\t]+)((Total|Used|Free))([\\x20\\t]+)(:)(\\s)([\\d]+)(\\s)(MiB)");
+    Pattern memoryPattern = Pattern.compile("([\\x20\\t]+)((Total|Used|Free))([\\x20\\t]+)(:)(\\s)([\\d]+)(\\s)(MiB)");
+
+    try {
+      process = Runtime.getRuntime().exec(command);
+
+      InputStream is = process.getInputStream();
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+      while ((line = br.readLine()) != null) {
+        Matcher memMatcher = memoryPattern.matcher(line);
+
+        //Get Memory Usage
+        if (memMatcher.find()){
+          System.out.println(memMatcher.group(2) + ": " + memMatcher.group(7));
+          if(memMatcher.group(2).equals("Total")){
+            memTotal = Integer.parseInt(memMatcher.group(7));
+          }
+          if(memMatcher.group(2).equals("Used")){
+            memUsed = Integer.parseInt(memMatcher.group(7));
+            memUsage = (double)memUsed/memTotal;
+          }
+        }
+      }
+
+      return memUsed;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
   }
 
   public static boolean checkPidPgrpidForMatch(String _pid, String procfs) {

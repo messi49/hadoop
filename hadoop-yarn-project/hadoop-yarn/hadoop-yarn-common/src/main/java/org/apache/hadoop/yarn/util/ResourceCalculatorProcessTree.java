@@ -121,6 +121,16 @@ public abstract class ResourceCalculatorProcessTree extends Configured {
   public abstract boolean checkPidPgrpidForMatch();
 
   /**
+   * Get the GPU memory used by all the processes
+   * in the process-tree.
+   *
+   * @return GPU memory used by the process-tree in bytes,
+   *          for processes. return olderThanAge0 if it cannot be
+   *          calculated
+   */
+  public abstract int getGpumem(int gpuNumber);
+
+  /**Executive Talent Acquisition
    * Create the ResourceCalculatorProcessTree rooted to specified process 
    * from the class name and configure it. If class name is null, this method
    * will try and return a process tree plugin available for this system.

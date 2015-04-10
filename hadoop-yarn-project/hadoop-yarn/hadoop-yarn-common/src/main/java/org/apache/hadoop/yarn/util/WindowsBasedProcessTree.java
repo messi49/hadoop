@@ -158,6 +158,11 @@ public class WindowsBasedProcessTree extends ResourceCalculatorProcessTree {
   }
 
   @Override
+  public int getGpumem(int gpuNumber) {
+    return 0;
+  }
+
+  @Override
   public String getProcessTreeDump() {
     StringBuilder ret = new StringBuilder();
     // The header.
