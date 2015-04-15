@@ -53,8 +53,7 @@ public class ResourcePBImpl extends Resource {
     }
     viaProto = false;
   }
-    
-  
+
   @Override
   public int getMemory() {
     ResourceProtoOrBuilder p = viaProto ? proto : builder;
@@ -77,6 +76,18 @@ public class ResourcePBImpl extends Resource {
   public void setVirtualCores(int vCores) {
     maybeInitBuilder();
     builder.setVirtualCores((vCores));
+  }
+
+  @Override
+  public int getGpuMemory() {
+    ResourceProtoOrBuilder p = viaProto ? proto : builder;
+    return (p.getGpuMemory());
+  }
+
+  @Override
+  public void setGpuMemory(int gpuMemory) {
+    maybeInitBuilder();
+    builder.setGpuMemory((gpuMemory));
   }
 
   @Override

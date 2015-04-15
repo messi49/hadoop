@@ -129,6 +129,8 @@ public class Client {
   private int amMemory = 10; 
   // Amt. of virtual core resource to request for to run the App Master
   private int amVCores = 1;
+  // Amt. of memory resource to request for to run the App Master
+  private int amGpuMemory = 0;
 
   // Application master jar file
   private String appMasterJar = ""; 
@@ -658,7 +660,7 @@ public class Client {
     // Set up resource type requirements
     // For now, both memory and vcores are supported, so we set memory and 
     // vcores requirements
-    Resource capability = Resource.newInstance(amMemory, amVCores);
+    Resource capability = Resource.newInstance(amMemory, amVCores, amGpuMemory);
     appContext.setResource(capability);
 
     // Service data is a binary blob that can be passed to the application

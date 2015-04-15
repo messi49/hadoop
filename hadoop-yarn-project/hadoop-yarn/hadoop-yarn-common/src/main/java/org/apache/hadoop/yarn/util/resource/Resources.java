@@ -51,6 +51,14 @@ public class Resources {
     }
 
     @Override
+    public int getGpuMemory() { return 0; }
+
+    @Override
+    public void setGpuMemory(int gpuMemory) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
     public int compareTo(Resource o) {
       int diff = 0 - o.getMemory();
       if (diff == 0) {
@@ -80,6 +88,16 @@ public class Resources {
 
     @Override
     public void setVirtualCores(int cores) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
+    public int getGpuMemory() {
+      return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void setGpuMemory(int gpuMemory) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 

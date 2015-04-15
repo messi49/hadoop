@@ -73,8 +73,8 @@ public class TestCapacitySchedulerPlanFollower {
   private CapacitySchedulerContext csContext;
   private ReservationAgent mAgent;
   private Plan plan;
-  private Resource minAlloc = Resource.newInstance(GB, 1);
-  private Resource maxAlloc = Resource.newInstance(GB * 8, 8);
+  private Resource minAlloc = Resource.newInstance(GB, 1, GB/4);
+  private Resource maxAlloc = Resource.newInstance(GB * 8, 8, GB);
   private ResourceCalculator res = new DefaultResourceCalculator();
   private CapacityOverTimePolicy policy = new CapacityOverTimePolicy();
 

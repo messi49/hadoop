@@ -135,15 +135,17 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
             YarnConfiguration.NM_PMEM_MB, YarnConfiguration.DEFAULT_NM_PMEM_MB);
     float vMemToPMem =             
         conf.getFloat(
-            YarnConfiguration.NM_VMEM_PMEM_RATIO, 
-            YarnConfiguration.DEFAULT_NM_VMEM_PMEM_RATIO); 
+                YarnConfiguration.NM_VMEM_PMEM_RATIO,
+                YarnConfiguration.DEFAULT_NM_VMEM_PMEM_RATIO);
     int virtualMemoryMb = (int)Math.ceil(memoryMb * vMemToPMem);
     
     int virtualCores =
         conf.getInt(
             YarnConfiguration.NM_VCORES, YarnConfiguration.DEFAULT_NM_VCORES);
 
-    this.totalResource = Resource.newInstance(memoryMb, virtualCores);
+    int gpuMemoryMib = 1535;
+
+    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuMemoryMib);
     metrics.addResource(totalResource);
     this.tokenKeepAliveEnabled = isTokenKeepAliveEnabled(conf);
     this.tokenRemovalDelayMs =
@@ -174,7 +176,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
     super.serviceInit(conf);
     LOG.info("Initialized nodemanager for " + nodeId + ":" +
         " physical-memory=" + memoryMb + " virtual-memory=" + virtualMemoryMb +
-        " virtual-cores=" + virtualCores);
+        " virtual-cores=" + virtualCores +  "GPU-memory=" + gpuMemoryMib);
   }
 
   @Override

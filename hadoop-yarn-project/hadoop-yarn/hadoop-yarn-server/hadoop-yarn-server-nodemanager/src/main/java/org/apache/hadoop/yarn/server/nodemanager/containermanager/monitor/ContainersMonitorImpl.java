@@ -66,9 +66,11 @@ public class ContainersMonitorImpl extends AbstractService implements
 
   private long maxVmemAllottedForContainers = UNKNOWN_MEMORY_LIMIT;
   private long maxPmemAllottedForContainers = UNKNOWN_MEMORY_LIMIT;
+  private long maxGmemAllottedForContainers = UNKNOWN_MEMORY_LIMIT;
 
   private boolean pmemCheckEnabled;
   private boolean vmemCheckEnabled;
+  private boolean gmemCheckEnabled;
 
   private long maxVCoresAllottedForContainers;
 
@@ -114,12 +116,17 @@ public class ContainersMonitorImpl extends AbstractService implements
         YarnConfiguration.NM_VCORES,
         YarnConfiguration.DEFAULT_NM_VCORES);
 
+    long configuredGMemForContainers = conf.getLong(
+            YarnConfiguration.NM_GMEM_MB,
+            YarnConfiguration.DEFAULT_NM_GMEM_MB) * 1024 * 1024l;
+
 
     // Setting these irrespective of whether checks are enabled. Required in
     // the UI.
     // ///////// Physical memory configuration //////
     this.maxPmemAllottedForContainers = configuredPMemForContainers;
     this.maxVCoresAllottedForContainers = configuredVCoresForContainers;
+    this.maxGmemAllottedForContainers = configuredGMemForContainers;
 
     // ///////// Virtual memory configuration //////
     float vmemRatio = conf.getFloat(YarnConfiguration.NM_VMEM_PMEM_RATIO,
@@ -133,8 +140,12 @@ public class ContainersMonitorImpl extends AbstractService implements
         YarnConfiguration.DEFAULT_NM_PMEM_CHECK_ENABLED);
     vmemCheckEnabled = conf.getBoolean(YarnConfiguration.NM_VMEM_CHECK_ENABLED,
         YarnConfiguration.DEFAULT_NM_VMEM_CHECK_ENABLED);
+    gmemCheckEnabled = conf.getBoolean(YarnConfiguration.NM_VMEM_CHECK_ENABLED,
+            YarnConfiguration.DEFAULT_NM_VMEM_CHECK_ENABLED);
     LOG.info("Physical memory check enabled: " + pmemCheckEnabled);
     LOG.info("Virtual memory check enabled: " + vmemCheckEnabled);
+    LOG.info("GPU memory check enabled: " + gmemCheckEnabled);
+
 
     if (pmemCheckEnabled) {
       // Logging if actual pmem cannot be determined.
@@ -174,7 +185,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                 + this.getClass().getName() + " is disabled.");
             return false;
     }
-    if (!(isPmemCheckEnabled() || isVmemCheckEnabled())) {
+    if (!(isPmemCheckEnabled() || isVmemCheckEnabled() || isGmemCheckEnabled())) {
       LOG.info("Neither virutal-memory nor physical-memory monitoring is " +
           "needed. Not running the monitor-thread");
       return false;
@@ -210,14 +221,16 @@ public class ContainersMonitorImpl extends AbstractService implements
     private ResourceCalculatorProcessTree pTree;
     private long vmemLimit;
     private long pmemLimit;
+    private long gmemLimit;
 
     public ProcessTreeInfo(ContainerId containerId, String pid,
-        ResourceCalculatorProcessTree pTree, long vmemLimit, long pmemLimit) {
+        ResourceCalculatorProcessTree pTree, long vmemLimit, long pmemLimit, long gmemLimit) {
       this.containerId = containerId;
       this.pid = pid;
       this.pTree = pTree;
       this.vmemLimit = vmemLimit;
       this.pmemLimit = pmemLimit;
+      this.gmemLimit = gmemLimit;
     }
 
     public ContainerId getContainerId() {
@@ -410,7 +423,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit));
 
-              LOG.info("GPU Memory usage : " + pTree.getGpumem(0) + " B");
+              LOG.info("GPU Memory usage : " + pTree.getGmem(0) + " MiB");
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;
@@ -542,6 +555,10 @@ public class ContainersMonitorImpl extends AbstractService implements
     return this.vmemCheckEnabled;
   }
 
+  public boolean isGmemCheckEnabled() {
+    return this.gmemCheckEnabled;
+  }
+
   @Override
   public void handle(ContainersMonitorEvent monitoringEvent) {
 
@@ -557,7 +574,7 @@ public class ContainersMonitorImpl extends AbstractService implements
       synchronized (this.containersToBeAdded) {
         ProcessTreeInfo processTreeInfo =
             new ProcessTreeInfo(containerId, null, null,
-                startEvent.getVmemLimit(), startEvent.getPmemLimit());
+                startEvent.getVmemLimit(), startEvent.getPmemLimit(), startEvent.getGmemLimit());
         this.containersToBeAdded.put(containerId, processTreeInfo);
       }
       break;

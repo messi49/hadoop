@@ -86,7 +86,7 @@ public class CommonNodeLabelsManager extends AbstractService {
     public Resource resource;
 
     protected Label() {
-      this.resource = Resource.newInstance(0, 0);
+      this.resource = Resource.newInstance(0, 0, 0);
     }
   }
 
@@ -120,7 +120,7 @@ public class CommonNodeLabelsManager extends AbstractService {
     
     protected Node() {
       labels = null;
-      resource = Resource.newInstance(0, 0);
+      resource = Resource.newInstance(0, 0, 0);
       running = false;
     }
     

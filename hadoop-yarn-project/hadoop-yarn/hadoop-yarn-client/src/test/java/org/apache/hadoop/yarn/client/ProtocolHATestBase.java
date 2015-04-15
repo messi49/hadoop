@@ -77,7 +77,6 @@ import org.apache.hadoop.yarn.api.protocolrecords.RenewDelegationTokenRequest;
 import org.apache.hadoop.yarn.api.protocolrecords.RenewDelegationTokenResponse;
 import org.apache.hadoop.yarn.api.protocolrecords.SubmitApplicationRequest;
 import org.apache.hadoop.yarn.api.protocolrecords.SubmitApplicationResponse;
-import org.apache.hadoop.yarn.api.records.AMCommand;
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptReport;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
@@ -807,8 +806,8 @@ public abstract class ProtocolHATestBase extends ClientBaseWithFixes {
 
     public RegisterApplicationMasterResponse
     createFakeRegisterApplicationMasterResponse() {
-      Resource minCapability = Resource.newInstance(2048, 2);
-      Resource maxCapability = Resource.newInstance(4096, 4);
+      Resource minCapability = Resource.newInstance(2048, 2, 256);
+      Resource maxCapability = Resource.newInstance(4096, 4, 1024);
       Map<ApplicationAccessType, String> acls =
           new HashMap<ApplicationAccessType, String>();
       acls.put(ApplicationAccessType.MODIFY_APP, "*");
@@ -827,7 +826,7 @@ public abstract class ProtocolHATestBase extends ClientBaseWithFixes {
       return AllocateResponse.newInstance(-1,
           new ArrayList<ContainerStatus>(),
           new ArrayList<Container>(), new ArrayList<NodeReport>(),
-          Resource.newInstance(1024, 2), null, 1,
+          Resource.newInstance(1024, 2, 256), null, 1,
           null, new ArrayList<NMToken>());
     }
   }

@@ -396,6 +396,7 @@ public class ApplicationHistoryManagerOnTimelineStore extends AbstractService
       TimelineEntity entity, String serverHttpAddress, String user) {
     int allocatedMem = 0;
     int allocatedVcore = 0;
+    int allocatedGpuMem = 0;
     String allocatedHost = null;
     int allocatedPort = -1;
     int allocatedPriority = 0;
@@ -479,7 +480,7 @@ public class ApplicationHistoryManagerOnTimelineStore extends AbstractService
         user);
     return ContainerReport.newInstance(
         ConverterUtils.toContainerId(entity.getEntityId()),
-        Resource.newInstance(allocatedMem, allocatedVcore),
+        Resource.newInstance(allocatedMem, allocatedVcore, allocatedGpuMem),
         NodeId.newInstance(allocatedHost, allocatedPort),
         Priority.newInstance(allocatedPriority),
         createdTime, finishedTime, diagnosticsInfo, logUrl, exitStatus, state);

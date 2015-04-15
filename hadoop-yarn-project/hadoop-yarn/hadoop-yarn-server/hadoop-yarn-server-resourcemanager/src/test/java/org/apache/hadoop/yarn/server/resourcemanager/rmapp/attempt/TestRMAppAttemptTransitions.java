@@ -1460,7 +1460,7 @@ public class TestRMAppAttemptTransitions {
                 (ResourceRequest) ((List) invocation.getArguments()[1]).get(0);
             
             // capacity shouldn't changed
-            assertEquals(Resource.newInstance(3333, 1), rr.getCapability());
+            assertEquals(Resource.newInstance(3333, 1, 444), rr.getCapability());
             assertEquals("label-expression", rr.getNodeLabelExpression());
             
             // priority, #container, relax-locality will be changed
@@ -1480,7 +1480,7 @@ public class TestRMAppAttemptTransitions {
         new RMAppAttemptImpl(applicationAttempt.getAppAttemptId(),
             spyRMContext, scheduler, masterService, submissionContext,
             new Configuration(), true, ResourceRequest.newInstance(
-                Priority.UNDEFINED, "host1", Resource.newInstance(3333, 1), 3,
+                Priority.UNDEFINED, "host1", Resource.newInstance(3333, 1, 444), 3,
                 false, "label-expression"));
     new RMAppAttemptImpl.ScheduleTransition().transition(
         (RMAppAttemptImpl) applicationAttempt, null);

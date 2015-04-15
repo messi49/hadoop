@@ -58,7 +58,7 @@ public class TestResourceCalculatorProcessTree {
     }
 
     @Override
-    public int getGpumem(int gpuNumber) { return 0; }
+    public int getGmem(int gpuNumber) { return 0; }
   }
 
   @Test

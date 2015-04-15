@@ -24,7 +24,6 @@ import java.security.AccessControlException;
 import java.nio.ByteBuffer;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -1165,7 +1164,7 @@ public class RMWebServices {
     }
     Resource r =
         Resource.newInstance(newApp.getResource().getMemory(), newApp
-          .getResource().getvCores());
+          .getResource().getvCores(), newApp.getResource().getGpuMemory());
     return r;
   }
 

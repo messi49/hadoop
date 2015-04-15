@@ -1193,7 +1193,7 @@ public class TestClientRMService {
             System.currentTimeMillis(), "YARN", null,
             BuilderUtils.newResourceRequest(
                 RMAppAttemptImpl.AM_CONTAINER_PRIORITY, ResourceRequest.ANY,
-                Resource.newInstance(1024, 1), 1)){
+                Resource.newInstance(1024, 1, 256), 1)){
                   @Override
                   public ApplicationReport createAndGetApplicationReport(
                       String clientUserName, boolean allowAccess) {
@@ -1344,7 +1344,7 @@ public class TestClientRMService {
       int numContainers, long arrival, long deadline, long duration) {
     // create a request with a single atomic ask
     ReservationRequest r =
-        ReservationRequest.newInstance(Resource.newInstance(1024, 1),
+        ReservationRequest.newInstance(Resource.newInstance(1024, 1, 256),
             numContainers, 1, duration);
     ReservationRequests reqs =
         ReservationRequests.newInstance(Collections.singletonList(r),

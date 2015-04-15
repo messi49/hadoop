@@ -43,9 +43,9 @@ public class TestSimpleCapacityReplanner {
   @Test
   public void testReplanningPlanCapacityLoss() throws PlanningException {
 
-    Resource clusterCapacity = Resource.newInstance(100 * 1024, 10);
-    Resource minAlloc = Resource.newInstance(1024, 1);
-    Resource maxAlloc = Resource.newInstance(1024 * 8, 8);
+    Resource clusterCapacity = Resource.newInstance(100 * 1024, 10, 1024);
+    Resource minAlloc = Resource.newInstance(1024, 1, 128);
+    Resource maxAlloc = Resource.newInstance(1024 * 8, 8, 512);
 
     ResourceCalculator res = new DefaultResourceCalculator();
     long step = 1L;
@@ -122,7 +122,7 @@ public class TestSimpleCapacityReplanner {
             minAlloc)));
 
     // remove some of the resources (requires replanning)
-    plan.setTotalCapacity(Resource.newInstance(70 * 1024, 70));
+    plan.setTotalCapacity(Resource.newInstance(70 * 1024, 70, 768));
 
     when(clock.getTime()).thenReturn(0L);
 
@@ -156,7 +156,7 @@ public class TestSimpleCapacityReplanner {
         new TreeMap<ReservationInterval, ReservationRequest>();
     for (int i = 0; i < alloc.length; i++) {
       req.put(new ReservationInterval(startTime + i, startTime + i + 1),
-          ReservationRequest.newInstance(Resource.newInstance(1024, 1),
+          ReservationRequest.newInstance(Resource.newInstance(1024, 1, 256),
               alloc[i]));
     }
     return req;

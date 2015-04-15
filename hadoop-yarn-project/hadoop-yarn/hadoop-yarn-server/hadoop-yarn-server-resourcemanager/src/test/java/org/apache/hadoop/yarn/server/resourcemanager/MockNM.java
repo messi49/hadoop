@@ -50,6 +50,7 @@ public class MockNM {
   private NodeId nodeId;
   private final int memory;
   private final int vCores;
+  private int gpuMemory;
   private ResourceTrackerService resourceTracker;
   private final int httpPort = 2;
   private MasterKey currentContainerTokenMasterKey;
@@ -197,5 +198,9 @@ public class MockNM {
 
   public int getvCores() {
     return vCores;
+  }
+
+  public int getGpuMemory() {
+    return gpuMemory;
   }
 }

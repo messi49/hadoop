@@ -207,7 +207,7 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
   }
 
   public synchronized Resource getTotalPendingRequests() {
-    Resource ret = Resource.newInstance(0, 0);
+    Resource ret = Resource.newInstance(0, 0, 0);
     for (ResourceRequest rr : appSchedulingInfo.getAllResourceRequests()) {
       // to avoid double counting we count only "ANY" resource requests
       if (ResourceRequest.isAnyLocation(rr.getResourceName())){
@@ -241,7 +241,7 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
     Set<ContainerId> currentContPreemption = Collections.unmodifiableSet(
         new HashSet<ContainerId>(containersToPreempt));
     containersToPreempt.clear();
-    Resource tot = Resource.newInstance(0, 0);
+    Resource tot = Resource.newInstance(0, 0, 0);
     for(ContainerId c : currentContPreemption){
       Resources.addTo(tot,
           liveContainers.get(c).getContainer().getResource());

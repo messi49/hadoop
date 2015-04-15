@@ -139,11 +139,11 @@ public class TestAMRMClientOnRMRestart {
 
     amClient.registerApplicationMaster("Host", 10000, "");
 
-    ContainerRequest cRequest1 = createReq(1, 1024, new String[] { "h1" });
+    ContainerRequest cRequest1 = createReq(1, 1024, 256, new String[] { "h1" });
     amClient.addContainerRequest(cRequest1);
 
     ContainerRequest cRequest2 =
-        createReq(1, 1024, new String[] { "h1", "h2" });
+        createReq(1, 1024, 256, new String[] { "h1", "h2" });
     amClient.addContainerRequest(cRequest2);
 
     List<String> blacklistAdditions = new ArrayList<String>();
@@ -191,7 +191,7 @@ public class TestAMRMClientOnRMRestart {
     assertBlacklistAdditionsAndRemovals(0, 0, rm1);
 
     // Step-3 : Send 1 containerRequest and 1 releaseRequests to RM
-    ContainerRequest cRequest3 = createReq(1, 1024, new String[] { "h1" });
+    ContainerRequest cRequest3 = createReq(1, 1024, 256, new String[] { "h1" });
     amClient.addContainerRequest(cRequest3);
 
     int pendingRelease = 0;
@@ -242,7 +242,7 @@ public class TestAMRMClientOnRMRestart {
     }
 
     ContainerRequest cRequest4 =
-        createReq(1, 1024, new String[] { "h1", "h2" });
+        createReq(1, 1024, 256, new String[] { "h1", "h2" });
     amClient.addContainerRequest(cRequest4);
 
     // Step-4 : On RM restart, AM(does not know RM is restarted) sends
@@ -260,7 +260,7 @@ public class TestAMRMClientOnRMRestart {
     assertBlacklistAdditionsAndRemovals(2, 0, rm2);
 
     ContainerRequest cRequest5 =
-        createReq(1, 1024, new String[] { "h1", "h2", "h3" });
+        createReq(1, 1024, 256, new String[] { "h1", "h2", "h3" });
     amClient.addContainerRequest(cRequest5);
 
     // Step-5 : Allocater after resync command
@@ -355,7 +355,7 @@ public class TestAMRMClientOnRMRestart {
     ContainerId containerId = ContainerId.newContainerId(appAttemptId, 1);
     NMContainerStatus containerReport =
         NMContainerStatus.newInstance(containerId, ContainerState.RUNNING,
-            Resource.newInstance(1024, 1), "recover container", 0,
+            Resource.newInstance(1024, 1, 256), "recover container", 0,
             Priority.newInstance(0), 0);
     nm1.registerNode(Arrays.asList(containerReport), null);
     nm1.nodeHeartbeat(true);
@@ -641,8 +641,8 @@ public class TestAMRMClientOnRMRestart {
         rm.getMyFifoScheduler().lastRelease.size());
   }
 
-  private ContainerRequest createReq(int priority, int memory, String[] hosts) {
-    Resource capability = Resource.newInstance(memory, 1);
+  private ContainerRequest createReq(int priority, int memory, int gpuMemory, String[] hosts) {
+    Resource capability = Resource.newInstance(memory, 1, gpuMemory);
     Priority priorityOfContainer = Priority.newInstance(priority);
     return new ContainerRequest(capability, hosts,
         new String[] { NetworkTopology.DEFAULT_RACK }, priorityOfContainer);

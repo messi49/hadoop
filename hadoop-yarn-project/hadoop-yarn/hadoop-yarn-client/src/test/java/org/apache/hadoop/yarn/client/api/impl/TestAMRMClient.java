@@ -140,7 +140,7 @@ public class TestAMRMClient {
     
     priority = Priority.newInstance(1);
     priority2 = Priority.newInstance(2);
-    capability = Resource.newInstance(1024, 1);
+    capability = Resource.newInstance(1024, 1, 256);
 
     node = nodeReports.get(0).getNodeId().getHost();
     rack = nodeReports.get(0).getRackName();
@@ -171,7 +171,7 @@ public class TestAMRMClient {
           new HashMap<String, ByteBuffer>(), null,
           new HashMap<ApplicationAccessType, String>());
     appContext.setAMContainerSpec(amContainer);
-    appContext.setResource(Resource.newInstance(1024, 1));
+    appContext.setResource(Resource.newInstance(1024, 1, 256));
     // Create the request to send to the applications manager
     SubmitApplicationRequest appRequest = Records
         .newRecord(SubmitApplicationRequest.class);
@@ -230,13 +230,13 @@ public class TestAMRMClient {
       amClient.start();
       amClient.registerApplicationMaster("Host", 10000, "");
       
-      Resource capability1 = Resource.newInstance(1024, 2);
-      Resource capability2 = Resource.newInstance(1024, 1);
-      Resource capability3 = Resource.newInstance(1000, 2);
-      Resource capability4 = Resource.newInstance(2000, 1);
-      Resource capability5 = Resource.newInstance(1000, 3);
-      Resource capability6 = Resource.newInstance(2000, 1);
-      Resource capability7 = Resource.newInstance(2000, 1);
+      Resource capability1 = Resource.newInstance(1024, 2, 256);
+      Resource capability2 = Resource.newInstance(1024, 1, 256);
+      Resource capability3 = Resource.newInstance(1000, 2, 200);
+      Resource capability4 = Resource.newInstance(2000, 1, 400);
+      Resource capability5 = Resource.newInstance(1000, 3, 200);
+      Resource capability6 = Resource.newInstance(2000, 1, 400);
+      Resource capability7 = Resource.newInstance(2000, 1, 400);
 
       ContainerRequest storedContainer1 = 
           new ContainerRequest(capability1, nodes, racks, priority);
@@ -264,7 +264,7 @@ public class TestAMRMClient {
       List<? extends Collection<ContainerRequest>> matches;
       ContainerRequest storedRequest;
       // exact match
-      Resource testCapability1 = Resource.newInstance(1024,  2);
+      Resource testCapability1 = Resource.newInstance(1024,  2, 256);
       matches = amClient.getMatchingRequests(priority, node, testCapability1);
       verifyMatches(matches, 1);
       storedRequest = matches.get(0).iterator().next();
@@ -272,7 +272,7 @@ public class TestAMRMClient {
       amClient.removeContainerRequest(storedContainer1);
       
       // exact matching with order maintained
-      Resource testCapability2 = Resource.newInstance(2000, 1);
+      Resource testCapability2 = Resource.newInstance(2000, 1, 512);
       matches = amClient.getMatchingRequests(priority, node, testCapability2);
       verifyMatches(matches, 2);
       // must be returned in the order they were made
@@ -287,11 +287,11 @@ public class TestAMRMClient {
       amClient.removeContainerRequest(storedContainer6);
       
       // matching with larger container. all requests returned
-      Resource testCapability3 = Resource.newInstance(4000, 4);
+      Resource testCapability3 = Resource.newInstance(4000, 4, 1024);
       matches = amClient.getMatchingRequests(priority, node, testCapability3);
       assert(matches.size() == 4);
       
-      Resource testCapability4 = Resource.newInstance(1024, 2);
+      Resource testCapability4 = Resource.newInstance(1024, 2, 256);
       matches = amClient.getMatchingRequests(priority, node, testCapability4);
       assert(matches.size() == 2);
       // verify non-fitting containers are not returned and fitting ones are
@@ -304,13 +304,13 @@ public class TestAMRMClient {
                 testRequest == storedContainer3);
       }
       
-      Resource testCapability5 = Resource.newInstance(512, 4);
+      Resource testCapability5 = Resource.newInstance(512, 4, 128);
       matches = amClient.getMatchingRequests(priority, node, testCapability5);
       assert(matches.size() == 0);
       
       // verify requests without relaxed locality are only returned at specific
       // locations
-      Resource testCapability7 = Resource.newInstance(2000, 1);
+      Resource testCapability7 = Resource.newInstance(2000, 1, 512);
       matches = amClient.getMatchingRequests(priority2, ResourceRequest.ANY,
           testCapability7);
       assert(matches.size() == 0);
@@ -344,7 +344,7 @@ public class TestAMRMClient {
       amClient.start();
       amClient.registerApplicationMaster("Host", 10000, "");
       
-      Resource capability = Resource.newInstance(1024, 2);
+      Resource capability = Resource.newInstance(1024, 2, 256);
 
       ContainerRequest storedContainer1 = 
           new ContainerRequest(capability, nodes, null, priority);
@@ -549,7 +549,7 @@ public class TestAMRMClient {
       
       // create a invalid ContainerRequest - memory value is minus
       ContainerRequest invalidContainerRequest = 
-          new ContainerRequest(Resource.newInstance(-1024, 1),
+          new ContainerRequest(Resource.newInstance(-1024, 1, 128),
               nodes, racks, priority);
       amClient.addContainerRequest(invalidContainerRequest);
       amClient.updateBlacklist(localNodeBlacklist, null);
@@ -677,16 +677,16 @@ public class TestAMRMClient {
 
     // add x, y to ANY
     client.addContainerRequest(new ContainerRequest(Resource.newInstance(1024,
-        1), null, null, Priority.UNDEFINED, true, "x && y"));
+        1, 256), null, null, Priority.UNDEFINED, true, "x && y"));
     Assert.assertEquals(1, client.ask.size());
     Assert.assertEquals("x && y", client.ask.iterator().next()
         .getNodeLabelExpression());
 
     // add x, y and a, b to ANY, only a, b should be kept
     client.addContainerRequest(new ContainerRequest(Resource.newInstance(1024,
-        1), null, null, Priority.UNDEFINED, true, "x && y"));
+        1, 256), null, null, Priority.UNDEFINED, true, "x && y"));
     client.addContainerRequest(new ContainerRequest(Resource.newInstance(1024,
-        1), null, null, Priority.UNDEFINED, true, "a && b"));
+        1, 256), null, null, Priority.UNDEFINED, true, "a && b"));
     Assert.assertEquals(1, client.ask.size());
     Assert.assertEquals("a && b", client.ask.iterator().next()
         .getNodeLabelExpression());

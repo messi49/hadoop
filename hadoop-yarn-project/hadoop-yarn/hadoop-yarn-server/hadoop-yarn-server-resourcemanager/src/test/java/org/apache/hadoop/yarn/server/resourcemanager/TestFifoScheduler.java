@@ -564,7 +564,7 @@ public class TestFifoScheduler {
     Map<NodeId, ResourceOption> nodeResourceMap = 
         new HashMap<NodeId, ResourceOption>();
     nodeResourceMap.put(nm1.getNodeId(), 
-        ResourceOption.newInstance(Resource.newInstance(2 * GB, 1), -1));
+        ResourceOption.newInstance(Resource.newInstance(2 * GB, 1, 256), -1));
     UpdateNodeResourceRequest request = 
         UpdateNodeResourceRequest.newInstance(nodeResourceMap);
     AdminService as = rm.adminService;

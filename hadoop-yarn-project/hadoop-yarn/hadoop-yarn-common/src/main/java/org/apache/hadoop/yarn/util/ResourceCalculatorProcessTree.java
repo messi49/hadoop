@@ -128,7 +128,7 @@ public abstract class ResourceCalculatorProcessTree extends Configured {
    *          for processes. return olderThanAge0 if it cannot be
    *          calculated
    */
-  public abstract int getGpumem(int gpuNumber);
+  public abstract int getGmem(int gpuNumber);
 
   /**Executive Talent Acquisition
    * Create the ResourceCalculatorProcessTree rooted to specified process 

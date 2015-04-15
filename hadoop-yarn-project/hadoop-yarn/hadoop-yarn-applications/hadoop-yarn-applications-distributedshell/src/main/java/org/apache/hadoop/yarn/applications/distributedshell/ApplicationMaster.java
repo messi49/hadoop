@@ -216,6 +216,7 @@ public class ApplicationMaster {
   private int containerMemory = 10;
   // VirtualCores to request for the container on which the shell command will run
   private int containerVirtualCores = 1;
+  private int containerGpuMemory = 0;
   // Priority of the request
   private int requestPriority;
 
@@ -1020,7 +1021,7 @@ public class ApplicationMaster {
     // Set up resource type requirements
     // For now, memory and CPU are supported so we set memory and cpu requirements
     Resource capability = Resource.newInstance(containerMemory,
-      containerVirtualCores);
+      containerVirtualCores, containerGpuMemory);
 
     ContainerRequest request = new ContainerRequest(capability, null, null,
         pri);

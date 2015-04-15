@@ -777,6 +777,15 @@ public class YarnConfiguration extends Configuration {
       + "vmem-check-enabled";
   public static final boolean DEFAULT_NM_VMEM_CHECK_ENABLED = true;
 
+  /** Amount of memory in GB that can be allocated for containers.*/
+  public static final String NM_GMEM_MB = NM_PREFIX + "resource.memory-mb";
+  public static final int DEFAULT_NM_GMEM_MB = 1536;
+
+  /** Specifies whether physical GPU memory check is enabled. */
+  public static final String NM_GMEM_CHECK_ENABLED = NM_PREFIX
+          + "gmem-check-enabled";
+  public static final boolean DEFAULT_NM_GMEM_CHECK_ENABLED = true;
+
   /** Conversion ratio for physical memory to virtual memory. */
   public static final String NM_VMEM_PMEM_RATIO =
     NM_PREFIX + "vmem-pmem-ratio";

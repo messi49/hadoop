@@ -1061,7 +1061,7 @@ public class LeafQueue extends AbstractCSQueue {
     //   with miniscule capacity (< 1 slot) make progress
     // * If we're running over capacity, then its
     //   (usedResources + required) (which extra resources we are allocating)
-    Resource queueCapacity = Resource.newInstance(0, 0);
+    Resource queueCapacity = Resource.newInstance(0, 0, 0);
     if (requestedLabels != null && !requestedLabels.isEmpty()) {
       // if we have multiple labels to request, we will choose to use the first
       // label

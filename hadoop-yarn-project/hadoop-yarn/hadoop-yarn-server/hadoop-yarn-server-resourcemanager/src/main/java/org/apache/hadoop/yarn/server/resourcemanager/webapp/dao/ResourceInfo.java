@@ -29,7 +29,8 @@ import org.apache.hadoop.yarn.api.records.Resource;
 public class ResourceInfo {
   int memory;
   int vCores;
-  
+  int gpuMemory;
+
   public ResourceInfo() {
   }
 
@@ -45,6 +46,10 @@ public class ResourceInfo {
   public int getvCores() {
     return vCores;
   }
+
+  public int getGpuMemory() {
+    return gpuMemory;
+  }
   
   @Override
   public String toString() {
@@ -57,5 +62,9 @@ public class ResourceInfo {
 
   public void setvCores(int vCores) {
     this.vCores = vCores;
+  }
+
+  public void setGpuMemory(int gpuMemory) {
+    this.gpuMemory = gpuMemory;
   }
 }

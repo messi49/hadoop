@@ -66,6 +66,7 @@ public class QueueMetrics implements MetricsSource {
   @Metric("Aggregate # of released containers") MutableCounterLong aggregateContainersReleased;
   @Metric("Available memory in MB") MutableGaugeInt availableMB;
   @Metric("Available CPU in virtual cores") MutableGaugeInt availableVCores;
+  @Metric("Available GPU memory") MutableGaugeInt availableGpuMemory;
   @Metric("Pending memory allocation in MB") MutableGaugeInt pendingMB;
   @Metric("Pending CPU allocation in virtual cores") MutableGaugeInt pendingVCores;
   @Metric("# of pending containers") MutableGaugeInt pendingContainers;
@@ -172,9 +173,9 @@ public class QueueMetrics implements MetricsSource {
       metrics = new QueueMetrics(metricsSystem, queueName, null, false, conf);
       users.put(userName, metrics);
       metricsSystem.register(
-          sourceName(queueName).append(",user=").append(userName).toString(),
-          "Metrics for user '"+ userName +"' in queue '"+ queueName +"'",
-          metrics.tag(QUEUE_INFO, queueName).tag(USER_INFO, userName));
+              sourceName(queueName).append(",user=").append(userName).toString(),
+              "Metrics for user '" + userName + "' in queue '" + queueName + "'",
+              metrics.tag(QUEUE_INFO, queueName).tag(USER_INFO, userName));
     }
     return metrics;
   }
@@ -505,7 +506,11 @@ public class QueueMetrics implements MetricsSource {
 
   public int getAvailableMB() {
     return availableMB.value();
-  }  
+  }
+
+  public int getAvailableGpuMemory() {
+    return availableGpuMemory.value();
+  }
   
   public int getAvailableVirtualCores() {
     return availableVCores.value();

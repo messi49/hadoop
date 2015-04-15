@@ -510,7 +510,7 @@ public class TestResourceTrackerService {
         NMContainerStatus.newInstance(
           ContainerId.newContainerId(
             ApplicationAttemptId.newInstance(app.getApplicationId(), 2), 1),
-          ContainerState.COMPLETE, Resource.newInstance(1024, 1),
+          ContainerState.COMPLETE, Resource.newInstance(1024, 1, 256),
           "Dummy Completed", 0, Priority.newInstance(10), 1234);
     rm.getResourceTrackerService().handleNMContainerStatus(report, null);
     verify(handler, never()).handle((Event) any());
@@ -521,7 +521,7 @@ public class TestResourceTrackerService {
     currentAttempt.setMasterContainer(null);
     report = NMContainerStatus.newInstance(
           ContainerId.newContainerId(currentAttempt.getAppAttemptId(), 0),
-          ContainerState.COMPLETE, Resource.newInstance(1024, 1),
+          ContainerState.COMPLETE, Resource.newInstance(1024, 1, 256),
           "Dummy Completed", 0, Priority.newInstance(10), 1234);
     rm.getResourceTrackerService().handleNMContainerStatus(report, null);
     verify(handler, never()).handle((Event)any());
@@ -533,7 +533,7 @@ public class TestResourceTrackerService {
     report = NMContainerStatus.newInstance(
           ContainerId.newContainerId(
             ApplicationAttemptId.newInstance(app.getApplicationId(), 2), 1),
-          ContainerState.COMPLETE, Resource.newInstance(1024, 1),
+          ContainerState.COMPLETE, Resource.newInstance(1024, 1, 256),
           "Dummy Completed", 0, Priority.newInstance(10), 1234);
     try {
       rm.getResourceTrackerService().handleNMContainerStatus(report, null);
@@ -548,7 +548,7 @@ public class TestResourceTrackerService {
     currentAttempt.setMasterContainer(null);
     report = NMContainerStatus.newInstance(
       ContainerId.newContainerId(currentAttempt.getAppAttemptId(), 0),
-      ContainerState.COMPLETE, Resource.newInstance(1024, 1),
+      ContainerState.COMPLETE, Resource.newInstance(1024, 1, 256),
       "Dummy Completed", 0, Priority.newInstance(10), 1234);
     try {
       rm.getResourceTrackerService().handleNMContainerStatus(report, null);

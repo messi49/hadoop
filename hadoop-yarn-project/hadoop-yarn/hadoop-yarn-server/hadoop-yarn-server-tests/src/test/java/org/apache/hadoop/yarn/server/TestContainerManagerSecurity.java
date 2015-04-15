@@ -82,9 +82,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
-
 @RunWith(Parameterized.class)
 public class TestContainerManagerSecurity extends KerberosSecurityTestcase {
 
@@ -224,7 +221,7 @@ public class TestContainerManagerSecurity extends KerberosSecurityTestcase {
      */
     YarnRPC rpc = YarnRPC.create(conf);
     String user = "test";
-    Resource r = Resource.newInstance(1024, 1);
+    Resource r = Resource.newInstance(1024, 1, 256);
 
     ApplicationId appId = ApplicationId.newInstance(1, 1);
     ApplicationAttemptId validAppAttemptId =
@@ -657,7 +654,7 @@ public class TestContainerManagerSecurity extends KerberosSecurityTestcase {
         yarnCluster.getResourceManager().getRMContext().
             getContainerTokenSecretManager();
     
-    Resource r = Resource.newInstance(1230, 2);
+    Resource r = Resource.newInstance(1230, 2, 346);
     
     Token containerToken = 
         containerTokenSecretManager.createContainerToken(
@@ -751,7 +748,7 @@ public class TestContainerManagerSecurity extends KerberosSecurityTestcase {
     RMContainerTokenSecretManager containerTokenSecretManager =
         yarnCluster.getResourceManager().getRMContext().
             getContainerTokenSecretManager();
-    Resource r = Resource.newInstance(1230, 2);
+    Resource r = Resource.newInstance(1230, 2, 346);
     Token containerToken =
         containerTokenSecretManager.createContainerToken(cId, nodeId, user, r,
             Priority.newInstance(0), 0);

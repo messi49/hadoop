@@ -266,7 +266,7 @@ public class TestCgroupsLCEResourcesHandler {
     // check values
     // default case - files shouldn't exist, strict mode off by default
     ContainerId id = ContainerId.fromString("container_1_1_1_1");
-    handler.preExecute(id, Resource.newInstance(1024, 1));
+    handler.preExecute(id, Resource.newInstance(1024, 1, 256));
     File containerDir = new File(cgroupMountDir, id.toString());
     Assert.assertTrue(containerDir.exists());
     Assert.assertTrue(containerDir.isDirectory());
@@ -281,7 +281,7 @@ public class TestCgroupsLCEResourcesHandler {
       YarnConfiguration.NM_LINUX_CONTAINER_CGROUPS_STRICT_RESOURCE_USAGE, true);
     handler.initConfig();
     handler.preExecute(id,
-      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES));
+      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES, 256));
     Assert.assertTrue(containerDir.exists());
     Assert.assertTrue(containerDir.isDirectory());
     periodFile = new File(containerDir, "cpu.cfs_period_us");
@@ -295,7 +295,7 @@ public class TestCgroupsLCEResourcesHandler {
       YarnConfiguration.NM_LINUX_CONTAINER_CGROUPS_STRICT_RESOURCE_USAGE, true);
     handler.initConfig();
     handler.preExecute(id,
-      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES / 2));
+      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES / 2, 256));
     Assert.assertTrue(containerDir.exists());
     Assert.assertTrue(containerDir.isDirectory());
     periodFile = new File(containerDir, "cpu.cfs_period_us");
@@ -314,7 +314,7 @@ public class TestCgroupsLCEResourcesHandler {
     handler.initConfig();
     handler.init(mockLCE, plugin);
     handler.preExecute(id,
-      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES / 2));
+      Resource.newInstance(1024, YarnConfiguration.DEFAULT_NM_VCORES / 2, 256));
     Assert.assertTrue(containerDir.exists());
     Assert.assertTrue(containerDir.isDirectory());
     periodFile = new File(containerDir, "cpu.cfs_period_us");

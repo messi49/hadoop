@@ -68,9 +68,9 @@ public class TestCapacityOverTimePolicy {
     instConstraint = 70;
 
     initTime = System.currentTimeMillis();
-    minAlloc = Resource.newInstance(1024, 1);
+    minAlloc = Resource.newInstance(1024, 1, 256);
     res = new DefaultResourceCalculator();
-    maxAlloc = Resource.newInstance(1024 * 8, 8);
+    maxAlloc = Resource.newInstance(1024 * 8, 8, 256 * 2);
 
     mAgent = mock(ReservationAgent.class);
     ReservationSystemTestUtil testUtil = new ReservationSystemTestUtil();
@@ -202,7 +202,7 @@ public class TestCapacityOverTimePolicy {
     long win = timeWindow / 2 + 100;
     int cont = (int) Math.ceil(0.5 * totCont);
     req.put(new ReservationInterval(initTime, initTime + win),
-        ReservationRequest.newInstance(Resource.newInstance(1024, 1), cont));
+        ReservationRequest.newInstance(Resource.newInstance(1024, 1, 256), cont));
 
     assertTrue(plan.toString(),
         plan.addReservation(new InMemoryReservationAllocation(
@@ -218,7 +218,7 @@ public class TestCapacityOverTimePolicy {
     long win = 86400000 / 4 + 1;
     int cont = (int) Math.ceil(0.5 * totCont);
     req.put(new ReservationInterval(initTime, initTime + win),
-        ReservationRequest.newInstance(Resource.newInstance(1024, 1), cont));
+        ReservationRequest.newInstance(Resource.newInstance(1024, 1, 256), cont));
     assertTrue(plan.toString(),
         plan.addReservation(new InMemoryReservationAllocation(
             ReservationSystemTestUtil.getNewReservationId(), null, "u1",

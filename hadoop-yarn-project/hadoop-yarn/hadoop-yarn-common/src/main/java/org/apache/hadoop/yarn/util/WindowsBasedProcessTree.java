@@ -158,7 +158,7 @@ public class WindowsBasedProcessTree extends ResourceCalculatorProcessTree {
   }
 
   @Override
-  public int getGpumem(int gpuNumber) {
+  public int getGmem(int gpuNumber) {
     return 0;
   }
 

@@ -697,7 +697,7 @@ public class TestCapacityScheduler {
     Map<NodeId, ResourceOption> nodeResourceMap = 
         new HashMap<NodeId, ResourceOption>();
     nodeResourceMap.put(nm1.getNodeId(), 
-        ResourceOption.newInstance(Resource.newInstance(2 * GB, 1), -1));
+        ResourceOption.newInstance(Resource.newInstance(2 * GB, 1, 512), -1));
     UpdateNodeResourceRequest request = 
         UpdateNodeResourceRequest.newInstance(nodeResourceMap);
     AdminService as = ((MockRM)rm).getAdminService();
@@ -1035,8 +1035,8 @@ public class TestCapacityScheduler {
 
     // check values
     waitForAppPreemptionInfo(app0,
-        Resource.newInstance(CONTAINER_MEMORY * 3, 3), 0, 3,
-        Resource.newInstance(CONTAINER_MEMORY * 3, 3), false, 3);
+        Resource.newInstance(CONTAINER_MEMORY * 3, 3, 256), 0, 3,
+        Resource.newInstance(CONTAINER_MEMORY * 3, 3, 256), false, 3);
 
     // kill app0-attempt0 AM container
     cs.killContainer(schedulerAppAttempt.getRMContainer(app0
@@ -1047,8 +1047,8 @@ public class TestCapacityScheduler {
 
     // check values
     waitForAppPreemptionInfo(app0,
-        Resource.newInstance(CONTAINER_MEMORY * 4, 4), 1, 3,
-        Resource.newInstance(0, 0), false, 0);
+        Resource.newInstance(CONTAINER_MEMORY * 4, 4, 256), 1, 3,
+        Resource.newInstance(0, 0, 0), false, 0);
 
     // launch app0-attempt1
     MockAM am1 = launchAM(app0, rm1, nm1);
@@ -1065,8 +1065,8 @@ public class TestCapacityScheduler {
 
     // check values
     waitForAppPreemptionInfo(app0,
-        Resource.newInstance(CONTAINER_MEMORY * 7, 7), 1, 6,
-        Resource.newInstance(CONTAINER_MEMORY * 3, 3), false, 3);
+        Resource.newInstance(CONTAINER_MEMORY * 7, 7, 256), 1, 6,
+        Resource.newInstance(CONTAINER_MEMORY * 3, 3, 256), false, 3);
 
     rm1.stop();
   }

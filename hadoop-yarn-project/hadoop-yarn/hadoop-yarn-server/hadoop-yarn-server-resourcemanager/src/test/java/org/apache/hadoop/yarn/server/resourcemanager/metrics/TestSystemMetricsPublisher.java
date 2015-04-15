@@ -38,7 +38,6 @@ import org.apache.hadoop.yarn.api.records.timeline.TimelineEntity;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineEvent;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.server.applicationhistoryservice.ApplicationHistoryServer;
-import org.apache.hadoop.yarn.server.applicationhistoryservice.webapp.AHSWebApp;
 import org.apache.hadoop.yarn.server.metrics.AppAttemptMetricsConstants;
 import org.apache.hadoop.yarn.server.metrics.ApplicationMetricsConstants;
 import org.apache.hadoop.yarn.server.metrics.ContainerMetricsConstants;
@@ -362,7 +361,7 @@ public class TestSystemMetricsPublisher {
     when(container.getAllocatedNode()).thenReturn(
         NodeId.newInstance("test host", -100));
     when(container.getAllocatedResource()).thenReturn(
-        Resource.newInstance(-1, -1));
+        Resource.newInstance(-1, -1, -1));
     when(container.getAllocatedPriority()).thenReturn(Priority.UNDEFINED);
     when(container.getCreationTime()).thenReturn(Integer.MAX_VALUE + 1L);
     when(container.getFinishTime()).thenReturn(Integer.MAX_VALUE + 2L);

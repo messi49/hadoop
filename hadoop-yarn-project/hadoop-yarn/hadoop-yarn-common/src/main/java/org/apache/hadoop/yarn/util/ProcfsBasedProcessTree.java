@@ -282,7 +282,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
   }
 
   @Override
-  public int getGpumem(int gpuNumber) {
+  public int getGmem(int gpuNumber) {
     String command = "nvidia-smi -q -d MEMORY,UTILIZATION";
     Process process = null;
     String line = null;

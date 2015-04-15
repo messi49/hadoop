@@ -706,7 +706,7 @@ public class TestYarnClient {
     ContainerLaunchContext amContainer
       = Records.newRecord(ContainerLaunchContext.class);
     appContext.setAMContainerSpec(amContainer);
-    appContext.setResource(Resource.newInstance(1024, 1));
+    appContext.setResource(Resource.newInstance(1024, 1, 256));
     appContext.setUnmanagedAM(unmanaged);
 
     // Submit the application to the applications manager
@@ -954,7 +954,7 @@ public class TestYarnClient {
       int numContainers, long arrival, long deadline, long duration) {
     // create a request with a single atomic ask
     ReservationRequest r =
-        ReservationRequest.newInstance(Resource.newInstance(1024, 1),
+        ReservationRequest.newInstance(Resource.newInstance(1024, 1, 256),
             numContainers, 1, duration);
     ReservationRequests reqs =
         ReservationRequests.newInstance(Collections.singletonList(r),

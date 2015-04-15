@@ -147,7 +147,9 @@ public class TestWorkPreservingRMRestart {
       DominantResourceCalculator.class.getName());
 
     int containerMemory = 1024;
-    Resource containerResource = Resource.newInstance(containerMemory, 1);
+    int containerGpuMemory = 256;
+
+    Resource containerResource = Resource.newInstance(containerMemory, 1, containerGpuMemory);
 
     MemoryRMStateStore memStore = new MemoryRMStateStore();
     memStore.init(conf);
@@ -206,7 +208,7 @@ public class TestWorkPreservingRMRestart {
     // 2 running containers.
     Resource usedResources = Resources.multiply(containerResource, 2);
     Resource nmResource =
-        Resource.newInstance(nm1.getMemory(), nm1.getvCores());
+        Resource.newInstance(nm1.getMemory(), nm1.getvCores(), nm1.getGpuMemory());
 
     assertTrue(schedulerNode1.isValidContainer(amContainer.getContainerId()));
     assertTrue(schedulerNode1.isValidContainer(runningContainer
@@ -440,9 +442,9 @@ public class TestWorkPreservingRMRestart {
     waitForNumContainersToRecover(2, rm2, am1_2.getApplicationAttemptId());
 
     // Calculate each queue's resource usage.
-    Resource containerResource = Resource.newInstance(1024, 1);
+    Resource containerResource = Resource.newInstance(1024, 1, 256);
     Resource nmResource =
-        Resource.newInstance(nm1.getMemory(), nm1.getvCores());
+        Resource.newInstance(nm1.getMemory(), nm1.getvCores(), nm1.getGpuMemory());
     Resource clusterResource = Resources.multiply(nmResource, 2);
     Resource q1Resource = Resources.multiply(clusterResource, 0.5);
     Resource q2Resource = Resources.multiply(clusterResource, 0.5);

@@ -527,10 +527,11 @@ public class ContainerImpl implements Container {
           YarnConfiguration.NM_VMEM_PMEM_RATIO,
           YarnConfiguration.DEFAULT_NM_VMEM_PMEM_RATIO);
       long vmemBytes = (long) (pmemRatio * pmemBytes);
+      long gmemBytes = getResource().getGpuMemory() * 1024 * 1024L;
 
-      dispatcher.getEventHandler().handle(
+    dispatcher.getEventHandler().handle(
           new ContainerStartMonitoringEvent(containerId,
-              vmemBytes, pmemBytes));
+              vmemBytes, pmemBytes, gmemBytes));
   }
 
   private void addDiagnostics(String... diags) {

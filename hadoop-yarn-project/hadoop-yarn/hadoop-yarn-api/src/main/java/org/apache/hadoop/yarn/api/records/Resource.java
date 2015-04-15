@@ -53,10 +53,11 @@ public abstract class Resource implements Comparable<Resource> {
 
   @Public
   @Stable
-  public static Resource newInstance(int memory, int vCores) {
+  public static Resource newInstance(int memory, int vCores, int gpuMemory) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(vCores);
+    resource.setMemory(gpuMemory);
     return resource;
   }
 
@@ -105,6 +106,15 @@ public abstract class Resource implements Comparable<Resource> {
   @Evolving
   public abstract void setVirtualCores(int vCores);
 
+  @Public
+  @Stable
+  public abstract int getGpuMemory();
+
+  @Public
+  @Stable
+  public abstract void setGpuMemory(int gpuMemory);
+
+
   @Override
   public int hashCode() {
     final int prime = 263167;
@@ -132,6 +142,6 @@ public abstract class Resource implements Comparable<Resource> {
 
   @Override
   public String toString() {
-    return "<memory:" + getMemory() + ", vCores:" + getVirtualCores() + ">";
+    return "<memory:" + getMemory() + ", vCores:" + getVirtualCores() + ", gpuMemory:" + getGpuMemory() + ">";
   }
 }

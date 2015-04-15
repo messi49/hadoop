@@ -115,7 +115,7 @@ public class CapacitySchedulerPlanFollower implements PlanFollower {
     Set<ReservationAllocation> currentReservations =
         plan.getReservationsAtTime(now);
     Set<String> curReservationNames = new HashSet<String>();
-    Resource reservedResources = Resource.newInstance(0, 0);
+    Resource reservedResources = Resource.newInstance(0, 0, 0);
     int numRes = 0;
     if (currentReservations != null) {
       numRes = currentReservations.size();

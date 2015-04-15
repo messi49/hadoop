@@ -38,9 +38,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class TestRMNodeLabelsManager extends NodeLabelTestBase {
-  private final Resource EMPTY_RESOURCE = Resource.newInstance(0, 0);
-  private final Resource SMALL_RESOURCE = Resource.newInstance(100, 0);
-  private final Resource LARGE_NODE = Resource.newInstance(1000, 0);
+  private final Resource EMPTY_RESOURCE = Resource.newInstance(0, 0, 0);
+  private final Resource SMALL_RESOURCE = Resource.newInstance(100, 0, 10);
+  private final Resource LARGE_NODE = Resource.newInstance(1000, 0, 100);
   
   MemoryRMNodeLabelsManager mgr = null;
 
@@ -202,7 +202,7 @@ public class TestRMNodeLabelsManager extends NodeLabelTestBase {
   
   @Test(timeout=5000)
   public void testGetQueueResource() throws Exception {
-    Resource clusterResource = Resource.newInstance(9999, 1);
+    Resource clusterResource = Resource.newInstance(9999, 1, 256);
     
     /*
      * Node->Labels:

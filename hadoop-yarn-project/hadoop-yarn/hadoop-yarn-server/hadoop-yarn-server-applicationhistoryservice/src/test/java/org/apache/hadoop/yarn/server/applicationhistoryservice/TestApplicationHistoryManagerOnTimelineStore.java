@@ -282,7 +282,7 @@ public class TestApplicationHistoryManagerOnTimelineStore {
     Assert.assertNotNull(container);
     Assert.assertEquals(Integer.MAX_VALUE + 1L, container.getCreationTime());
     Assert.assertEquals(Integer.MAX_VALUE + 2L, container.getFinishTime());
-    Assert.assertEquals(Resource.newInstance(-1, -1),
+    Assert.assertEquals(Resource.newInstance(-1, -1, -1),
         container.getAllocatedResource());
     Assert.assertEquals(NodeId.newInstance("test host", 100),
         container.getAssignedNode());
