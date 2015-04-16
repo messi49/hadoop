@@ -130,8 +130,9 @@ public class DominantResourceCalculator extends ResourceCalculator {
   public Resource divideAndCeil(Resource numerator, int denominator) {
     return Resources.createResource(
         divideAndCeil(numerator.getMemory(), denominator),
-        divideAndCeil(numerator.getVirtualCores(), denominator)
-        );
+        divideAndCeil(numerator.getVirtualCores(), denominator),
+            divideAndCeil(numerator.getGpuMemory(), denominator)
+    );
   }
 
   @Override
@@ -147,24 +148,31 @@ public class DominantResourceCalculator extends ResourceCalculator {
         Math.max(r.getVirtualCores(), minimumResource.getVirtualCores()),
         stepFactor.getVirtualCores()),
       maximumResource.getVirtualCores());
+    int normalizedGpuMemory = Math.min(
+            roundUp(
+                    Math.max(r.getGpuMemory(), minimumResource.getGpuMemory()),
+                    stepFactor.getGpuMemory()),
+            maximumResource.getGpuMemory());
     return Resources.createResource(normalizedMemory,
-      normalizedCores);
+      normalizedCores, normalizedGpuMemory);
   }
 
   @Override
   public Resource roundUp(Resource r, Resource stepFactor) {
     return Resources.createResource(
         roundUp(r.getMemory(), stepFactor.getMemory()), 
-        roundUp(r.getVirtualCores(), stepFactor.getVirtualCores())
-        );
+        roundUp(r.getVirtualCores(), stepFactor.getVirtualCores()),
+            roundUp(r.getGpuMemory(), stepFactor.getGpuMemory())
+            );
   }
 
   @Override
   public Resource roundDown(Resource r, Resource stepFactor) {
     return Resources.createResource(
         roundDown(r.getMemory(), stepFactor.getMemory()),
-        roundDown(r.getVirtualCores(), stepFactor.getVirtualCores())
-        );
+        roundDown(r.getVirtualCores(), stepFactor.getVirtualCores()),
+            roundUp(r.getGpuMemory(), stepFactor.getGpuMemory())
+    );
   }
 
   @Override
@@ -175,8 +183,10 @@ public class DominantResourceCalculator extends ResourceCalculator {
             (int)Math.ceil(r.getMemory() * by), stepFactor.getMemory()),
         roundUp(
             (int)Math.ceil(r.getVirtualCores() * by), 
-            stepFactor.getVirtualCores())
-        );
+            stepFactor.getVirtualCores()),
+            roundUp(
+                    (int)Math.ceil(r.getGpuMemory() * by), stepFactor.getGpuMemory())
+    );
   }
 
   @Override
@@ -190,8 +200,12 @@ public class DominantResourceCalculator extends ResourceCalculator {
         roundDown(
             (int)(r.getVirtualCores() * by), 
             stepFactor.getVirtualCores()
+            ),
+            roundDown(
+                    (int) (r.getGpuMemory() * by),
+                    stepFactor.getGpuMemory()
             )
-        );
+    );
   }
 
 }

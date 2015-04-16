@@ -65,7 +65,7 @@ public class TestDominantResourceFairnessPolicy {
     Resource usage = BuilderUtils.newResource(memUsage, cpuUsage);
     Resource minShare = BuilderUtils.newResource(minMemShare, minCpuShare);
     return new FakeSchedulable(minShare,
-        Resources.createResource(Integer.MAX_VALUE, Integer.MAX_VALUE),
+        Resources.createResource(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE),
         weights, Resources.none(), usage, 0l);
   }
   
@@ -146,8 +146,8 @@ public class TestDominantResourceFairnessPolicy {
   
   @Test
   public void testCalculateShares() {
-    Resource used = Resources.createResource(10, 5);
-    Resource capacity = Resources.createResource(100, 10);
+    Resource used = Resources.createResource(10, 5, 5);
+    Resource capacity = Resources.createResource(100, 10, 10);
     ResourceType[] resourceOrder = new ResourceType[2];
     ResourceWeights shares = new ResourceWeights();
     DominantResourceFairnessPolicy.DominantResourceFairnessComparator comparator =

@@ -700,7 +700,7 @@ public class LeafQueue extends AbstractCSQueue {
   }
 
   private static final CSAssignment NULL_ASSIGNMENT =
-      new CSAssignment(Resources.createResource(0, 0), NodeType.NODE_LOCAL);
+      new CSAssignment(Resources.createResource(0, 0, 0), NodeType.NODE_LOCAL);
   
   private static final CSAssignment SKIP_ASSIGNMENT = new CSAssignment(true);
   
@@ -1764,7 +1764,7 @@ public class LeafQueue extends AbstractCSQueue {
 
   @VisibleForTesting
   public static class User {
-    Resource consumed = Resources.createResource(0, 0);
+    Resource consumed = Resources.createResource(0, 0, 0);
     Map<String, Resource> consumedByLabel = new HashMap<String, Resource>();
     int pendingApplications = 0;
     int activeApplications = 0;

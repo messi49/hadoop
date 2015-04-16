@@ -96,10 +96,13 @@ public class DominantResourceFairnessPolicy extends SchedulingPolicy {
     int queueAvailableCPU =
         Math.max(queueFairShare.getVirtualCores() - queueUsage
             .getVirtualCores(), 0);
+    int queueAvailableGpuMemory =
+            Math.max(queueFairShare.getGpuMemory() - queueUsage.getGpuMemory(), 0);
     Resource headroom = Resources.createResource(
         Math.min(clusterAvailable.getMemory(), queueAvailableMemory),
         Math.min(clusterAvailable.getVirtualCores(),
-            queueAvailableCPU));
+            queueAvailableCPU),
+            Math.min(clusterAvailable.getGpuMemory(), queueAvailableGpuMemory));
     return headroom;
   }
 

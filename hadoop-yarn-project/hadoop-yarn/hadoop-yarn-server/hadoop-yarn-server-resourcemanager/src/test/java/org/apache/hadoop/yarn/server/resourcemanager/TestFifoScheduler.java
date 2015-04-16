@@ -230,7 +230,7 @@ public class TestFifoScheduler {
     scheduler.reinitialize(conf, rm.getRMContext());
 
     RMNode node = MockNodes.newNodeInfo(1,
-            Resources.createResource(1024, 4), 1, "127.0.0.1");
+            Resources.createResource(1024, 4, 256), 1, "127.0.0.1");
     scheduler.handle(new NodeAddedSchedulerEvent(node));
 
     ApplicationId appId = ApplicationId.newInstance(0, 1);

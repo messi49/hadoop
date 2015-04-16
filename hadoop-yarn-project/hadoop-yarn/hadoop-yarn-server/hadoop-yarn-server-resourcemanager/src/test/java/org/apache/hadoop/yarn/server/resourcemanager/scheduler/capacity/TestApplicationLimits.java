@@ -25,7 +25,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,11 +82,11 @@ public class TestApplicationLimits {
     when(csContext.getConfiguration()).thenReturn(csConf);
     when(csContext.getConf()).thenReturn(conf);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB, 1));
+        thenReturn(Resources.createResource(GB, 1, 128));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(16*GB, 32));
+        thenReturn(Resources.createResource(16*GB, 32, 1536));
     when(csContext.getClusterResource()).
-        thenReturn(Resources.createResource(10 * 16 * GB, 10 * 32));
+        thenReturn(Resources.createResource(10 * 16 * GB, 10 * 32, 1536 * 4));
     when(csContext.getApplicationComparator()).
         thenReturn(CapacityScheduler.applicationComparator);
     when(csContext.getQueueComparator()).
@@ -161,9 +160,9 @@ public class TestApplicationLimits {
     when(csContext.getConfiguration()).thenReturn(csConf);
     when(csContext.getConf()).thenReturn(conf);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB, 1));
+        thenReturn(Resources.createResource(GB, 1, 128));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(16*GB, 16));
+        thenReturn(Resources.createResource(16*GB, 16, 1536));
     when(csContext.getApplicationComparator()).
         thenReturn(CapacityScheduler.applicationComparator);
     when(csContext.getQueueComparator()).
@@ -172,7 +171,7 @@ public class TestApplicationLimits {
     when(csContext.getRMContext()).thenReturn(rmContext);
     
     // Say cluster has 100 nodes of 16G each
-    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 16);
+    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 16, 1536 * 4);
     when(csContext.getClusterResource()).thenReturn(clusterResource);
     
     Map<String, CSQueue> queues = new HashMap<String, CSQueue>();
@@ -526,7 +525,7 @@ public class TestApplicationLimits {
 
     // Schedule to compute 
     queue.assignContainers(clusterResource, node_0, false);
-    Resource expectedHeadroom = Resources.createResource(10*16*GB, 1);
+    Resource expectedHeadroom = Resources.createResource(10*16*GB, 1, 1536 * 4);
     assertEquals(expectedHeadroom, app_0_0.getHeadroom());
 
     // Submit second application from user_0, check headroom
@@ -564,7 +563,7 @@ public class TestApplicationLimits {
     
     // Schedule to compute 
     queue.assignContainers(clusterResource, node_0, false); // Schedule to compute
-    expectedHeadroom = Resources.createResource(10*16*GB / 2, 1); // changes
+    expectedHeadroom = Resources.createResource(10*16*GB / 2, 1, 1); // changes
     assertEquals(expectedHeadroom, app_0_0.getHeadroom());
     assertEquals(expectedHeadroom, app_0_1.getHeadroom());
     assertEquals(expectedHeadroom, app_1_0.getHeadroom());
@@ -572,7 +571,7 @@ public class TestApplicationLimits {
     // Now reduce cluster size and check for the smaller headroom
     clusterResource = Resources.createResource(90*16*GB);
     queue.assignContainers(clusterResource, node_0, false); // Schedule to compute
-    expectedHeadroom = Resources.createResource(9*16*GB / 2, 1); // changes
+    expectedHeadroom = Resources.createResource(9*16*GB / 2, 1, 1); // changes
     assertEquals(expectedHeadroom, app_0_0.getHeadroom());
     assertEquals(expectedHeadroom, app_0_1.getHeadroom());
     assertEquals(expectedHeadroom, app_1_0.getHeadroom());

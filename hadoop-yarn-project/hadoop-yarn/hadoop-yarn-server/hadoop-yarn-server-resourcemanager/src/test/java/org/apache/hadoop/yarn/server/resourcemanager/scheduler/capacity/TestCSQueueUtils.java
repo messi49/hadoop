@@ -51,10 +51,10 @@ public class TestCSQueueUtils {
     Resource clusterResource;
     if (useDominant) {
       resourceCalculator = new DominantResourceCalculator();
-      clusterResource = Resources.createResource(10, 0);
+      clusterResource = Resources.createResource(10, 0, 0);
     } else {
       resourceCalculator = new DefaultResourceCalculator();
-      clusterResource = Resources.createResource(0, 99);
+      clusterResource = Resources.createResource(0, 99, 0);
     }
     
     YarnConfiguration conf = new YarnConfiguration();
@@ -66,9 +66,9 @@ public class TestCSQueueUtils {
     when(csContext.getClusterResource()).thenReturn(clusterResource);
     when(csContext.getResourceCalculator()).thenReturn(resourceCalculator);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB, 1));
+        thenReturn(Resources.createResource(GB, 1, 128));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(0, 0));
+        thenReturn(Resources.createResource(0, 0, 0));
     RMContext rmContext = TestUtils.getMockRMContext();
     when(csContext.getRMContext()).thenReturn(rmContext);
   
@@ -98,7 +98,7 @@ public class TestCSQueueUtils {
   public void testAbsoluteMaxAvailCapacityNoUse() throws Exception {
     
     ResourceCalculator resourceCalculator = new DefaultResourceCalculator();
-    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 32);
+    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 32, 1536 * 4);
     
     YarnConfiguration conf = new YarnConfiguration();
     CapacitySchedulerConfiguration csConf = new CapacitySchedulerConfiguration();
@@ -109,9 +109,9 @@ public class TestCSQueueUtils {
     when(csContext.getClusterResource()).thenReturn(clusterResource);
     when(csContext.getResourceCalculator()).thenReturn(resourceCalculator);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB, 1));
+        thenReturn(Resources.createResource(GB, 1, 128));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(16*GB, 32));
+        thenReturn(Resources.createResource(16*GB, 32, 256));
     RMContext rmContext = TestUtils.getMockRMContext();
     when(csContext.getRMContext()).thenReturn(rmContext);
     
@@ -144,7 +144,7 @@ public class TestCSQueueUtils {
   public void testAbsoluteMaxAvailCapacityWithUse() throws Exception {
     
     ResourceCalculator resourceCalculator = new DefaultResourceCalculator();
-    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 32);
+    Resource clusterResource = Resources.createResource(100 * 16 * GB, 100 * 32, 1536 * 4);
     
     YarnConfiguration conf = new YarnConfiguration();
     CapacitySchedulerConfiguration csConf = new CapacitySchedulerConfiguration();
@@ -155,9 +155,9 @@ public class TestCSQueueUtils {
     when(csContext.getClusterResource()).thenReturn(clusterResource);
     when(csContext.getResourceCalculator()).thenReturn(resourceCalculator);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB, 1));
+        thenReturn(Resources.createResource(GB, 1, 256));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(16*GB, 32));
+        thenReturn(Resources.createResource(16*GB, 32, 256));
     
     RMContext rmContext = TestUtils.getMockRMContext();
     when(csContext.getRMContext()).thenReturn(rmContext);

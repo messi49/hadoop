@@ -90,18 +90,20 @@ public class TestResourceManager {
         
     final int memory = 4 * 1024;
     final int vcores = 4;
-    
+    final int gpuMemory = 2 * 128;
+
+
     // Register node1
     String host1 = "host1";
     org.apache.hadoop.yarn.server.resourcemanager.NodeManager nm1 = 
       registerNode(host1, 1234, 2345, NetworkTopology.DEFAULT_RACK, 
-          Resources.createResource(memory, vcores));
+          Resources.createResource(memory, vcores, gpuMemory));
     
     // Register node2
     String host2 = "host2";
     org.apache.hadoop.yarn.server.resourcemanager.NodeManager nm2 = 
       registerNode(host2, 1234, 2345, NetworkTopology.DEFAULT_RACK, 
-          Resources.createResource(memory/2, vcores/2));
+          Resources.createResource(memory/2, vcores/2, gpuMemory/2));
 
     // Submit an application
     Application application = new Application("user1", resourceManager);
@@ -112,7 +114,7 @@ public class TestResourceManager {
     
     // Application resource requirements
     final int memory1 = 1024;
-    Resource capability1 = Resources.createResource(memory1, 1);
+    Resource capability1 = Resources.createResource(memory1, 1, 128);
     Priority priority1 = 
       org.apache.hadoop.yarn.server.resourcemanager.resource.Priority.create(1);
     application.addResourceRequestSpec(priority1, capability1);
@@ -121,7 +123,7 @@ public class TestResourceManager {
     application.addTask(t1);
     
     final int memory2 = 2048;
-    Resource capability2 = Resources.createResource(memory2, 1);
+    Resource capability2 = Resources.createResource(memory2, 1, 256);
     Priority priority0 = 
         org.apache.hadoop.yarn.server.resourcemanager.resource.Priority.create(0); // higher
     application.addResourceRequestSpec(priority0, capability2);
@@ -192,7 +194,7 @@ public class TestResourceManager {
     final int memory = 4 * 1024;
     org.apache.hadoop.yarn.server.resourcemanager.NodeManager nm1 = 
       registerNode(host1, 1234, 2345, NetworkTopology.DEFAULT_RACK, 
-          Resources.createResource(memory, 1));
+          Resources.createResource(memory, 1, 128));
     nm1.heartbeat();
     nm1.heartbeat();
     Collection<RMNode> values = resourceManager.getRMContext().getRMNodes().values();

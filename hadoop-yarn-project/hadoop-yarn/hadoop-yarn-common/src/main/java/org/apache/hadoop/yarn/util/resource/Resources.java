@@ -116,10 +116,15 @@ public class Resources {
     return createResource(memory, (memory > 0) ? 1 : 0);
   }
 
-  public static Resource createResource(int memory, int cores) {
+  public static Resource createResource(int memory, int gpuMemory) {
+    return createResource(memory, (memory > 0) ? 1 : 0, gpuMemory);
+  }
+
+  public static Resource createResource(int memory, int cores, int gpuMemory) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(cores);
+    resource.setGpuMemory(memory);
     return resource;
   }
 
@@ -132,7 +137,7 @@ public class Resources {
   }
 
   public static Resource clone(Resource res) {
-    return createResource(res.getMemory(), res.getVirtualCores());
+    return createResource(res.getMemory(), res.getVirtualCores(), res.getGpuMemory());
   }
 
   public static Resource addTo(Resource lhs, Resource rhs) {
@@ -276,6 +281,7 @@ public class Resources {
   
   public static Resource componentwiseMin(Resource lhs, Resource rhs) {
     return createResource(Math.min(lhs.getMemory(), rhs.getMemory()),
-        Math.min(lhs.getVirtualCores(), rhs.getVirtualCores()));
+        Math.min(lhs.getVirtualCores(), rhs.getVirtualCores()),
+            Math.min(lhs.getGpuMemory(), rhs.getGpuMemory()));
   }
 }

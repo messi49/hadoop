@@ -57,7 +57,7 @@ public abstract class Resource implements Comparable<Resource> {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(vCores);
-    resource.setMemory(gpuMemory);
+    resource.setGpuMemory(gpuMemory);
     return resource;
   }
 
@@ -110,6 +110,7 @@ public abstract class Resource implements Comparable<Resource> {
   @Stable
   public abstract int getGpuMemory();
 
+
   @Public
   @Stable
   public abstract void setGpuMemory(int gpuMemory);
@@ -142,6 +143,6 @@ public abstract class Resource implements Comparable<Resource> {
 
   @Override
   public String toString() {
-    return "<memory:" + getMemory() + ", vCores:" + getVirtualCores() + ", gpuMemory:" + getGpuMemory() + ">";
+    return "<memory:" + getMemory() + ", vCores:" + getVirtualCores() + ", GPU Memory:" + getGpuMemory() + ">";
   }
 }

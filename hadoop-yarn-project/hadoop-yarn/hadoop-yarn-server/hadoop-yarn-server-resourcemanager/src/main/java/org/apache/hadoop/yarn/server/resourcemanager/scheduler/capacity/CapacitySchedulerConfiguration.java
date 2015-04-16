@@ -577,7 +577,10 @@ public class CapacitySchedulerConfiguration extends Configuration {
     int minimumCores = getInt(
         YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES,
         YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES);
-    return Resources.createResource(minimumMemory, minimumCores);
+    int minimumGpuMemory = getInt(
+            YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+            YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
+    return Resources.createResource(minimumMemory, minimumCores, minimumGpuMemory);
   }
 
   public Resource getMaximumAllocation() {
@@ -587,7 +590,10 @@ public class CapacitySchedulerConfiguration extends Configuration {
     int maximumCores = getInt(
         YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES,
         YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES);
-    return Resources.createResource(maximumMemory, maximumCores);
+    int maximumGpuMemory = getInt(
+            YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_MB,
+            YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_MB);
+    return Resources.createResource(maximumMemory, maximumCores, maximumGpuMemory);
   }
 
   public boolean getEnableUserMetrics() {

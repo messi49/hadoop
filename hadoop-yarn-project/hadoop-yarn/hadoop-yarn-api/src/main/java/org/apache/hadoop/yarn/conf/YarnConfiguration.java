@@ -162,6 +162,9 @@ public class YarnConfiguration extends Configuration {
   public static final String RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES =
       YARN_PREFIX + "scheduler.minimum-allocation-vcores";
     public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES = 1;
+  public static final String RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB =
+          YARN_PREFIX + "scheduler.minimum-allocation-gpu-mb";
+  public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB = 128;
 
   /** Maximum request grant-able by the RM scheduler. */
   public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_MB =
@@ -170,6 +173,9 @@ public class YarnConfiguration extends Configuration {
   public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES =
       YARN_PREFIX + "scheduler.maximum-allocation-vcores";
   public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES = 4;
+  public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB =
+          YARN_PREFIX + "scheduler.maximum-allocation-gpu-mb";
+  public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB = 1536;
 
   /** Number of threads to handle scheduler interface.*/
   public static final String RM_SCHEDULER_CLIENT_THREAD_COUNT =

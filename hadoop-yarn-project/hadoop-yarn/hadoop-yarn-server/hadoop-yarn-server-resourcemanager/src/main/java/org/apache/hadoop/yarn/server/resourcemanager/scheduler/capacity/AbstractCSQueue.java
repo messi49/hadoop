@@ -64,7 +64,7 @@ public abstract class AbstractCSQueue implements CSQueue {
   Set<String> accessibleLabels;
   RMNodeLabelsManager labelManager;
   String defaultLabelExpression;
-  Resource usedResources = Resources.createResource(0, 0);
+  Resource usedResources = Resources.createResource(0, 0, 0);
   QueueInfo queueInfo;
   Map<String, Float> absoluteCapacityByNodeLabels;
   Map<String, Float> capacitiyByNodeLabels;

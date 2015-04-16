@@ -98,9 +98,9 @@ public class TestFairSchedulerPreemption extends FairSchedulerTestBase {
   }
 
   private void registerNodeAndSubmitApp(
-      int memory, int vcores, int appContainers, int appMemory) {
+      int memory, int vcores, int gpuMemory, int appContainers, int appMemory) {
     RMNode node1 = MockNodes.newNodeInfo(
-        1, Resources.createResource(memory, vcores), 1, "node1");
+        1, Resources.createResource(memory, vcores, gpuMemory), 1, "node1");
     NodeAddedSchedulerEvent nodeEvent1 = new NodeAddedSchedulerEvent(node1);
     scheduler.handle(nodeEvent1);
 
@@ -143,8 +143,8 @@ public class TestFairSchedulerPreemption extends FairSchedulerTestBase {
     out.close();
 
     startResourceManager(0f);
-    // Create node with 4GB memory and 4 vcores
-    registerNodeAndSubmitApp(4 * 1024, 4, 2, 1024);
+    // Create node with 4GB memory and 4 vcores and 256MiB GPU memory
+    registerNodeAndSubmitApp(4 * 1024, 4, 256, 2, 1024);
 
     // Verify submitting another request triggers preemption
     createSchedulingRequest(1024, "queueB", "user1", 1, 1);
@@ -159,8 +159,8 @@ public class TestFairSchedulerPreemption extends FairSchedulerTestBase {
     resourceManager.stop();
 
     startResourceManager(0.8f);
-    // Create node with 4GB memory and 4 vcores
-    registerNodeAndSubmitApp(4 * 1024, 4, 3, 1024);
+    // Create node with 4GB memory and 4 vcores and 256MiB GPU memory
+    registerNodeAndSubmitApp(4 * 1024, 4, 256, 3, 1024);
 
     // Verify submitting another request doesn't trigger preemption
     createSchedulingRequest(1024, "queueB", "user1", 1, 1);
@@ -175,8 +175,8 @@ public class TestFairSchedulerPreemption extends FairSchedulerTestBase {
     resourceManager.stop();
 
     startResourceManager(0.7f);
-    // Create node with 4GB memory and 4 vcores
-    registerNodeAndSubmitApp(4 * 1024, 4, 3, 1024);
+    // Create node with 4GB memory and 4 vcores and 256MiB GPU memory
+    registerNodeAndSubmitApp(4 * 1024, 4, 256, 3, 1024);
 
     // Verify submitting another request triggers preemption
     createSchedulingRequest(1024, "queueB", "user1", 1, 1);

@@ -143,7 +143,9 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
         conf.getInt(
             YarnConfiguration.NM_VCORES, YarnConfiguration.DEFAULT_NM_VCORES);
 
-    int gpuMemoryMib = 1535;
+    int gpuMemoryMib =
+            conf.getInt(
+                    YarnConfiguration.NM_GMEM_MB, YarnConfiguration.DEFAULT_NM_GMEM_MB);
 
     this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuMemoryMib);
     metrics.addResource(totalResource);
@@ -176,7 +178,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
     super.serviceInit(conf);
     LOG.info("Initialized nodemanager for " + nodeId + ":" +
         " physical-memory=" + memoryMb + " virtual-memory=" + virtualMemoryMb +
-        " virtual-cores=" + virtualCores +  "GPU-memory=" + gpuMemoryMib);
+        " virtual-cores=" + virtualCores +  " GPU-memory=" + gpuMemoryMib);
   }
 
   @Override

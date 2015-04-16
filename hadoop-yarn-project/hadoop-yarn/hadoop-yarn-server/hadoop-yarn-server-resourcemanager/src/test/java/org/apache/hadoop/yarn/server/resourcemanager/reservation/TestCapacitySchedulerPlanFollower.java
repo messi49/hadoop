@@ -108,9 +108,9 @@ public class TestCapacitySchedulerPlanFollower {
     when(csContext.getMinimumResourceCapability()).thenReturn(minAlloc);
     when(csContext.getMaximumResourceCapability()).thenReturn(maxAlloc);
     when(csContext.getClusterResource()).thenReturn(
-        Resources.createResource(100 * 16 * GB, 100 * 32));
+        Resources.createResource(100 * 16 * GB, 100 * 32, 125 * GB));
     when(scheduler.getClusterResource()).thenReturn(
-        Resources.createResource(125 * GB, 125));
+        Resources.createResource(125 * GB, 125, 125 * GB));
     when(csContext.getResourceCalculator()).thenReturn(
         new DefaultResourceCalculator());
     RMContainerTokenSecretManager containerTokenSecretManager =

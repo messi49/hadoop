@@ -419,7 +419,7 @@ public class ParentQueue extends AbstractCSQueue {
   public synchronized CSAssignment assignContainers(
       Resource clusterResource, FiCaSchedulerNode node, boolean needToUnreserve) {
     CSAssignment assignment = 
-        new CSAssignment(Resources.createResource(0, 0), NodeType.NODE_LOCAL);
+        new CSAssignment(Resources.createResource(0, 0, 0), NodeType.NODE_LOCAL);
     
     // if our queue cannot access this node, just return
     if (!SchedulerUtils.checkQueueAccessToNode(accessibleLabels,
@@ -539,7 +539,8 @@ public class ParentQueue extends AbstractCSQueue {
       // node
 
       Resource reservedResources = Resources.createResource(getMetrics()
-          .getReservedMB(), getMetrics().getReservedVirtualCores());
+          .getReservedMB(), getMetrics().getReservedVirtualCores(), getMetrics()
+              .getReservedMB());
       float capacityWithoutReservedCapacity = Resources.divide(
           resourceCalculator, clusterResource,
           Resources.subtract(usedResources, reservedResources),
@@ -574,7 +575,7 @@ public class ParentQueue extends AbstractCSQueue {
   private synchronized CSAssignment assignContainersToChildQueues(Resource cluster, 
       FiCaSchedulerNode node, boolean needToUnreserve) {
     CSAssignment assignment = 
-        new CSAssignment(Resources.createResource(0, 0), NodeType.NODE_LOCAL);
+        new CSAssignment(Resources.createResource(0, 0, 0), NodeType.NODE_LOCAL);
     
     printChildQueues();
 

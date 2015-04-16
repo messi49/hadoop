@@ -72,6 +72,7 @@ public class QueueMetrics implements MetricsSource {
   @Metric("# of pending containers") MutableGaugeInt pendingContainers;
   @Metric("# of reserved memory in MB") MutableGaugeInt reservedMB;
   @Metric("Reserved CPU in virtual cores") MutableGaugeInt reservedVCores;
+  @Metric("# of reserved GPU memory in MB") MutableGaugeInt reservedGpuMB;
   @Metric("# of reserved containers") MutableGaugeInt reservedContainers;
   @Metric("# of active users") MutableGaugeInt activeUsers;
   @Metric("# of active applications") MutableGaugeInt activeApplications;
@@ -534,6 +535,10 @@ public class QueueMetrics implements MetricsSource {
   
   public int getReservedVirtualCores() {
     return reservedVCores.value();
+  }
+
+  public int getReservedGpuMB() {
+    return reservedGpuMB.value();
   }
 
   public int getReservedContainers() {

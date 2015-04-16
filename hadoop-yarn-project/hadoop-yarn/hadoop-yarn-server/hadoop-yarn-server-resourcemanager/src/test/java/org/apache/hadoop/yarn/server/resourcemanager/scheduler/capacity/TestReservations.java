@@ -112,11 +112,11 @@ public class TestReservations {
     when(csContext.getConfiguration()).thenReturn(csConf);
     when(csContext.getConf()).thenReturn(conf);
     when(csContext.getMinimumResourceCapability()).thenReturn(
-        Resources.createResource(GB, 1));
+        Resources.createResource(GB, 1, 128));
     when(csContext.getMaximumResourceCapability()).thenReturn(
-        Resources.createResource(16 * GB, 12));
+        Resources.createResource(16 * GB, 12, 356));
     when(csContext.getClusterResource()).thenReturn(
-        Resources.createResource(100 * 16 * GB, 100 * 12));
+        Resources.createResource(100 * 16 * GB, 100 * 12, 1536 * 4));
     when(csContext.getApplicationComparator()).thenReturn(
         CapacityScheduler.applicationComparator);
     when(csContext.getQueueComparator()).thenReturn(
@@ -629,7 +629,7 @@ public class TestReservations {
 
     // Setup resource-requests
     Priority priorityMap = TestUtils.createMockPriority(5);
-    Resource capability = Resources.createResource(2*GB, 0);
+    Resource capability = Resources.createResource(2*GB, 0, 0);
 
     RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
     SystemMetricsPublisher publisher = mock(SystemMetricsPublisher.class);
@@ -693,7 +693,7 @@ public class TestReservations {
 
     // Setup resource-requests
     Priority priorityMap = TestUtils.createMockPriority(5);
-    Resource capability = Resources.createResource(2 * GB, 0);
+    Resource capability = Resources.createResource(2 * GB, 0, 0);
 
     RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
     SystemMetricsPublisher publisher = mock(SystemMetricsPublisher.class);
@@ -820,7 +820,7 @@ public class TestReservations {
 
     // allocate to queue so that the potential new capacity is greater then
     // absoluteMaxCapacity
-    Resource capability = Resources.createResource(32 * GB, 0);
+    Resource capability = Resources.createResource(32 * GB, 0, 0);
     boolean res =
         a.canAssignToThisQueue(clusterResource, capability,
             CommonNodeLabelsManager.EMPTY_STRING_SET, app_0, true);
@@ -839,7 +839,7 @@ public class TestReservations {
     assertEquals(5 * GB, node_0.getUsedResource().getMemory());
     assertEquals(3 * GB, node_1.getUsedResource().getMemory());
 
-    capability = Resources.createResource(5 * GB, 0);
+    capability = Resources.createResource(5 * GB, 0, 0);
     res =
         a.canAssignToThisQueue(clusterResource, capability,
             CommonNodeLabelsManager.EMPTY_STRING_SET, app_0, true);
@@ -1008,7 +1008,7 @@ public class TestReservations {
     assertEquals(3 * GB, node_1.getUsedResource().getMemory());
 
     // set limit so subtrace reservations it can continue
-    Resource limit = Resources.createResource(12 * GB, 0);
+    Resource limit = Resources.createResource(12 * GB, 0, 0);
     boolean res = a.assignToUser(clusterResource, user_0, limit, app_0,
         true, null);
     assertTrue(res);

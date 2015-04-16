@@ -198,10 +198,10 @@ public class TestFSAppAttempt extends FairSchedulerTestBase {
     Mockito.when(mockScheduler.getClock()).thenReturn(scheduler.getClock());
 
     final FSLeafQueue mockQueue = Mockito.mock(FSLeafQueue.class);
-    final Resource queueFairShare = Resources.createResource(4096, 4);
+    final Resource queueFairShare = Resources.createResource(4096, 4, 256);
     final Resource queueUsage = Resource.newInstance(1024, 1, 256);
-    final Resource clusterResource = Resources.createResource(8192, 8);
-    final Resource clusterUsage = Resources.createResource(6144, 2);
+    final Resource clusterResource = Resources.createResource(8192, 8, 512);
+    final Resource clusterUsage = Resources.createResource(6144, 2, 256);
     final QueueMetrics fakeRootQueueMetrics = Mockito.mock(QueueMetrics.class);
 
     ApplicationAttemptId applicationAttemptId = createAppAttemptId(1, 1);
