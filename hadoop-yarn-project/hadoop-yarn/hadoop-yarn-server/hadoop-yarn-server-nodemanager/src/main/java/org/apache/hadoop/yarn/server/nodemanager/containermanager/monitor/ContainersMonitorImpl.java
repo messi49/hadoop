@@ -263,6 +263,10 @@ public class ContainersMonitorImpl extends AbstractService implements
     public long getPmemLimit() {
       return this.pmemLimit;
     }
+
+    public long getGmemLimit() {
+      return this.gmemLimit;
+    }
   }
 
 
@@ -375,6 +379,7 @@ public class ContainersMonitorImpl extends AbstractService implements
         // Check memory usage and kill any overflowing containers
         long vmemStillInUsage = 0;
         long pmemStillInUsage = 0;
+        long gmemStillInUsage = 0;
         for (Iterator<Map.Entry<ContainerId, ProcessTreeInfo>> it =
             trackingContainers.entrySet().iterator(); it.hasNext();) {
 
@@ -407,23 +412,26 @@ public class ContainersMonitorImpl extends AbstractService implements
             }
 
             LOG.debug("Constructing ProcessTree for : PID = " + pId
-                + " ContainerId = " + containerId);
+                    + " ContainerId = " + containerId);
             ResourceCalculatorProcessTree pTree = ptInfo.getProcessTree();
             pTree.updateProcessTree();    // update process-tree
             long currentVmemUsage = pTree.getCumulativeVmem();
             long currentPmemUsage = pTree.getCumulativeRssmem();
+            long currentGmemUsage = pTree.getCumulativeGmem();
             // as processes begin with an age 1, we want to see if there
             // are processes more than 1 iteration old.
             long curMemUsageOfAgedProcesses = pTree.getCumulativeVmem(1);
             long curRssMemUsageOfAgedProcesses = pTree.getCumulativeRssmem(1);
+            long curGMemUsageOfAgedProcesses = pTree.getCumulativeGmem(1);
             long vmemLimit = ptInfo.getVmemLimit();
             long pmemLimit = ptInfo.getPmemLimit();
+            long gmemLimit = ptInfo.getGmemLimit();
             LOG.info(String.format(
                 "Memory usage of ProcessTree %s for container-id %s: ",
                      pId, containerId.toString()) +
-                formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit));
+                formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit, currentGmemUsage, gmemLimit));
 
-              LOG.info("GPU Memory usage : " + pTree.getGmem(0) + " MiB");
+            LOG.info("PID = " + pId +", GPU Memory usage : " + currentGmemUsage + " MiB, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;
@@ -436,6 +444,7 @@ public class ContainersMonitorImpl extends AbstractService implements
               msg = formatErrorMessage("virtual",
                   currentVmemUsage, vmemLimit,
                   currentPmemUsage, pmemLimit,
+                  currentGmemUsage, gmemLimit,
                   pId, containerId, pTree);
               isMemoryOverLimit = true;
               containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_VMEM;
@@ -449,6 +458,7 @@ public class ContainersMonitorImpl extends AbstractService implements
               msg = formatErrorMessage("physical",
                   currentVmemUsage, vmemLimit,
                   currentPmemUsage, pmemLimit,
+                  currentGmemUsage, gmemLimit,
                   pId, containerId, pTree);
               isMemoryOverLimit = true;
               containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_PMEM;
@@ -476,6 +486,7 @@ public class ContainersMonitorImpl extends AbstractService implements
               // alive and within limits.
               vmemStillInUsage += currentVmemUsage;
               pmemStillInUsage += currentPmemUsage;
+              gmemStillInUsage += currentGmemUsage;
             }
           } catch (Exception e) {
             // Log the exception and proceed to the next container.
@@ -495,28 +506,33 @@ public class ContainersMonitorImpl extends AbstractService implements
     }
 
     private String formatErrorMessage(String memTypeExceeded,
-        long currentVmemUsage, long vmemLimit,
-        long currentPmemUsage, long pmemLimit,
-        String pId, ContainerId containerId, ResourceCalculatorProcessTree pTree) {
+                                      long currentVmemUsage, long vmemLimit,
+                                      long currentPmemUsage, long pmemLimit,
+                                      long currentGmemUsage, long gmemLimit,
+                                      String pId, ContainerId containerId, ResourceCalculatorProcessTree pTree) {
       return
         String.format("Container [pid=%s,containerID=%s] is running beyond %s memory limits. ",
             pId, containerId, memTypeExceeded) +
         "Current usage: " +
         formatUsageString(currentVmemUsage, vmemLimit,
-                          currentPmemUsage, pmemLimit) +
+                          currentPmemUsage, pmemLimit,
+                          currentGmemUsage, gmemLimit) +
         ". Killing container.\n" +
         "Dump of the process-tree for " + containerId + " :\n" +
         pTree.getProcessTreeDump();
     }
 
     private String formatUsageString(long currentVmemUsage, long vmemLimit,
-        long currentPmemUsage, long pmemLimit) {
+                                     long currentPmemUsage, long pmemLimit, long currentGmemUsage, long gmemLimit) {
       return String.format("%sB of %sB physical memory used; " +
-          "%sB of %sB virtual memory used",
+          "%sB of %sB virtual memory used; " +
+                      "%sMiB of %sMiB GPU memory used; ",
           TraditionalBinaryPrefix.long2String(currentPmemUsage, "", 1),
           TraditionalBinaryPrefix.long2String(pmemLimit, "", 1),
           TraditionalBinaryPrefix.long2String(currentVmemUsage, "", 1),
-          TraditionalBinaryPrefix.long2String(vmemLimit, "", 1));
+          TraditionalBinaryPrefix.long2String(vmemLimit, "", 1),
+          TraditionalBinaryPrefix.long2String(currentGmemUsage, "", 1),
+          TraditionalBinaryPrefix.long2String(gmemLimit, "", 1));
     }
   }
 

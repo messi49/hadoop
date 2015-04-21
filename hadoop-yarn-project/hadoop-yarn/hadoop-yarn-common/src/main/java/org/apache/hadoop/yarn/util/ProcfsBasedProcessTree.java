@@ -281,46 +281,6 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     return checkPidPgrpidForMatch(pid, PROCFS);
   }
 
-  @Override
-  public int getGmem(int gpuNumber) {
-    String command = "nvidia-smi -q -d MEMORY,UTILIZATION";
-    Process process = null;
-    String line = null;
-    int memTotal = 0, memUsed = 0;
-    double memUsage = 0;
-
-    Pattern gpuPattern = Pattern.compile("([\\x20\\t]+)((Total|Used|Free))([\\x20\\t]+)(:)(\\s)([\\d]+)(\\s)(MiB)");
-    Pattern memoryPattern = Pattern.compile("([\\x20\\t]+)((Total|Used|Free))([\\x20\\t]+)(:)(\\s)([\\d]+)(\\s)(MiB)");
-
-    try {
-      process = Runtime.getRuntime().exec(command);
-
-      InputStream is = process.getInputStream();
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-      while ((line = br.readLine()) != null) {
-        Matcher memMatcher = memoryPattern.matcher(line);
-
-        //Get Memory Usage
-        if (memMatcher.find()){
-          System.out.println(memMatcher.group(2) + ": " + memMatcher.group(7));
-          if(memMatcher.group(2).equals("Total")){
-            memTotal = Integer.parseInt(memMatcher.group(7));
-          }
-          if(memMatcher.group(2).equals("Used")){
-            memUsed = Integer.parseInt(memMatcher.group(7));
-            memUsage = (double)memUsed/memTotal;
-          }
-        }
-      }
-
-      return memUsed;
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return 0;
-  }
-
   public static boolean checkPidPgrpidForMatch(String _pid, String procfs) {
     // Get information for this process
     ProcessInfo pInfo = new ProcessInfo(_pid);
@@ -352,8 +312,8 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     StringBuilder ret = new StringBuilder();
     // The header.
     ret.append(String.format("\t|- PID PPID PGRPID SESSID CMD_NAME "
-        + "USER_MODE_TIME(MILLIS) SYSTEM_TIME(MILLIS) VMEM_USAGE(BYTES) "
-        + "RSSMEM_USAGE(PAGES) FULL_CMD_LINE\n"));
+      + "USER_MODE_TIME(MILLIS) SYSTEM_TIME(MILLIS) VMEM_USAGE(BYTES) "
+      + "RSSMEM_USAGE(PAGES) FULL_CMD_LINE\n"));
     for (ProcessInfo p : processTree.values()) {
       if (p != null) {
         ret.append(String.format(PROCESSTREE_DUMP_FORMAT, p.getPid(), p
@@ -459,6 +419,18 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     return total; // size
   }
 
+  @Override
+  public long getCumulativeGmem(int olderThanAge) {
+    long total = 0;
+    for (ProcessInfo p : processTree.values()) {
+      if ((p != null) && (p.getAge() > olderThanAge)) {
+        total += p.getGmem();
+      }
+    }
+    return total;
+  }
+
+
   /**
    * Get the CPU time in millisecond used by all the processes in the
    * process-tree since the process-tree created
@@ -545,7 +517,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
         pinfo.updateProcessInfo(m.group(2), m.group(3),
                 Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
                 Long.parseLong(m.group(7)), new BigInteger(m.group(8)),
-                Long.parseLong(m.group(10)), Long.parseLong(m.group(11)));
+                Long.parseLong(m.group(10)), Long.parseLong(m.group(11)), getGpuMemoryUsage(pinfo.getPid()));
       } else {
         LOG.warn("Unexpected: procfs stat file is not in the expected format"
             + " for process with pid " + pinfo.getPid());
@@ -570,6 +542,39 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
 
     return ret;
   }
+
+  private static Long getGpuMemoryUsage(String pid) {
+      String command = "nvidia-smi";
+      Process process = null;
+      String line = null;
+      long gpuMemoryUsage = 0;
+
+      Pattern gpuMemoryUsagePattern = Pattern.compile("(|)([\\x20\\t]+)([\\d]+)([\\x20\\t]+)([\\d]+)([\\x20\\t]+)((G|C\\+G))([\\x20\\t]+)([0-9a-zA-Z_\\-\\.\\/\\=(  )]+)([\\x20\\t]+)([\\d]+)(MiB)( |)");
+
+      try {
+        process = Runtime.getRuntime().exec(command);
+
+        InputStream is = process.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        while ((line = br.readLine()) != null) {
+          Matcher memMatcher = gpuMemoryUsagePattern.matcher(line);
+
+          //Get Memory Usage
+          if (memMatcher.find()){
+            //System.out.println(memMatcher.group(3) + ": " + memMatcher.group(5)+ ": " + memMatcher.group(7)+ ": " + memMatcher.group(10)+ ": " + memMatcher.group(12));
+            if(memMatcher.group(5).equals(pid)){
+              gpuMemoryUsage = Long.parseLong(memMatcher.group(12));
+            }
+          }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      return gpuMemoryUsage;
+  }
+
   /**
    * Returns a string printing PIDs of process present in the
    * ProcfsBasedProcessTree. Output format : [pid pid ..]
@@ -597,6 +602,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     private Integer sessionId; // session-id
     private Long vmem; // virtual memory usage
     private Long rssmemPage; // rss memory usage in # of pages
+    private Long gmem; // virtual memory usage
     private Long utime = 0L; // # of jiffies in user mode
     private final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
     private BigInteger stime = new BigInteger("0"); // # of jiffies in kernel mode
@@ -657,12 +663,16 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
       return rssmemPage;
     }
 
+    public Long getGmem() {
+      return gmem;
+    }
+
     public int getAge() {
       return age;
     }
 
     public void updateProcessInfo(String name, String ppid, Integer pgrpId,
-        Integer sessionId, Long utime, BigInteger stime, Long vmem, Long rssmem) {
+        Integer sessionId, Long utime, BigInteger stime, Long vmem, Long rssmem, Long gmem) {
       this.name = name;
       this.ppid = ppid;
       this.pgrpId = pgrpId;
@@ -671,6 +681,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
       this.stime = stime;
       this.vmem = vmem;
       this.rssmemPage = rssmem;
+      this.gmem = gmem;
     }
 
     public void updateJiffy(ProcessInfo oldInfo) {

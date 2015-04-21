@@ -39,6 +39,7 @@ public class WindowsBasedProcessTree extends ResourceCalculatorProcessTree {
     String pid; // process pid
     long vmem; // virtual memory
     long workingSet; // working set, RAM used
+    long gmem; // gpu memory
     long cpuTimeMs; // total cpuTime in millisec
     long cpuTimeMsDelta; // delta of cpuTime since last update
     int age = 1;
@@ -158,11 +159,6 @@ public class WindowsBasedProcessTree extends ResourceCalculatorProcessTree {
   }
 
   @Override
-  public int getGmem(int gpuNumber) {
-    return 0;
-  }
-
-  @Override
   public String getProcessTreeDump() {
     StringBuilder ret = new StringBuilder();
     // The header.
@@ -194,6 +190,17 @@ public class WindowsBasedProcessTree extends ResourceCalculatorProcessTree {
     for (ProcessInfo p : processTree.values()) {
       if ((p != null) && (p.age > olderThanAge)) {
         total += p.workingSet;
+      }
+    }
+    return total;
+  }
+
+  @Override
+  public long getCumulativeGmem(int olderThanAge) {
+    long total = 0;
+    for (ProcessInfo p : processTree.values()) {
+      if ((p != null) && (p.age > olderThanAge)) {
+        total += p.gmem;
       }
     }
     return total;

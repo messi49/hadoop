@@ -49,6 +49,10 @@ public class TestResourceCalculatorProcessTree {
       return 0;
     }
 
+    public long getCumulativeGmem(int age) {
+      return 0;
+    }
+
     public long getCumulativeCpuTime() {
       return 0;
     }
@@ -56,9 +60,6 @@ public class TestResourceCalculatorProcessTree {
     public boolean checkPidPgrpidForMatch() {
       return false;
     }
-
-    @Override
-    public int getGmem(int gpuNumber) { return 0; }
   }
 
   @Test

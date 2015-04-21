@@ -83,6 +83,10 @@ public abstract class ResourceCalculatorProcessTree extends Configured {
     return getCumulativeRssmem(0);
   }
 
+  public long getCumulativeGmem() {
+    return getCumulativeGmem(0);
+  }
+
   /**
    * Get the cumulative virtual memory used by all the processes in the
    * process-tree that are older than the passed in age.
@@ -128,7 +132,7 @@ public abstract class ResourceCalculatorProcessTree extends Configured {
    *          for processes. return olderThanAge0 if it cannot be
    *          calculated
    */
-  public abstract int getGmem(int gpuNumber);
+  public abstract long getCumulativeGmem(int olderThanAge);
 
   /**Executive Talent Acquisition
    * Create the ResourceCalculatorProcessTree rooted to specified process 
