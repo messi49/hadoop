@@ -186,6 +186,24 @@ public class CapacityScheduler extends
         + "=" + maxVcores + ", min and max should be greater than 0"
         + ", max should be no smaller than min.");
     }
+
+    // validate scheduler GPU memory allocation setting
+    int minGpuMem = conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
+    int maxGpuMem = conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB);
+
+    if (minGpuMem <= 0 || minGpuMem > maxGpuMem) {
+      throw new YarnRuntimeException("Invalid resource scheduler GPU memory"
+        + " allocation configuration"
+        + ", " + YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB
+        + "=" + minGpuMem
+        + ", " + YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB
+        + "=" + maxGpuMem + ", min and max should be greater than 0"
+        + ", max should be no smaller than min.");
+    }
   }
 
   @Override

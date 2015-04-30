@@ -124,7 +124,7 @@ public class Resources {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(cores);
-    resource.setGpuMemory(memory);
+    resource.setGpuMemory(gpuMemory);
     return resource;
   }
 

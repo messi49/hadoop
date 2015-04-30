@@ -145,8 +145,8 @@ public class FairSchedulerConfiguration extends Configuration {
         YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES,
         YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES);
     int gmem = getInt(
-            YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
-            YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
+        YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+        YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
     return Resources.createResource(mem, cpu, gmem);
   }
 

@@ -171,11 +171,11 @@ public class YarnConfiguration extends Configuration {
     YARN_PREFIX + "scheduler.maximum-allocation-mb";
   public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_MB = 8192;
   public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES =
-      YARN_PREFIX + "scheduler.maximum-allocation-vcores";
+    YARN_PREFIX + "scheduler.maximum-allocation-vcores";
   public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES = 4;
   public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB =
-          YARN_PREFIX + "scheduler.maximum-allocation-gpu-mb";
-  public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB = 1536;
+    YARN_PREFIX + "scheduler.maximum-allocation-gpu-mb";
+  public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB = 2048;
 
   /** Number of threads to handle scheduler interface.*/
   public static final String RM_SCHEDULER_CLIENT_THREAD_COUNT =
@@ -785,7 +785,7 @@ public class YarnConfiguration extends Configuration {
 
   /** Amount of memory in GB that can be allocated for containers.*/
   public static final String NM_GMEM_MB = NM_PREFIX + "resource.gpu-memory-mb";
-  public static final int DEFAULT_NM_GMEM_MB = 1536;
+  public static final int DEFAULT_NM_GMEM_MB = 2048;
 
   /** Specifies whether physical GPU memory check is enabled. */
   public static final String NM_GMEM_CHECK_ENABLED = NM_PREFIX
