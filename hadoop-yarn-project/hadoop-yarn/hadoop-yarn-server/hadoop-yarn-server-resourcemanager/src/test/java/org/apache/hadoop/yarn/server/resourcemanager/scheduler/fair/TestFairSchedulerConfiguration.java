@@ -31,13 +31,13 @@ import org.junit.Test;
 public class TestFairSchedulerConfiguration {
   @Test
   public void testParseResourceConfigValue() throws Exception {
-    assertEquals(BuilderUtils.newResource(1024, 2),
+    assertEquals(BuilderUtils.newResource(1024, 2, 256),
         parseResourceConfigValue("2 vcores, 1024 mb"));
-    assertEquals(BuilderUtils.newResource(1024, 2),
+    assertEquals(BuilderUtils.newResource(1024, 2, 256),
         parseResourceConfigValue("1024 mb, 2 vcores"));
-    assertEquals(BuilderUtils.newResource(1024, 2),
+    assertEquals(BuilderUtils.newResource(1024, 2, 256),
         parseResourceConfigValue("2vcores,1024mb"));
-    assertEquals(BuilderUtils.newResource(1024, 2),
+    assertEquals(BuilderUtils.newResource(1024, 2, 256),
         parseResourceConfigValue("1024mb,2vcores"));
   }
   

@@ -43,6 +43,9 @@ public class NodeManagerMetrics {
   @Metric("Current allocated Virtual Cores")
       MutableGaugeInt allocatedVCores;
   @Metric MutableGaugeInt availableVCores;
+  @Metric("Current allocated GPU memory in GB")
+  MutableGaugeInt allocatedGpuGB;
+  @Metric MutableGaugeInt availableGpuGB;
 
   public static NodeManagerMetrics create() {
     return create(DefaultMetricsSystem.instance());
@@ -93,6 +96,8 @@ public class NodeManagerMetrics {
     availableGB.decr(res.getMemory() / 1024);
     allocatedVCores.incr(res.getVirtualCores());
     availableVCores.decr(res.getVirtualCores());
+    allocatedGpuGB.incr(res.getGpuMemory() / 1024);
+    availableGpuGB.decr(res.getGpuMemory() / 1024);
   }
 
   public void releaseContainer(Resource res) {
@@ -101,11 +106,14 @@ public class NodeManagerMetrics {
     availableGB.incr(res.getMemory() / 1024);
     allocatedVCores.decr(res.getVirtualCores());
     availableVCores.incr(res.getVirtualCores());
+    allocatedGpuGB.decr(res.getGpuMemory() / 1024);
+    availableGpuGB.incr(res.getGpuMemory() / 1024);
   }
 
   public void addResource(Resource res) {
     availableGB.incr(res.getMemory() / 1024);
     availableVCores.incr(res.getVirtualCores());
+    availableGpuGB.incr(res.getGpuMemory() / 1024);
   }
   
   public int getRunningContainers() {

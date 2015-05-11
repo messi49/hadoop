@@ -33,12 +33,16 @@ public class FSQueueMetrics extends QueueMetrics {
 
   @Metric("Fair share of memory in MB") MutableGaugeInt fairShareMB;
   @Metric("Fair share of CPU in vcores") MutableGaugeInt fairShareVCores;
+  @Metric("Fair share of GPU memory in MB") MutableGaugeInt fairShareGpuMB;
   @Metric("Steady fair share of memory in MB") MutableGaugeInt steadyFairShareMB;
   @Metric("Steady fair share of CPU in vcores") MutableGaugeInt steadyFairShareVCores;
+  @Metric("Steady fair share of GPU memory in MB") MutableGaugeInt steadyFairShareGpuMB;
   @Metric("Minimum share of memory in MB") MutableGaugeInt minShareMB;
   @Metric("Minimum share of CPU in vcores") MutableGaugeInt minShareVCores;
+  @Metric("Minimum share of GPU memory in MB") MutableGaugeInt minShareGpuMB;
   @Metric("Maximum share of memory in MB") MutableGaugeInt maxShareMB;
   @Metric("Maximum share of CPU in vcores") MutableGaugeInt maxShareVCores;
+  @Metric("Maximum share of GPU memory in MB") MutableGaugeInt maxShareGpuMB;
   
   FSQueueMetrics(MetricsSystem ms, String queueName, Queue parent,
       boolean enableUserMetrics, Configuration conf) {
@@ -48,6 +52,7 @@ public class FSQueueMetrics extends QueueMetrics {
   public void setFairShare(Resource resource) {
     fairShareMB.set(resource.getMemory());
     fairShareVCores.set(resource.getVirtualCores());
+    fairShareGpuMB.set(resource.getGpuMemory());
   }
   
   public int getFairShareMB() {
@@ -61,6 +66,7 @@ public class FSQueueMetrics extends QueueMetrics {
   public void setSteadyFairShare(Resource resource) {
     steadyFairShareMB.set(resource.getMemory());
     steadyFairShareVCores.set(resource.getVirtualCores());
+    steadyFairShareGpuMB.set(resource.getGpuMemory());
   }
 
   public int getSteadyFairShareMB() {
@@ -74,6 +80,7 @@ public class FSQueueMetrics extends QueueMetrics {
   public void setMinShare(Resource resource) {
     minShareMB.set(resource.getMemory());
     minShareVCores.set(resource.getVirtualCores());
+    minShareGpuMB.set(resource.getGpuMemory());
   }
   
   public int getMinShareMB() {
@@ -87,6 +94,7 @@ public class FSQueueMetrics extends QueueMetrics {
   public void setMaxShare(Resource resource) {
     maxShareMB.set(resource.getMemory());
     maxShareVCores.set(resource.getVirtualCores());
+    maxShareGpuMB.set(resource.getGpuMemory());
   }
   
   public int getMaxShareMB() {

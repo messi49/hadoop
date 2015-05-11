@@ -2675,7 +2675,7 @@ public class TestFairScheduler extends FairSchedulerTestBase {
     scheduler.start();
     scheduler.reinitialize(conf, resourceManager.getRMContext());
 
-    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(8192, 5));
+    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(8192, 5, 512));
     NodeAddedSchedulerEvent nodeEvent = new NodeAddedSchedulerEvent(node);
     scheduler.handle(nodeEvent);
 
@@ -2717,7 +2717,7 @@ public class TestFairScheduler extends FairSchedulerTestBase {
     scheduler.start();
     scheduler.reinitialize(conf, resourceManager.getRMContext());
 
-    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(8192, 7),
+    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(8192, 7, 512),
         1, "127.0.0.1");
     NodeAddedSchedulerEvent nodeEvent = new NodeAddedSchedulerEvent(node);
     scheduler.handle(nodeEvent);
@@ -2755,7 +2755,7 @@ public class TestFairScheduler extends FairSchedulerTestBase {
     scheduler.start();
     scheduler.reinitialize(conf, resourceManager.getRMContext());
 
-    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(12288, 12),
+    RMNode node = MockNodes.newNodeInfo(1, BuilderUtils.newResource(12288, 12, 2562),
         1, "127.0.0.1");
     NodeAddedSchedulerEvent nodeEvent = new NodeAddedSchedulerEvent(node);
     scheduler.handle(nodeEvent);
@@ -3333,7 +3333,7 @@ public class TestFairScheduler extends FairSchedulerTestBase {
     scheduler.addApplicationAttempt(appAttemptId, false, false);
     List<ResourceRequest> ask = new ArrayList<ResourceRequest>();
     ResourceRequest request =
-            createResourceRequest(1024, 1, ResourceRequest.ANY, 1, 1, true);
+            createResourceRequest(1024, 1, 256, ResourceRequest.ANY, 1, 1, true);
     ask.add(request);
     scheduler.allocate(appAttemptId, ask, new ArrayList<ContainerId>(), null, null);
 
@@ -3351,7 +3351,7 @@ public class TestFairScheduler extends FairSchedulerTestBase {
 
     // another request
     request =
-            createResourceRequest(1024, 1, ResourceRequest.ANY, 2, 1, true);
+            createResourceRequest(1024, 1, 256, ResourceRequest.ANY, 2, 1, true);
     ask.clear();
     ask.add(request);
     scheduler.allocate(appAttemptId, ask, new ArrayList<ContainerId>(), null, null);
@@ -3504,11 +3504,11 @@ public class TestFairScheduler extends FairSchedulerTestBase {
 
     // Create 3 container requests and place it in ask
     List<ResourceRequest> ask = new ArrayList<ResourceRequest>();
-    ResourceRequest nodeLocalRequest = createResourceRequest(GB, 1, host,
+    ResourceRequest nodeLocalRequest = createResourceRequest(GB, 1, 256, host,
         priority.getPriority(), 1, true);
-    ResourceRequest rackLocalRequest = createResourceRequest(GB, 1,
+    ResourceRequest rackLocalRequest = createResourceRequest(GB, 1, 256,
         node.getRackName(), priority.getPriority(), 1, true);
-    ResourceRequest offRackRequest = createResourceRequest(GB, 1,
+    ResourceRequest offRackRequest = createResourceRequest(GB, 1, 256,
         ResourceRequest.ANY, priority.getPriority(), 1, true);
     ask.add(nodeLocalRequest);
     ask.add(rackLocalRequest);

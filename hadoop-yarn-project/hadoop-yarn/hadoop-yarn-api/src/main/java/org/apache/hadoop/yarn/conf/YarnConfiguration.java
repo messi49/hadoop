@@ -783,15 +783,6 @@ public class YarnConfiguration extends Configuration {
       + "vmem-check-enabled";
   public static final boolean DEFAULT_NM_VMEM_CHECK_ENABLED = true;
 
-  /** Amount of memory in GB that can be allocated for containers.*/
-  public static final String NM_GMEM_MB = NM_PREFIX + "resource.gpu-memory-mb";
-  public static final int DEFAULT_NM_GMEM_MB = 2048;
-
-  /** Specifies whether physical GPU memory check is enabled. */
-  public static final String NM_GMEM_CHECK_ENABLED = NM_PREFIX
-          + "gmem-check-enabled";
-  public static final boolean DEFAULT_NM_GMEM_CHECK_ENABLED = true;
-
   /** Conversion ratio for physical memory to virtual memory. */
   public static final String NM_VMEM_PMEM_RATIO =
     NM_PREFIX + "vmem-pmem-ratio";
@@ -806,6 +797,15 @@ public class YarnConfiguration extends Configuration {
       NM_PREFIX + "resource.percentage-physical-cpu-limit";
   public static final int DEFAULT_NM_RESOURCE_PERCENTAGE_PHYSICAL_CPU_LIMIT =
       100;
+
+  /** Amount of memory in GB that can be allocated for containers.*/
+  public static final String NM_GMEM_MB = NM_PREFIX + "resource.gpu-memory-mb";
+  public static final int DEFAULT_NM_GMEM_MB = 2048;
+
+  /** Specifies whether physical GPU memory check is enabled. */
+  public static final String NM_GMEM_CHECK_ENABLED = NM_PREFIX
+    + "gmem-check-enabled";
+  public static final boolean DEFAULT_NM_GMEM_CHECK_ENABLED = true;
   
   /** NM Webapp address.**/
   public static final String NM_WEBAPP_ADDRESS = NM_PREFIX + "webapp.address";

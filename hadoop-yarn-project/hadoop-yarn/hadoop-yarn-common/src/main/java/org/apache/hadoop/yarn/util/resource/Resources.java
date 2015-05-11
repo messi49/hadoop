@@ -64,6 +64,7 @@ public class Resources {
       if (diff == 0) {
         diff = 0 - o.getVirtualCores();
       }
+      diff = 0 - o.getGpuMemory();
       return diff;
     }
     
@@ -107,6 +108,7 @@ public class Resources {
       if (diff == 0) {
         diff = 0 - o.getVirtualCores();
       }
+      diff = 0 - o.getGpuMemory();
       return diff;
     }
     
@@ -143,6 +145,7 @@ public class Resources {
   public static Resource addTo(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() + rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() + rhs.getVirtualCores());
+    lhs.setGpuMemory(lhs.getGpuMemory() + rhs.getGpuMemory());
     return lhs;
   }
 
@@ -153,6 +156,7 @@ public class Resources {
   public static Resource subtractFrom(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() - rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores());
+    lhs.setGpuMemory(lhs.getGpuMemory() - rhs.getGpuMemory());
     return lhs;
   }
 
@@ -166,7 +170,8 @@ public class Resources {
 
   public static Resource multiplyTo(Resource lhs, double by) {
     lhs.setMemory((int)(lhs.getMemory() * by));
-    lhs.setVirtualCores((int)(lhs.getVirtualCores() * by));
+    lhs.setVirtualCores((int) (lhs.getVirtualCores() * by));
+    lhs.setGpuMemory((int) (lhs.getGpuMemory() * by));
     return lhs;
   }
 
@@ -187,7 +192,8 @@ public class Resources {
   public static Resource multiplyAndRoundDown(Resource lhs, double by) {
     Resource out = clone(lhs);
     out.setMemory((int)(lhs.getMemory() * by));
-    out.setVirtualCores((int)(lhs.getVirtualCores() * by));
+    out.setVirtualCores((int) (lhs.getVirtualCores() * by));
+    out.setGpuMemory((int) (lhs.getGpuMemory() * by));
     return out;
   }
   
@@ -276,7 +282,8 @@ public class Resources {
   
   public static boolean fitsIn(Resource smaller, Resource bigger) {
     return smaller.getMemory() <= bigger.getMemory() &&
-        smaller.getVirtualCores() <= bigger.getVirtualCores();
+        smaller.getVirtualCores() <= bigger.getVirtualCores() &&
+        smaller.getGpuMemory() <= bigger.getGpuMemory();
   }
   
   public static Resource componentwiseMin(Resource lhs, Resource rhs) {

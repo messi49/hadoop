@@ -285,7 +285,8 @@ public class FileSystemRMStateStore extends RMStateStore {
                   attemptStateData.getAMContainerExitStatus(),
                   attemptStateData.getFinishTime(),
                   attemptStateData.getMemorySeconds(),
-                  attemptStateData.getVcoreSeconds());
+                  attemptStateData.getVcoreSeconds(),
+                  attemptStateData.getGpuMemorySeconds());
 
             // assert child node name is same as application attempt id
             assert attemptId.equals(attemptState.getAttemptId());

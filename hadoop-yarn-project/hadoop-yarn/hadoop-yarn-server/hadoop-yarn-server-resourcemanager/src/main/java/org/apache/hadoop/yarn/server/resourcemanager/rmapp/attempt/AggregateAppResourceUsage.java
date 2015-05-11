@@ -24,10 +24,12 @@ import org.apache.hadoop.classification.InterfaceAudience.Private;
 public class AggregateAppResourceUsage {
   long memorySeconds;
   long vcoreSeconds;
+  long gpuMemorySeconds;
 
-  public AggregateAppResourceUsage(long memorySeconds, long vcoreSeconds) {
+  public AggregateAppResourceUsage(long memorySeconds, long vcoreSeconds, long gpuMemorySeconds) {
     this.memorySeconds = memorySeconds;
     this.vcoreSeconds = vcoreSeconds;
+    this.gpuMemorySeconds = gpuMemorySeconds;
   }
 
   /**
@@ -57,4 +59,13 @@ public class AggregateAppResourceUsage {
   public void setVcoreSeconds(long vcoreSeconds) {
     this.vcoreSeconds = vcoreSeconds;
   }
+
+  public long getGpuMemorySeconds() {
+    return gpuMemorySeconds;
+  }
+
+  public void setGpuMemorySeconds(long gpuMemorySeconds) {
+    this.gpuMemorySeconds = gpuMemorySeconds;
+  }
+
 }

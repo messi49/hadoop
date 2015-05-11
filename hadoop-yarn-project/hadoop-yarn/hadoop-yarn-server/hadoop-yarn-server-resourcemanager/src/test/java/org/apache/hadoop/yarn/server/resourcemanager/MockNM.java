@@ -116,7 +116,7 @@ public class MockNM {
         RegisterNodeManagerRequest.class);
     req.setNodeId(nodeId);
     req.setHttpPort(httpPort);
-    Resource resource = BuilderUtils.newResource(memory, vCores);
+    Resource resource = BuilderUtils.newResource(memory, vCores, gpuMemory);
     req.setResource(resource);
     req.setContainerStatuses(containerReports);
     req.setNMVersion(version);

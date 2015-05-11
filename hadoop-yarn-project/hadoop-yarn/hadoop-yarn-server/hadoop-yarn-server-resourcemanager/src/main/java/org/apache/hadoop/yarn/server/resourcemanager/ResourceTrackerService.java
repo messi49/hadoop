@@ -99,6 +99,7 @@ public class ResourceTrackerService extends AbstractService implements
   
   private int minAllocMb;
   private int minAllocVcores;
+  private int minAllocGpuMb;
 
   static {
     resync.setNodeAction(NodeAction.RESYNC);
@@ -144,6 +145,9 @@ public class ResourceTrackerService extends AbstractService implements
     minAllocVcores = conf.getInt(
     	YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES,
     	YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES);
+    minAllocGpuMb = conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
 
     minimumNodeManagerVersion = conf.get(
         YarnConfiguration.RM_NODEMANAGER_MINIMUM_VERSION,
@@ -285,7 +289,7 @@ public class ResourceTrackerService extends AbstractService implements
 
     // Check if this node has minimum allocations
     if (capability.getMemory() < minAllocMb
-        || capability.getVirtualCores() < minAllocVcores) {
+        || capability.getVirtualCores() < minAllocVcores || capability.getGpuMemory() < minAllocGpuMb) {
       String message =
           "NodeManager from  " + host
               + " doesn't satisfy minimum allocations, Sending SHUTDOWN"

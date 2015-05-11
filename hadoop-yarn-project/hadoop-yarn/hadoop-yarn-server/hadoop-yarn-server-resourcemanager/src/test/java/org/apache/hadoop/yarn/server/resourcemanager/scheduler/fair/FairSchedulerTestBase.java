@@ -95,15 +95,15 @@ public class FairSchedulerTestBase {
   protected ResourceRequest createResourceRequest(
       int memory, String host, int priority, int numContainers,
       boolean relaxLocality) {
-    return createResourceRequest(memory, 1, host, priority, numContainers,
+    return createResourceRequest(memory, 1, 256,  host, priority, numContainers,
         relaxLocality);
   }
 
   protected ResourceRequest createResourceRequest(
-      int memory, int vcores, String host, int priority, int numContainers,
+      int memory, int vcores, int gpuMemory, String host, int priority, int numContainers,
       boolean relaxLocality) {
     ResourceRequest request = recordFactory.newRecordInstance(ResourceRequest.class);
-    request.setCapability(BuilderUtils.newResource(memory, vcores));
+    request.setCapability(BuilderUtils.newResource(memory, vcores, gpuMemory));
     request.setResourceName(host);
     request.setNumContainers(numContainers);
     Priority prio = recordFactory.newRecordInstance(Priority.class);
@@ -154,7 +154,7 @@ public class FairSchedulerTestBase {
       scheduler.addApplicationAttempt(id, false, false);
     }
     List<ResourceRequest> ask = new ArrayList<ResourceRequest>();
-    ResourceRequest request = createResourceRequest(memory, vcores, ResourceRequest.ANY,
+    ResourceRequest request = createResourceRequest(memory, vcores, 256, ResourceRequest.ANY,
         priority, numContainers, true);
     ask.add(request);
     scheduler.allocate(id, ask,  new ArrayList<ContainerId>(), null, null);
@@ -198,7 +198,7 @@ public class FairSchedulerTestBase {
 
   protected void createSchedulingRequestExistingApplication(
       int memory, int vcores, int priority, ApplicationAttemptId attId) {
-    ResourceRequest request = createResourceRequest(memory, vcores, ResourceRequest.ANY,
+    ResourceRequest request = createResourceRequest(memory, vcores, 256, ResourceRequest.ANY,
         priority, 1, true);
     createSchedulingRequestExistingApplication(request, attId);
   }

@@ -272,20 +272,21 @@ public abstract class RMStateStore extends AbstractService {
     FinalApplicationStatus amUnregisteredFinalStatus;
     long memorySeconds;
     long vcoreSeconds;
+    long gpuMemorySeconds;
 
     public ApplicationAttemptState(ApplicationAttemptId attemptId,
-        Container masterContainer, Credentials appAttemptCredentials,
-        long startTime, long memorySeconds, long vcoreSeconds) {
+                                   Container masterContainer, Credentials appAttemptCredentials,
+                                   long startTime, long memorySeconds, long vcoreSeconds, long gpuMemorySeconds) {
       this(attemptId, masterContainer, appAttemptCredentials, startTime, null,
-        null, "", null, ContainerExitStatus.INVALID, 0, memorySeconds, vcoreSeconds);
+        null, "", null, ContainerExitStatus.INVALID, 0, memorySeconds, vcoreSeconds, gpuMemorySeconds);
     }
 
     public ApplicationAttemptState(ApplicationAttemptId attemptId,
-        Container masterContainer, Credentials appAttemptCredentials,
-        long startTime, RMAppAttemptState state, String finalTrackingUrl,
-        String diagnostics, FinalApplicationStatus amUnregisteredFinalStatus,
-        int exitStatus, long finishTime, long memorySeconds,
-        long vcoreSeconds) {
+                                   Container masterContainer, Credentials appAttemptCredentials,
+                                   long startTime, RMAppAttemptState state, String finalTrackingUrl,
+                                   String diagnostics, FinalApplicationStatus amUnregisteredFinalStatus,
+                                   int exitStatus, long finishTime, long memorySeconds,
+                                   long vcoreSeconds, long gpuMemorySeconds) {
       this.attemptId = attemptId;
       this.masterContainer = masterContainer;
       this.appAttemptCredentials = appAttemptCredentials;
@@ -298,6 +299,7 @@ public abstract class RMStateStore extends AbstractService {
       this.finishTime = finishTime;
       this.memorySeconds = memorySeconds;
       this.vcoreSeconds = vcoreSeconds;
+      this.gpuMemorySeconds = gpuMemorySeconds;
     }
 
     public Container getMasterContainer() {
@@ -332,6 +334,9 @@ public abstract class RMStateStore extends AbstractService {
     }
     public long getVcoreSeconds() {
       return vcoreSeconds;
+    }
+    public long getGpuMemorySeconds() {
+      return gpuMemorySeconds;
     }
     public long getFinishTime() {
       return this.finishTime;
@@ -613,7 +618,7 @@ public abstract class RMStateStore extends AbstractService {
         new ApplicationAttemptState(appAttempt.getAppAttemptId(),
           appAttempt.getMasterContainer(), credentials,
           appAttempt.getStartTime(), resUsage.getMemorySeconds(),
-          resUsage.getVcoreSeconds());
+          resUsage.getVcoreSeconds(), resUsage.getGpuMemorySeconds());
 
     dispatcher.getEventHandler().handle(
       new RMStateStoreAppAttemptEvent(attemptState));
@@ -769,7 +774,7 @@ public abstract class RMStateStore extends AbstractService {
       ApplicationAttemptState attemptState =
           new ApplicationAttemptState(appAttempt.getAppAttemptId(),
             appAttempt.getMasterContainer(), credentials,
-            appAttempt.getStartTime(), 0, 0);
+            appAttempt.getStartTime(), 0, 0, 0);
       appState.attempts.put(attemptState.getAttemptId(), attemptState);
     }
     

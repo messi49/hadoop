@@ -779,16 +779,22 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       sb.append(queueName).append(", ")
         .append(current.getMemory()).append(", ")
         .append(current.getVirtualCores()).append(", ")
+        .append(current.getGpuMemory()).append(", ")
         .append(pending.getMemory()).append(", ")
         .append(pending.getVirtualCores()).append(", ")
+        .append(pending.getGpuMemory()).append(", ")
         .append(guaranteed.getMemory()).append(", ")
         .append(guaranteed.getVirtualCores()).append(", ")
+        .append(guaranteed.getGpuMemory()).append(", ")
         .append(idealAssigned.getMemory()).append(", ")
         .append(idealAssigned.getVirtualCores()).append(", ")
+        .append(idealAssigned.getGpuMemory()).append(", ")
         .append(toBePreempted.getMemory()).append(", ")
         .append(toBePreempted.getVirtualCores() ).append(", ")
+        .append(toBePreempted.getGpuMemory()).append(", ")
         .append(actuallyPreempted.getMemory()).append(", ")
-        .append(actuallyPreempted.getVirtualCores());
+        .append(actuallyPreempted.getVirtualCores())
+        .append(actuallyPreempted.getGpuMemory()).append(", ");
     }
 
   }

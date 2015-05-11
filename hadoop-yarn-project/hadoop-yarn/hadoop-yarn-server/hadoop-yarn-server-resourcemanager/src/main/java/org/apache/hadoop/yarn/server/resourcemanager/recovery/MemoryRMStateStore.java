@@ -140,7 +140,8 @@ public class MemoryRMStateStore extends RMStateStore {
           attemptStateData.getMasterContainer(), credentials,
           attemptStateData.getStartTime(),
           attemptStateData.getMemorySeconds(),
-          attemptStateData.getVcoreSeconds());
+          attemptStateData.getVcoreSeconds(),
+          attemptStateData.getGpuMemorySeconds());
 
 
     ApplicationState appState = state.getApplicationState().get(
@@ -173,7 +174,8 @@ public class MemoryRMStateStore extends RMStateStore {
           attemptStateData.getAMContainerExitStatus(),
           attemptStateData.getFinishTime(),
           attemptStateData.getMemorySeconds(),
-          attemptStateData.getVcoreSeconds());
+          attemptStateData.getVcoreSeconds(),
+          attemptStateData.getGpuMemorySeconds());
 
     ApplicationState appState =
         state.getApplicationState().get(

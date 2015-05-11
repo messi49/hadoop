@@ -129,6 +129,8 @@ public abstract class FSQueue implements Queue, Schedulable {
         scheduler.getClusterResource().getMemory());
     queueInfo.setCapacity((float) getResourceUsage().getMemory() /
         scheduler.getClusterResource().getMemory());
+    queueInfo.setCapacity((float) getResourceUsage().getGpuMemory() /
+      scheduler.getClusterResource().getGpuMemory());
     
     ArrayList<QueueInfo> childQueueInfos = new ArrayList<QueueInfo>();
     if (includeChildQueues) {

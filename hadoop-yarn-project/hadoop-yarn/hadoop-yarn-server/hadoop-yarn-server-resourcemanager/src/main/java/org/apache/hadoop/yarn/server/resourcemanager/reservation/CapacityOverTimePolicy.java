@@ -106,7 +106,7 @@ public class CapacityOverTimePolicy implements SharingPolicy {
 
     // define variable that will store integral of resources (need diff class to
     // avoid overflow issues for long/large allocations)
-    IntegralResource runningTot = new IntegralResource(0L, 0L);
+    IntegralResource runningTot = new IntegralResource(0L, 0L, 0L);
     IntegralResource maxAllowed = new IntegralResource(maxAvgRes);
     maxAllowed.multiplyBy(validWindow / step);
 
@@ -211,30 +211,36 @@ public class CapacityOverTimePolicy implements SharingPolicy {
   private static class IntegralResource {
     long memory;
     long vcores;
+    long gpuMemory;
 
     public IntegralResource(Resource resource) {
       this.memory = resource.getMemory();
       this.vcores = resource.getVirtualCores();
+      this.gpuMemory = resource.getGpuMemory();
     }
 
-    public IntegralResource(long mem, long vcores) {
+    public IntegralResource(long mem, long vcores, long gpuMemory) {
       this.memory = mem;
       this.vcores = vcores;
+      this.gpuMemory = gpuMemory;
     }
 
     public void add(Resource r) {
       memory += r.getMemory();
       vcores += r.getVirtualCores();
+      gpuMemory += r.getGpuMemory();
     }
 
     public void subtract(Resource r) {
       memory -= r.getMemory();
       vcores -= r.getVirtualCores();
+      gpuMemory -= r.getGpuMemory();
     }
 
     public void multiplyBy(long window) {
       memory = memory * window;
       vcores = vcores * window;
+      gpuMemory = gpuMemory * window;
     }
 
     public long compareTo(IntegralResource other) {
@@ -242,12 +248,13 @@ public class CapacityOverTimePolicy implements SharingPolicy {
       if (diff == 0) {
         diff = vcores - other.vcores;
       }
+      diff = gpuMemory - other.gpuMemory;
       return diff;
     }
 
     @Override
     public String toString() {
-      return "<memory:" + memory + ", vCores:" + vcores + ">";
+      return "<memory:" + memory + ", vCores:" + vcores +  ", GPU memory:" + gpuMemory + ">";
     }
   }
 }

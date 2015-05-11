@@ -130,7 +130,7 @@ public class Client {
   // Amt. of virtual core resource to request for to run the App Master
   private int amVCores = 1;
   // Amt. of memory resource to request for to run the App Master
-  private int amGpuMemory = 0;
+  private int amGpuMemory = 10;
 
   // Application master jar file
   private String appMasterJar = ""; 
@@ -152,6 +152,7 @@ public class Client {
   private int containerMemory = 10; 
   // Amt. of virtual cores to request for container in which shell script will be executed
   private int containerVirtualCores = 1;
+  private int containerGpuMemory = 10;
   // No. of containers in which the shell script needs to be executed
   private int numContainers = 1;
   private String nodeLabelExpression = null;
@@ -247,6 +248,7 @@ public class Client {
     opts.addOption("timeout", true, "Application timeout in milliseconds");
     opts.addOption("master_memory", true, "Amount of memory in MB to be requested to run the application master");
     opts.addOption("master_vcores", true, "Amount of virtual cores to be requested to run the application master");
+    opts.addOption("master_gpu_memory", true, "Amount of GPU memory in MiB to be requested to run the application master");
     opts.addOption("jar", true, "Jar file containing the application master");
     opts.addOption("shell_command", true, "Shell command to be executed by " +
         "the Application Master. Can only specify either --shell_command " +
@@ -260,6 +262,7 @@ public class Client {
     opts.addOption("shell_cmd_priority", true, "Priority for the shell command containers");
     opts.addOption("container_memory", true, "Amount of memory in MB to be requested to run the shell command");
     opts.addOption("container_vcores", true, "Amount of virtual cores to be requested to run the shell command");
+    opts.addOption("container_gpu_memory", true, "Amount of memory in MB to be requested to run the shell command");
     opts.addOption("num_containers", true, "No. of containers on which the shell command needs to be executed");
     opts.addOption("log_properties", true, "log4j.properties file");
     opts.addOption("keep_containers_across_application_attempts", false,
@@ -347,6 +350,7 @@ public class Client {
     amQueue = cliParser.getOptionValue("queue", "default");
     amMemory = Integer.parseInt(cliParser.getOptionValue("master_memory", "10"));		
     amVCores = Integer.parseInt(cliParser.getOptionValue("master_vcores", "1"));
+    amGpuMemory = Integer.parseInt(cliParser.getOptionValue("master_gpu_memory", "10"));
 
     if (amMemory < 0) {
       throw new IllegalArgumentException("Invalid memory specified for application master, exiting."
@@ -355,6 +359,10 @@ public class Client {
     if (amVCores < 0) {
       throw new IllegalArgumentException("Invalid virtual cores specified for application master, exiting."
           + " Specified virtual cores=" + amVCores);
+    }
+    if (amGpuMemory < 0) {
+      throw new IllegalArgumentException("Invalid GPU memory specified for application master, exiting."
+        + " Specified GPU memory=" + amGpuMemory);
     }
 
     if (!cliParser.hasOption("jar")) {
@@ -398,14 +406,16 @@ public class Client {
 
     containerMemory = Integer.parseInt(cliParser.getOptionValue("container_memory", "10"));
     containerVirtualCores = Integer.parseInt(cliParser.getOptionValue("container_vcores", "1"));
+    containerGpuMemory = Integer.parseInt(cliParser.getOptionValue("container_gpu_memory", "10"));
     numContainers = Integer.parseInt(cliParser.getOptionValue("num_containers", "1"));
     
 
-    if (containerMemory < 0 || containerVirtualCores < 0 || numContainers < 1) {
-      throw new IllegalArgumentException("Invalid no. of containers or container memory/vcores specified,"
+    if (containerMemory < 0 || containerVirtualCores < 0 || containerGpuMemory < 0 || numContainers < 1) {
+      throw new IllegalArgumentException("Invalid no. of containers or container memory/vcores/gpu memory specified,"
           + " exiting."
           + " Specified containerMemory=" + containerMemory
           + ", containerVirtualCores=" + containerVirtualCores
+          + " Specified containerGpuMemory=" + containerGpuMemory
           + ", numContainer=" + numContainers);
     }
     
@@ -509,7 +519,18 @@ public class Client {
           + ", max=" + maxVCores);
       amVCores = maxVCores;
     }
-    
+
+    int maxGpuMem = appResponse.getMaximumResourceCapability().getGpuMemory();
+    LOG.info("Max GPU mem capabililty of resources in this cluster " + maxGpuMem);
+
+    // A resource ask cannot exceed the max.
+    if (amGpuMemory > maxGpuMem) {
+      LOG.info("AM GPU memory specified above max threshold of cluster. Using max value."
+        + ", specified=" + amGpuMemory
+        + ", max=" + maxGpuMem);
+      amGpuMemory = maxGpuMem;
+    }
+
     // set the application name
     ApplicationSubmissionContext appContext = app.getApplicationSubmissionContext();
     ApplicationId appId = appContext.getApplicationId();
@@ -627,6 +648,7 @@ public class Client {
     // Set params for Application Master
     vargs.add("--container_memory " + String.valueOf(containerMemory));
     vargs.add("--container_vcores " + String.valueOf(containerVirtualCores));
+    vargs.add("--container_gpu_memory " + String.valueOf(containerGpuMemory));
     vargs.add("--num_containers " + String.valueOf(numContainers));
     if (null != nodeLabelExpression) {
       appContext.setNodeLabelExpression(nodeLabelExpression);

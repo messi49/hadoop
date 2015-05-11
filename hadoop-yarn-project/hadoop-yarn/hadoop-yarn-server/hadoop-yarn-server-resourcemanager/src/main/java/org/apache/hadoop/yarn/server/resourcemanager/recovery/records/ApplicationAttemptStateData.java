@@ -194,4 +194,12 @@ public abstract class ApplicationAttemptStateData {
   @Public
   @Unstable
   public abstract void setVcoreSeconds(long vcoreSeconds);
+
+  @Public
+  @Unstable
+  public abstract long getGpuMemorySeconds();
+
+  @Public
+  @Unstable
+  public abstract void setGpuMemorySeconds(long gpuMemorySeconds);
 }

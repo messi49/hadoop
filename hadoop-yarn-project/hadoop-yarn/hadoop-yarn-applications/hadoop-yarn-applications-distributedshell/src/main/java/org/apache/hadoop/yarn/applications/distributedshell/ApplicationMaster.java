@@ -216,7 +216,7 @@ public class ApplicationMaster {
   private int containerMemory = 10;
   // VirtualCores to request for the container on which the shell command will run
   private int containerVirtualCores = 1;
-  private int containerGpuMemory = 0;
+  private int containerGpuMemory = 10;
   // Priority of the request
   private int requestPriority;
 
@@ -357,6 +357,8 @@ public class ApplicationMaster {
         "Amount of memory in MB to be requested to run the shell command");
     opts.addOption("container_vcores", true,
         "Amount of virtual cores to be requested to run the shell command");
+    opts.addOption("container_gpu_memory", true,
+      "Amount of GPU memory in MiB to be requested to run the shell command");
     opts.addOption("num_containers", true,
         "No. of containers on which the shell command needs to be executed");
     opts.addOption("priority", true, "Application Priority. Default 0");
@@ -489,6 +491,8 @@ public class ApplicationMaster {
         "container_memory", "10"));
     containerVirtualCores = Integer.parseInt(cliParser.getOptionValue(
         "container_vcores", "1"));
+    containerGpuMemory = Integer.parseInt(cliParser.getOptionValue(
+      "container_gpu_memory", "10"));
     numTotalContainers = Integer.parseInt(cliParser.getOptionValue(
         "num_containers", "1"));
     if (numTotalContainers == 0) {
@@ -583,6 +587,9 @@ public class ApplicationMaster {
     int maxVCores = response.getMaximumResourceCapability().getVirtualCores();
     LOG.info("Max vcores capabililty of resources in this cluster " + maxVCores);
 
+    int maxGpuMem = response.getMaximumResourceCapability().getGpuMemory();
+    LOG.info("Max GPU mem capabililty of resources in this cluster " + maxGpuMem);
+
     // A resource ask cannot exceed the max.
     if (containerMemory > maxMem) {
       LOG.info("Container memory specified above max threshold of cluster."
@@ -596,6 +603,13 @@ public class ApplicationMaster {
           + " Using max value." + ", specified=" + containerVirtualCores + ", max="
           + maxVCores);
       containerVirtualCores = maxVCores;
+    }
+
+    if (containerGpuMemory > maxGpuMem) {
+      LOG.info("Container GPU memory specified above max threshold of cluster."
+        + " Using max value." + ", specified=" + containerGpuMemory + ", max="
+        + maxGpuMem);
+      containerGpuMemory = maxGpuMem;
     }
 
     List<Container> previousAMRunningContainers =
@@ -759,7 +773,9 @@ public class ApplicationMaster {
             + ", containerResourceMemory"
             + allocatedContainer.getResource().getMemory()
             + ", containerResourceVirtualCores"
-            + allocatedContainer.getResource().getVirtualCores());
+            + allocatedContainer.getResource().getVirtualCores()
+            + ", containerResourceGpuMemory"
+            + allocatedContainer.getResource().getGpuMemory());
         // + ", containerToken"
         // +allocatedContainer.getContainerToken().getIdentifier().toString());
 

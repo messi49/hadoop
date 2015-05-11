@@ -47,6 +47,7 @@ public class RMAppAttemptMetrics {
   private WriteLock writeLock;
   private AtomicLong finishedMemorySeconds = new AtomicLong(0);
   private AtomicLong finishedVcoreSeconds = new AtomicLong(0);
+  private AtomicLong finishedGpuMemorySeconds = new AtomicLong(0);
   private RMContext rmContext;
 
   public RMAppAttemptMetrics(ApplicationAttemptId attemptId,
@@ -106,6 +107,7 @@ public class RMAppAttemptMetrics {
   public AggregateAppResourceUsage getAggregateAppResourceUsage() {
     long memorySeconds = finishedMemorySeconds.get();
     long vcoreSeconds = finishedVcoreSeconds.get();
+    long gpuMemorySeconds = finishedGpuMemorySeconds.get();
 
     // Only add in the running containers if this is the active attempt.
     RMAppAttempt currentAttempt = rmContext.getRMApps()
@@ -116,13 +118,14 @@ public class RMAppAttemptMetrics {
       if (appResUsageReport != null) {
         memorySeconds += appResUsageReport.getMemorySeconds();
         vcoreSeconds += appResUsageReport.getVcoreSeconds();
+        gpuMemorySeconds += appResUsageReport.getGpuMemorySeconds();
       }
     }
-    return new AggregateAppResourceUsage(memorySeconds, vcoreSeconds);
+    return new AggregateAppResourceUsage(memorySeconds, vcoreSeconds, gpuMemorySeconds);
   }
 
   public void updateAggregateAppResourceUsage(long finishedMemorySeconds,
-                                        long finishedVcoreSeconds) {
+                                              long finishedVcoreSeconds, long finishedGpuMemorySeconds) {
     this.finishedMemorySeconds.addAndGet(finishedMemorySeconds);
     this.finishedVcoreSeconds.addAndGet(finishedVcoreSeconds);
   }

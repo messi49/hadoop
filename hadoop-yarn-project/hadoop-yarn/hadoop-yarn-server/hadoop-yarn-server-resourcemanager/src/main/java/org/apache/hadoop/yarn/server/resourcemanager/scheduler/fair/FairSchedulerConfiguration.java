@@ -253,7 +253,8 @@ public class FairSchedulerConfiguration extends Configuration {
     try {
       int memory = findResource(val, "mb");
       int vcores = findResource(val, "vcores");
-      return BuilderUtils.newResource(memory, vcores);
+      int gpuMemory = findResource(val, "mb");
+      return BuilderUtils.newResource(memory, vcores, gpuMemory);
     } catch (AllocationConfigurationException ex) {
       throw ex;
     } catch (Exception ex) {

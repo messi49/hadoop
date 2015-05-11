@@ -41,7 +41,6 @@ import org.apache.hadoop.yarn.api.records.ResourceRequest;
 import org.apache.hadoop.yarn.event.EventHandler;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NMContainerStatus;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
-import org.apache.hadoop.yarn.server.resourcemanager.rmapp.RMApp;
 import org.apache.hadoop.yarn.server.resourcemanager.rmapp.RMAppRunningOnNodeEvent;
 import org.apache.hadoop.yarn.server.resourcemanager.rmapp.attempt.RMAppAttempt;
 import org.apache.hadoop.yarn.server.resourcemanager.rmapp.attempt.event.RMAppAttemptContainerAllocatedEvent;
@@ -521,9 +520,12 @@ public class RMContainerImpl implements RMContainer {
         long memorySeconds = resource.getMemory()
                               * usedMillis / DateUtils.MILLIS_PER_SECOND;
         long vcoreSeconds = resource.getVirtualCores()
-                             * usedMillis / DateUtils.MILLIS_PER_SECOND;
-        rmAttempt.getRMAppAttemptMetrics()
-                  .updateAggregateAppResourceUsage(memorySeconds,vcoreSeconds);
+                              * usedMillis / DateUtils.MILLIS_PER_SECOND;
+        long gpuMemorySeconds = resource.getGpuMemory()
+                              * usedMillis / DateUtils.MILLIS_PER_SECOND;
+
+         rmAttempt.getRMAppAttemptMetrics()
+                  .updateAggregateAppResourceUsage(memorySeconds,vcoreSeconds, gpuMemorySeconds);
       }
     }
   }

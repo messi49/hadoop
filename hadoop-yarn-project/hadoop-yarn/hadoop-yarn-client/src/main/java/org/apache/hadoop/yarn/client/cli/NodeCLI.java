@@ -185,8 +185,8 @@ public class NodeCLI extends YarnCLI {
       nodeReportStr.println(nodeReport.getHttpAddress());
       nodeReportStr.print("\tLast-Health-Update : ");
       nodeReportStr.println(DateFormatUtils.format(
-          new Date(nodeReport.getLastHealthReportTime()),
-            "E dd/MMM/yy hh:mm:ss:SSzz"));
+        new Date(nodeReport.getLastHealthReportTime()),
+        "E dd/MMM/yy hh:mm:ss:SSzz"));
       nodeReportStr.print("\tHealth-Report : ");
       nodeReportStr
           .println(nodeReport.getHealthReport());
@@ -194,7 +194,7 @@ public class NodeCLI extends YarnCLI {
       nodeReportStr.println(nodeReport.getNumContainers());
       nodeReportStr.print("\tMemory-Used : ");
       nodeReportStr.println((nodeReport.getUsed() == null) ? "0MB"
-          : (nodeReport.getUsed().getMemory() + "MB"));
+        : (nodeReport.getUsed().getMemory() + "MB"));
       nodeReportStr.print("\tMemory-Capacity : ");
       nodeReportStr.println(nodeReport.getCapability().getMemory() + "MB");
       nodeReportStr.print("\tCPU-Used : ");
@@ -202,6 +202,11 @@ public class NodeCLI extends YarnCLI {
           : (nodeReport.getUsed().getVirtualCores() + " vcores"));
       nodeReportStr.print("\tCPU-Capacity : ");
       nodeReportStr.println(nodeReport.getCapability().getVirtualCores() + " vcores");
+      nodeReportStr.print("\tGPU-Memory-Used : ");
+      nodeReportStr.println((nodeReport.getUsed() == null) ? "0MiB"
+        : (nodeReport.getUsed().getGpuMemory() + "MiB"));
+      nodeReportStr.print("\tGPU-Memory-Capacity : ");
+      nodeReportStr.println(nodeReport.getCapability().getGpuMemory() + "MiB");
       nodeReportStr.print("\tNode-Labels : ");
       
       // Create a List for node labels since we need it get sorted

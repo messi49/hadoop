@@ -58,17 +58,18 @@ public class QueueMetrics implements MetricsSource {
   @Metric("# of apps completed") MutableCounterInt appsCompleted;
   @Metric("# of apps killed") MutableCounterInt appsKilled;
   @Metric("# of apps failed") MutableCounterInt appsFailed;
-
   @Metric("Allocated memory in MB") MutableGaugeInt allocatedMB;
   @Metric("Allocated CPU in virtual cores") MutableGaugeInt allocatedVCores;
+  @Metric("Allocated GPU memory in MB") MutableGaugeInt allocatedGpuMB;
   @Metric("# of allocated containers") MutableGaugeInt allocatedContainers;
   @Metric("Aggregate # of allocated containers") MutableCounterLong aggregateContainersAllocated;
   @Metric("Aggregate # of released containers") MutableCounterLong aggregateContainersReleased;
   @Metric("Available memory in MB") MutableGaugeInt availableMB;
   @Metric("Available CPU in virtual cores") MutableGaugeInt availableVCores;
-  @Metric("Available GPU memory") MutableGaugeInt availableGpuMemory;
+  @Metric("Available GPU memory") MutableGaugeInt availableGpuMB;
   @Metric("Pending memory allocation in MB") MutableGaugeInt pendingMB;
   @Metric("Pending CPU allocation in virtual cores") MutableGaugeInt pendingVCores;
+  @Metric("Pending GPU memory allocation in MB") MutableGaugeInt pendingGpuMB;
   @Metric("# of pending containers") MutableGaugeInt pendingContainers;
   @Metric("# of reserved memory in MB") MutableGaugeInt reservedMB;
   @Metric("Reserved CPU in virtual cores") MutableGaugeInt reservedVCores;
@@ -321,6 +322,7 @@ public class QueueMetrics implements MetricsSource {
   public void setAvailableResourcesToQueue(Resource limit) {
     availableMB.set(limit.getMemory());
     availableVCores.set(limit.getVirtualCores());
+    availableGpuMB.set(limit.getGpuMemory());
   }
 
   /**
@@ -358,6 +360,7 @@ public class QueueMetrics implements MetricsSource {
     pendingContainers.incr(containers);
     pendingMB.incr(res.getMemory() * containers);
     pendingVCores.incr(res.getVirtualCores() * containers);
+    pendingGpuMB.incr(res.getGpuMemory() * containers);
   }
 
   public void decrPendingResources(String user, int containers, Resource res) {
@@ -375,6 +378,7 @@ public class QueueMetrics implements MetricsSource {
     pendingContainers.decr(containers);
     pendingMB.decr(res.getMemory() * containers);
     pendingVCores.decr(res.getVirtualCores() * containers);
+    pendingGpuMB.decr(res.getGpuMemory() * containers);
   }
 
   public void allocateResources(String user, int containers, Resource res,
@@ -383,6 +387,7 @@ public class QueueMetrics implements MetricsSource {
     aggregateContainersAllocated.incr(containers);
     allocatedMB.incr(res.getMemory() * containers);
     allocatedVCores.incr(res.getVirtualCores() * containers);
+    allocatedGpuMB.incr(res.getGpuMemory() * containers);
     if (decrPending) {
       _decrPendingResources(containers, res);
     }
@@ -400,6 +405,7 @@ public class QueueMetrics implements MetricsSource {
     aggregateContainersReleased.incr(containers);
     allocatedMB.decr(res.getMemory() * containers);
     allocatedVCores.decr(res.getVirtualCores() * containers);
+    allocatedGpuMB.decr(res.getGpuMemory() * containers);
     QueueMetrics userMetrics = getUserMetrics(user);
     if (userMetrics != null) {
       userMetrics.releaseResources(user, containers, res);
@@ -413,6 +419,7 @@ public class QueueMetrics implements MetricsSource {
     reservedContainers.incr();
     reservedMB.incr(res.getMemory());
     reservedVCores.incr(res.getVirtualCores());
+    reservedGpuMB.incr(res.getGpuMemory());
     QueueMetrics userMetrics = getUserMetrics(user);
     if (userMetrics != null) {
       userMetrics.reserveResource(user, res);
@@ -426,6 +433,7 @@ public class QueueMetrics implements MetricsSource {
     reservedContainers.decr();
     reservedMB.decr(res.getMemory());
     reservedVCores.decr(res.getVirtualCores());
+    reservedGpuMB.decr(res.getGpuMemory());
     QueueMetrics userMetrics = getUserMetrics(user);
     if (userMetrics != null) {
       userMetrics.unreserveResource(user, res);
@@ -490,7 +498,7 @@ public class QueueMetrics implements MetricsSource {
   }
   
   public Resource getAllocatedResources() {
-    return BuilderUtils.newResource(allocatedMB.value(), allocatedVCores.value());
+    return BuilderUtils.newResource(allocatedMB.value(), allocatedVCores.value(), allocatedGpuMB.value());
   }
 
   public int getAllocatedMB() {
@@ -510,7 +518,7 @@ public class QueueMetrics implements MetricsSource {
   }
 
   public int getAvailableGpuMemory() {
-    return availableGpuMemory.value();
+    return availableGpuMB.value();
   }
   
   public int getAvailableVirtualCores() {

@@ -216,6 +216,14 @@ public class SchedulerUtils {
           + resReq.getCapability().getVirtualCores()
           + ", maxVirtualCores=" + maximumResource.getVirtualCores());
     }
+    if (resReq.getCapability().getGpuMemory() < 0 ||
+      resReq.getCapability().getGpuMemory() > maximumResource.getGpuMemory()) {
+      throw new InvalidResourceRequestException("Invalid resource request"
+        + ", requested GPU memory < 0"
+        + ", or requested GPU memory > max configured"
+        + ", requestedGpuMemory=" + resReq.getCapability().getGpuMemory()
+        + ", maxGpuMemory=" + maximumResource.getGpuMemory());
+    }
     
     // Get queue from scheduler
     QueueInfo queueInfo = null;

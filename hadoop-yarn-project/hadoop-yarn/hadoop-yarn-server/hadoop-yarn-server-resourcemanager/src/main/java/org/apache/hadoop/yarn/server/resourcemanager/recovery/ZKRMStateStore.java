@@ -617,7 +617,8 @@ public class ZKRMStateStore extends RMStateStore {
               attemptStateData.getAMContainerExitStatus(),
               attemptStateData.getFinishTime(),
               attemptStateData.getMemorySeconds(),
-              attemptStateData.getVcoreSeconds());
+              attemptStateData.getVcoreSeconds(),
+              attemptStateData.getGpuMemorySeconds());
 
 
         appState.attempts.put(attemptState.getAttemptId(), attemptState);

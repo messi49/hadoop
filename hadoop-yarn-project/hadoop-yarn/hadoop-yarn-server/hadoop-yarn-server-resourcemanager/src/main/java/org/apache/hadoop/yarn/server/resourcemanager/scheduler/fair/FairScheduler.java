@@ -231,6 +231,23 @@ public class FairScheduler extends
         + "=" + maxVcores + ", min should equal greater than 0"
         + ", max should be no smaller than min.");
     }
+
+    int minGpuMem = conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB);
+    int maxGpuMem = conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB);
+
+    if (minGpuMem < 0 || minGpuMem > maxGpuMem) {
+      throw new YarnRuntimeException("Invalid resource scheduler memory"
+        + " allocation configuration"
+        + ", " + YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB
+        + "=" + minGpuMem
+        + ", " + YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB
+        + "=" + maxGpuMem + ", min should equal greater than 0"
+        + ", max should be no smaller than min.");
+    }
   }
 
   public FairSchedulerConfiguration getConf() {
@@ -1536,6 +1553,6 @@ public class FairScheduler extends
   @Override
   public EnumSet<SchedulerResourceTypes> getSchedulingResourceTypes() {
     return EnumSet
-      .of(SchedulerResourceTypes.MEMORY, SchedulerResourceTypes.CPU);
+      .of(SchedulerResourceTypes.MEMORY, SchedulerResourceTypes.CPU, SchedulerResourceTypes.GPU_MEMORY);
   }
 }
