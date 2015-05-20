@@ -144,8 +144,8 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
             YarnConfiguration.NM_VCORES, YarnConfiguration.DEFAULT_NM_VCORES);
 
     int gpuMemoryMib =
-            conf.getInt(
-                    YarnConfiguration.NM_GMEM_MB, YarnConfiguration.DEFAULT_NM_GMEM_MB);
+        conf.getInt(
+            YarnConfiguration.NM_GMEM_MB, YarnConfiguration.DEFAULT_NM_GMEM_MB);
 
     this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuMemoryMib);
     metrics.addResource(totalResource);

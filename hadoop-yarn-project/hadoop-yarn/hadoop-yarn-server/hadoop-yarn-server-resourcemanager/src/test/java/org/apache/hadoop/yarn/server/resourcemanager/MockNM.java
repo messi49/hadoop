@@ -62,18 +62,20 @@ public class MockNM {
     this(nodeIdStr, memory,
         Math.max(1, (memory * YarnConfiguration.DEFAULT_NM_VCORES) /
             YarnConfiguration.DEFAULT_NM_PMEM_MB),
+        YarnConfiguration.DEFAULT_NM_GMEM_MB,
         resourceTracker);
   }
 
-  public MockNM(String nodeIdStr, int memory, int vcores,
+  public MockNM(String nodeIdStr, int memory, int vcores, int gpuMemory,
       ResourceTrackerService resourceTracker) {
-    this(nodeIdStr, memory, vcores, resourceTracker, YarnVersionInfo.getVersion());
+    this(nodeIdStr, memory, vcores, gpuMemory, resourceTracker, YarnVersionInfo.getVersion());
   }
 
   public MockNM(String nodeIdStr, int memory, int vcores,
-      ResourceTrackerService resourceTracker, String version) {
+                int gpuMemory, ResourceTrackerService resourceTracker, String version) {
     this.memory = memory;
     this.vCores = vcores;
+    this.gpuMemory = gpuMemory;
     this.resourceTracker = resourceTracker;
     this.version = version;
     String[] splits = nodeIdStr.split(":");

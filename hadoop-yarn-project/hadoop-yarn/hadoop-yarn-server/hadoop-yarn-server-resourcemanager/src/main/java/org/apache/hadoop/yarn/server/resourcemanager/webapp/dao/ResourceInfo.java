@@ -37,6 +37,7 @@ public class ResourceInfo {
   public ResourceInfo(Resource res) {
     memory = res.getMemory();
     vCores = res.getVirtualCores();
+    gpuMemory = res.getGpuMemory();
   }
 
   public int getMemory() {
@@ -53,7 +54,7 @@ public class ResourceInfo {
   
   @Override
   public String toString() {
-    return "<memory:" + memory + ", vCores:" + vCores + ">";
+    return "<memory:" + memory + ", vCores:" + vCores + ", GPU memory:" + gpuMemory + ">";
   }
 
   public void setMemory(int memory) {

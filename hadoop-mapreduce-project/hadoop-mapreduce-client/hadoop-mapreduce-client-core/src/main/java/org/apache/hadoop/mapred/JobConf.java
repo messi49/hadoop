@@ -173,6 +173,12 @@ public class JobConf extends Configuration {
   static final String MAPREDUCE_JOB_REDUCE_MEMORY_MB_PROPERTY =
     JobContext.REDUCE_MEMORY_MB;
 
+  static final String MAPREDUCE_JOB_MAP_GPU_MEMORY_MB_PROPERTY =
+    JobContext.MAP_GPU_MEMORY_MB;
+
+  static final String MAPREDUCE_JOB_REDUCE_GPU_MEMORY_MB_PROPERTY =
+    JobContext.REDUCE_GPU_MEMORY_MB;
+
   /**
    * The variable is kept for M/R 1.x applications, while M/R 2.x applications
    * should use {@link #MAPREDUCE_JOB_MAP_MEMORY_MB_PROPERTY}
@@ -181,6 +187,10 @@ public class JobConf extends Configuration {
   public static final String MAPRED_JOB_MAP_MEMORY_MB_PROPERTY =
       "mapred.job.map.memory.mb";
 
+  @Deprecated
+  public static final String MAPRED_JOB_MAP_GPU_MEMORY_MB_PROPERTY =
+    "mapred.job.map.gpu-memory.mb";
+
   /**
    * The variable is kept for M/R 1.x applications, while M/R 2.x applications
    * should use {@link #MAPREDUCE_JOB_REDUCE_MEMORY_MB_PROPERTY}
@@ -188,6 +198,10 @@ public class JobConf extends Configuration {
   @Deprecated
   public static final String MAPRED_JOB_REDUCE_MEMORY_MB_PROPERTY =
       "mapred.job.reduce.memory.mb";
+
+  @Deprecated
+  public static final String MAPRED_JOB_REDUCE_GPU_MEMORY_MB_PROPERTY =
+    "mapred.job.reduce.gpu-memory.mb";
 
   /** Pattern for the default unpacking behavior for job jars */
   public static final Pattern UNPACK_JAR_PATTERN_DEFAULT =
@@ -710,9 +724,9 @@ public class JobConf extends Configuration {
    */
   public OutputFormat getOutputFormat() {
     return ReflectionUtils.newInstance(getClass("mapred.output.format.class",
-                                                              TextOutputFormat.class,
-                                                              OutputFormat.class),
-                                                     this);
+        TextOutputFormat.class,
+        OutputFormat.class),
+      this);
   }
 
   /**
@@ -775,8 +789,8 @@ public class JobConf extends Configuration {
   public void 
   setMapOutputCompressorClass(Class<? extends CompressionCodec> codecClass) {
     setCompressMapOutput(true);
-    setClass(JobContext.MAP_OUTPUT_COMPRESS_CODEC, codecClass, 
-             CompressionCodec.class);
+    setClass(JobContext.MAP_OUTPUT_COMPRESS_CODEC, codecClass,
+      CompressionCodec.class);
   }
   
   /**
@@ -837,7 +851,7 @@ public class JobConf extends Configuration {
    */
   public Class<?> getMapOutputValueClass() {
     Class<?> retv = getClass(JobContext.MAP_OUTPUT_VALUE_CLASS, null,
-        Object.class);
+      Object.class);
     if (retv == null) {
       retv = getOutputValueClass();
     }
@@ -1643,7 +1657,7 @@ public class JobConf extends Configuration {
    */
   public String getProfileParams() {
     return get(JobContext.TASK_PROFILE_PARAMS,
-        MRJobConfig.DEFAULT_TASK_PROFILE_PARAMS);
+      MRJobConfig.DEFAULT_TASK_PROFILE_PARAMS);
   }
 
   /**
@@ -1665,8 +1679,8 @@ public class JobConf extends Configuration {
    * @return the task ranges
    */
   public IntegerRanges getProfileTaskRange(boolean isMap) {
-    return getRange((isMap ? JobContext.NUM_MAP_PROFILES : 
-                       JobContext.NUM_REDUCE_PROFILES), "0-2");
+    return getRange((isMap ? JobContext.NUM_MAP_PROFILES :
+      JobContext.NUM_REDUCE_PROFILES), "0-2");
   }
 
   /**
@@ -1833,6 +1847,21 @@ public class JobConf extends Configuration {
     setLong(JobConf.MAPRED_JOB_MAP_MEMORY_MB_PROPERTY, mem);
   }
 
+  public long getGpuMemoryForMapTask() {
+    long value = getDeprecatedGpuMemoryValue();
+    if (value < 0) {
+      return getLong(JobConf.MAPRED_JOB_MAP_GPU_MEMORY_MB_PROPERTY,
+        JobContext.DEFAULT_MAP_GPU_MEMORY_MB);
+    }
+    return value;
+  }
+
+  public void setGpuMemoryForMapTask(long mem) {
+    setLong(JobConf.MAPREDUCE_JOB_MAP_GPU_MEMORY_MB_PROPERTY, mem);
+    // In case that M/R 1.x applications use the old property name
+    setLong(JobConf.MAPRED_JOB_MAP_GPU_MEMORY_MB_PROPERTY, mem);
+  }
+
   /**
    * Get memory required to run a reduce task of the job, in MB.
    * 
@@ -1859,8 +1888,8 @@ public class JobConf extends Configuration {
   // Returns DISABLED_MEMORY_LIMIT if unset, or set to a negative
   // value.
   private long getDeprecatedMemoryValue() {
-    long oldValue = getLong(MAPRED_TASK_MAXVMEM_PROPERTY, 
-        DISABLED_MEMORY_LIMIT);
+    long oldValue = getLong(MAPRED_TASK_MAXVMEM_PROPERTY,
+      DISABLED_MEMORY_LIMIT);
     if (oldValue > 0) {
       oldValue /= (1024*1024);
     }
@@ -1871,6 +1900,35 @@ public class JobConf extends Configuration {
     setLong(JobConf.MAPREDUCE_JOB_REDUCE_MEMORY_MB_PROPERTY, mem);
     // In case that M/R 1.x applications use the old property name
     setLong(JobConf.MAPRED_JOB_REDUCE_MEMORY_MB_PROPERTY, mem);
+  }
+
+
+  public long getGpuMemoryForReduceTask() {
+    long value = getDeprecatedGpuMemoryValue();
+    if (value < 0) {
+      return getLong(JobConf.MAPRED_JOB_REDUCE_GPU_MEMORY_MB_PROPERTY,
+        JobContext.DEFAULT_REDUCE_GPU_MEMORY_MB);
+    }
+    return value;
+  }
+
+  // Return the value set to the key MAPRED_TASK_MAXVMEM_PROPERTY,
+  // converted into MBs.
+  // Returns DISABLED_MEMORY_LIMIT if unset, or set to a negative
+  // value.
+  private long getDeprecatedGpuMemoryValue() {
+    long oldValue = getLong(MAPRED_TASK_MAXVMEM_PROPERTY,
+      DISABLED_MEMORY_LIMIT);
+    if (oldValue > 0) {
+      oldValue /= (1024*1024);
+    }
+    return oldValue;
+  }
+
+  public void setGpuMemoryForReduceTask(long mem) {
+    setLong(JobConf.MAPREDUCE_JOB_REDUCE_GPU_MEMORY_MB_PROPERTY, mem);
+    // In case that M/R 1.x applications use the old property name
+    setLong(JobConf.MAPRED_JOB_REDUCE_GPU_MEMORY_MB_PROPERTY, mem);
   }
 
   /**

@@ -29,4 +29,8 @@ public interface ResourceView {
   boolean isPmemCheckEnabled();
 
   long getVCoresAllocatedForContainers();
+
+  long getGmemAllocatedForContainers();
+
+  boolean isGmemCheckEnabled();
 }

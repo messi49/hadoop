@@ -625,7 +625,7 @@ public class TestResourceTrackerService {
     // reconnect of node with changed capability and running applications
     List<ApplicationId> runningApps = new ArrayList<ApplicationId>();
     runningApps.add(ApplicationId.newInstance(1, 0));
-    nm1 = rm.registerNode("host2:5678", 15360, 2, runningApps);
+    nm1 = rm.registerNode("host2:5678", 15360, 2, 256, runningApps);
     dispatcher.await();
     response = nm1.nodeHeartbeat(true);
     dispatcher.await();

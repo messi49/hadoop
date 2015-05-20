@@ -338,7 +338,9 @@ public class RMContainerAllocator extends RMContainerRequestor
           if (mapResourceRequest.getMemory() > supportedMaxContainerCapability
             .getMemory()
               || mapResourceRequest.getVirtualCores() > supportedMaxContainerCapability
-                .getVirtualCores()) {
+                .getVirtualCores()
+              || mapResourceRequest.getGpuMemory() > supportedMaxContainerCapability
+            .getGpuMemory()) {
             String diagMsg =
                 "MAP capability required is more than the supported "
                     + "max container capability in the cluster. Killing the Job. mapResourceRequest: "
@@ -353,6 +355,7 @@ public class RMContainerAllocator extends RMContainerRequestor
         reqEvent.getCapability().setMemory(mapResourceRequest.getMemory());
         reqEvent.getCapability().setVirtualCores(
           mapResourceRequest.getVirtualCores());
+        reqEvent.getCapability().setGpuMemory(mapResourceRequest.getGpuMemory());
         scheduledRequests.addMap(reqEvent);//maps are immediately scheduled
       } else {
         if (reduceResourceRequest.equals(Resources.none())) {
@@ -365,7 +368,9 @@ public class RMContainerAllocator extends RMContainerRequestor
           if (reduceResourceRequest.getMemory() > supportedMaxContainerCapability
             .getMemory()
               || reduceResourceRequest.getVirtualCores() > supportedMaxContainerCapability
-                .getVirtualCores()) {
+                .getVirtualCores()
+              || reduceResourceRequest.getGpuMemory() > supportedMaxContainerCapability
+            .getGpuMemory()) {
             String diagMsg =
                 "REDUCE capability required is more than the "
                     + "supported max container capability in the cluster. Killing the "
@@ -381,6 +386,7 @@ public class RMContainerAllocator extends RMContainerRequestor
         reqEvent.getCapability().setMemory(reduceResourceRequest.getMemory());
         reqEvent.getCapability().setVirtualCores(
           reduceResourceRequest.getVirtualCores());
+        reqEvent.getCapability().setGpuMemory(reduceResourceRequest.getGpuMemory());
         if (reqEvent.getEarlierAttemptFailed()) {
           //add to the front of queue for fail fast
           pendingReduces.addFirst(new ContainerRequest(reqEvent, PRIORITY_REDUCE));

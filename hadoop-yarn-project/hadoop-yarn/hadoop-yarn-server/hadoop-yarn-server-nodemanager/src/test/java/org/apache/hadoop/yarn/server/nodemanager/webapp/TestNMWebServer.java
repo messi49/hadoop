@@ -94,12 +94,22 @@ public class TestNMWebServer {
       public long getVCoresAllocatedForContainers() {
         return 0;
       }
+
+      @Override
+      public long getGmemAllocatedForContainers() {
+        return 0;
+      }
+
       @Override
       public boolean isVmemCheckEnabled() {
         return true;
       }
       @Override
       public boolean isPmemCheckEnabled() {
+        return true;
+      }
+      @Override
+      public boolean isGmemCheckEnabled() {
         return true;
       }
     };
@@ -158,11 +168,20 @@ public class TestNMWebServer {
         return 0;
       }
       @Override
+      public long getGmemAllocatedForContainers() {
+        return 0;
+      }
+
+      @Override
       public boolean isVmemCheckEnabled() {
         return true;
       }
       @Override
       public boolean isPmemCheckEnabled() {
+        return true;
+      }
+      @Override
+      public boolean isGmemCheckEnabled() {
         return true;
       }
     };

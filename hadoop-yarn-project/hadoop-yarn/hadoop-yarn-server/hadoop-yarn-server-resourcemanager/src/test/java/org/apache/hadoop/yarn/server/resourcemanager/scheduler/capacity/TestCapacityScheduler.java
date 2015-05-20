@@ -2024,11 +2024,11 @@ public class TestCapacityScheduler {
     MockRM rm = new MockRM(conf);
     rm.start();
 
-    MockNM nm1 = rm.registerNode("127.0.0.1:1234", 10 * GB, 1);
+    MockNM nm1 = rm.registerNode("127.0.0.1:1234", 10 * GB, 1, 256);
 
     // register extra nodes to bump up cluster resource
-    MockNM nm2 = rm.registerNode("127.0.0.1:1235", 10 * GB, 4);
-    rm.registerNode("127.0.0.1:1236", 10 * GB, 4);
+    MockNM nm2 = rm.registerNode("127.0.0.1:1235", 10 * GB, 4, 256);
+    rm.registerNode("127.0.0.1:1236", 10 * GB, 4, 256);
 
     RMApp app1 = rm.submitApp(1024);
     // kick the scheduling

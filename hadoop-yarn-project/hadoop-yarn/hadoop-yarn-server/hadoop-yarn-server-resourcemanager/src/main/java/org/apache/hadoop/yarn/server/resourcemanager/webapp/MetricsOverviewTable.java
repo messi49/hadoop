@@ -75,6 +75,9 @@ public class MetricsOverviewTable extends HtmlBlock {
         th().$class("ui-state-default")._("VCores Used")._().
         th().$class("ui-state-default")._("VCores Total")._().
         th().$class("ui-state-default")._("VCores Reserved")._().
+        th().$class("ui-state-default")._("GPU Memory Used")._().
+        th().$class("ui-state-default")._("GPU Memory Total")._().
+        th().$class("ui-state-default")._("GPU Memory Reserved")._().
         th().$class("ui-state-default")._("Active Nodes")._().
         th().$class("ui-state-default")._("Decommissioned Nodes")._().
         th().$class("ui-state-default")._("Lost Nodes")._().
@@ -129,6 +132,9 @@ public class MetricsOverviewTable extends HtmlBlock {
             th().$class("ui-state-default")._("VCores Used")._().
             th().$class("ui-state-default")._("VCores Pending")._().
             th().$class("ui-state-default")._("VCores Reserved")._().
+            th().$class("ui-state-default")._("GPU Memory Used")._().
+            th().$class("ui-state-default")._("GPU Memory Pending")._().
+            th().$class("ui-state-default")._("GPU Memory Reserved")._().
           _().
         _().
         tbody().$class("ui-widget-content").

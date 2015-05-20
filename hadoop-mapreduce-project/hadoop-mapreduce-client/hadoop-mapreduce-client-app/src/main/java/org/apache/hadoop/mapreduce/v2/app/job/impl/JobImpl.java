@@ -1217,7 +1217,11 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
 
     long sysCPUSizeForUberSlot =
         conf.getInt(MRJobConfig.MR_AM_CPU_VCORES,
-            MRJobConfig.DEFAULT_MR_AM_CPU_VCORES);
+          MRJobConfig.DEFAULT_MR_AM_CPU_VCORES);
+
+    long sysGpuMemSizeForUberSlot =
+      conf.getInt(MRJobConfig.MR_AM_GMEM_MB,
+        MRJobConfig.DEFAULT_MR_AM_GMEM_MB);
 
     boolean uberEnabled =
         conf.getBoolean(MRJobConfig.JOB_UBERTASK_ENABLE, false);
@@ -1229,21 +1233,26 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
     long requiredReduceMB = conf.getLong(MRJobConfig.REDUCE_MEMORY_MB, 0);
     long requiredMB = Math.max(requiredMapMB, requiredReduceMB);
     int requiredMapCores = conf.getInt(
-            MRJobConfig.MAP_CPU_VCORES, 
-            MRJobConfig.DEFAULT_MAP_CPU_VCORES);
+      MRJobConfig.MAP_CPU_VCORES,
+      MRJobConfig.DEFAULT_MAP_CPU_VCORES);
     int requiredReduceCores = conf.getInt(
-            MRJobConfig.REDUCE_CPU_VCORES, 
-            MRJobConfig.DEFAULT_REDUCE_CPU_VCORES);
-    int requiredCores = Math.max(requiredMapCores, requiredReduceCores);    
+      MRJobConfig.REDUCE_CPU_VCORES,
+      MRJobConfig.DEFAULT_REDUCE_CPU_VCORES);
+    int requiredCores = Math.max(requiredMapCores, requiredReduceCores);
+    long requiredMapGpuMB = conf.getLong(MRJobConfig.MAP_GPU_MEMORY_MB, 0);
+    long requiredReduceGpuMB = conf.getLong(MRJobConfig.REDUCE_GPU_MEMORY_MB, 0);
+    long requiredGpuMB = Math.max(requiredMapGpuMB, requiredReduceGpuMB);
     if (numReduceTasks == 0) {
       requiredMB = requiredMapMB;
       requiredCores = requiredMapCores;
+      requiredGpuMB = requiredMapGpuMB;
     }
     boolean smallMemory =
         (requiredMB <= sysMemSizeForUberSlot)
         || (sysMemSizeForUberSlot == JobConf.DISABLED_MEMORY_LIMIT);
     
     boolean smallCpu = requiredCores <= sysCPUSizeForUberSlot;
+    boolean smallGpuMemory = requiredGpuMB <= sysGpuMemSizeForUberSlot;
     boolean notChainJob = !isChainJob(conf);
 
     // User has overall veto power over uberization, or user can modify
@@ -1254,8 +1263,8 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
     // while "uber-AM" (MR AM + LocalContainerLauncher) loops over tasks
     // and thus requires sequential execution.
     isUber = uberEnabled && smallNumMapTasks && smallNumReduceTasks
-        && smallInput && smallMemory && smallCpu 
-        && notChainJob;
+        && smallInput && smallMemory && smallCpu && smallGpuMemory
+      && notChainJob;
 
     if (isUber) {
       LOG.info("Uberizing job " + jobId + ": " + numMapTasks + "m+"
@@ -1289,6 +1298,8 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
         msg.append(" too much CPU;");
       if (!smallMemory)
         msg.append(" too much RAM;");
+      if (!smallGpuMemory)
+        msg.append(" too much GPU Memory;");
       if (!notChainJob)
         msg.append(" chainjob;");
       LOG.info(msg.toString());

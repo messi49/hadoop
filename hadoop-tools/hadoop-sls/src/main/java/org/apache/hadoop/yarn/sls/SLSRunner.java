@@ -77,7 +77,7 @@ public class SLSRunner {
   
   // NM simulator
   private HashMap<NodeId, NMSimulator> nmMap;
-  private int nmMemoryMB, nmVCores;
+  private int nmMemoryMB, nmVCores, nmGpuMemoryMB;
   private String nodeFile;
   
   // AM simulator
@@ -174,6 +174,8 @@ public class SLSRunner {
             SLSConfiguration.NM_MEMORY_MB_DEFAULT);
     nmVCores = conf.getInt(SLSConfiguration.NM_VCORES,
             SLSConfiguration.NM_VCORES_DEFAULT);
+    nmGpuMemoryMB = conf.getInt(SLSConfiguration.NM_GPU_MEMORY_MB,
+      SLSConfiguration.NM_GPU_MEMORY_MB_DEFAULT);
     int heartbeatInterval = conf.getInt(
             SLSConfiguration.NM_HEARTBEAT_INTERVAL_MS,
             SLSConfiguration.NM_HEARTBEAT_INTERVAL_MS_DEFAULT);
@@ -199,7 +201,7 @@ public class SLSRunner {
     for (String hostName : nodeSet) {
       // we randomize the heartbeat start time from zero to 1 interval
       NMSimulator nm = new NMSimulator();
-      nm.init(hostName, nmMemoryMB, nmVCores, 
+      nm.init(hostName, nmMemoryMB, nmVCores, nmGpuMemoryMB,
           random.nextInt(heartbeatInterval), heartbeatInterval, rm);
       nmMap.put(nm.getNode().getNodeID(), nm);
       runner.schedule(nm);
@@ -240,8 +242,10 @@ public class SLSRunner {
             SLSConfiguration.CONTAINER_MEMORY_MB_DEFAULT);
     int containerVCores = conf.getInt(SLSConfiguration.CONTAINER_VCORES,
             SLSConfiguration.CONTAINER_VCORES_DEFAULT);
+    int containerGpuMemoryMB = conf.getInt(SLSConfiguration.CONTAINER_GPU_MEMORY_MB,
+      SLSConfiguration.CONTAINER_GPU_MEMORY_MB_DEFAULT);
     Resource containerResource =
-            BuilderUtils.newResource(containerMemoryMB, containerVCores);
+            BuilderUtils.newResource(containerMemoryMB, containerVCores, containerGpuMemoryMB);
 
     // application workload
     if (isSLS) {

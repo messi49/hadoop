@@ -543,6 +543,8 @@ public abstract class TaskAttemptImpl implements
         getMemoryRequired(conf, taskId.getTaskType()));
     this.resourceCapability.setVirtualCores(
         getCpuRequired(conf, taskId.getTaskType()));
+    this.resourceCapability.setGpuMemory(
+        getGpuMemoryRequired(conf, taskId.getTaskType()));
 
     this.dataLocalHosts = resolveHosts(dataLocalHosts);
     RackResolver.init(conf);
@@ -587,6 +589,21 @@ public abstract class TaskAttemptImpl implements
     }
     
     return vcores;
+  }
+
+  private int getGpuMemoryRequired(Configuration conf, TaskType taskType) {
+    int memory = 1024;
+    if (taskType == TaskType.MAP)  {
+      memory =
+          conf.getInt(MRJobConfig.MAP_GPU_MEMORY_MB,
+              MRJobConfig.DEFAULT_MAP_GPU_MEMORY_MB);
+    } else if (taskType == TaskType.REDUCE) {
+      memory =
+          conf.getInt(MRJobConfig.REDUCE_GPU_MEMORY_MB,
+              MRJobConfig.DEFAULT_REDUCE_GPU_MEMORY_MB);
+    }
+
+    return memory;
   }
 
   /**
@@ -1278,10 +1295,16 @@ public abstract class TaskAttemptImpl implements
     int mbRequired =
         taskAttempt.getMemoryRequired(taskAttempt.conf, taskType);
     int vcoresRequired = taskAttempt.getCpuRequired(taskAttempt.conf, taskType);
+    int gpuMbRequired =
+        taskAttempt.getGpuMemoryRequired(taskAttempt.conf, taskType);
 
     int minSlotMemSize = taskAttempt.conf.getInt(
       YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_MB,
       YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB);
+
+    int minSlotGpuMemSize = taskAttempt.conf.getInt(
+      YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB,
+      YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
 
     int simSlotsRequired =
         minSlotMemSize == 0 ? 0 : (int) Math.ceil((float) mbRequired
@@ -1291,11 +1314,13 @@ public abstract class TaskAttemptImpl implements
       jce.addCounterUpdate(JobCounter.SLOTS_MILLIS_MAPS, simSlotsRequired * duration);
       jce.addCounterUpdate(JobCounter.MB_MILLIS_MAPS, duration * mbRequired);
       jce.addCounterUpdate(JobCounter.VCORES_MILLIS_MAPS, duration * vcoresRequired);
+      jce.addCounterUpdate(JobCounter.GPU_MB_MILLIS_MAPS, duration * gpuMbRequired);
       jce.addCounterUpdate(JobCounter.MILLIS_MAPS, duration);
     } else {
       jce.addCounterUpdate(JobCounter.SLOTS_MILLIS_REDUCES, simSlotsRequired * duration);
       jce.addCounterUpdate(JobCounter.MB_MILLIS_REDUCES, duration * mbRequired);
       jce.addCounterUpdate(JobCounter.VCORES_MILLIS_REDUCES, duration * vcoresRequired);
+      jce.addCounterUpdate(JobCounter.GPU_MB_MILLIS_REDUCES, duration * gpuMbRequired);
       jce.addCounterUpdate(JobCounter.MILLIS_REDUCES, duration);
     }
   }

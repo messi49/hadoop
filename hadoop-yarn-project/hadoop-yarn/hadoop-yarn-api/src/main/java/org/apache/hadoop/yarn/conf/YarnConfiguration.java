@@ -798,9 +798,9 @@ public class YarnConfiguration extends Configuration {
   public static final int DEFAULT_NM_RESOURCE_PERCENTAGE_PHYSICAL_CPU_LIMIT =
       100;
 
-  /** Amount of memory in GB that can be allocated for containers.*/
+  /** Amount of GPU memory in GB that can be allocated for containers.*/
   public static final String NM_GMEM_MB = NM_PREFIX + "resource.gpu-memory-mb";
-  public static final int DEFAULT_NM_GMEM_MB = 2048;
+  public static final int DEFAULT_NM_GMEM_MB = 2 * 1024;
 
   /** Specifies whether physical GPU memory check is enabled. */
   public static final String NM_GMEM_CHECK_ENABLED = NM_PREFIX

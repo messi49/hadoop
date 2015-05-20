@@ -140,8 +140,8 @@ public class ContainersMonitorImpl extends AbstractService implements
         YarnConfiguration.DEFAULT_NM_PMEM_CHECK_ENABLED);
     vmemCheckEnabled = conf.getBoolean(YarnConfiguration.NM_VMEM_CHECK_ENABLED,
         YarnConfiguration.DEFAULT_NM_VMEM_CHECK_ENABLED);
-    gmemCheckEnabled = conf.getBoolean(YarnConfiguration.NM_VMEM_CHECK_ENABLED,
-            YarnConfiguration.DEFAULT_NM_VMEM_CHECK_ENABLED);
+    gmemCheckEnabled = conf.getBoolean(YarnConfiguration.NM_GMEM_CHECK_ENABLED,
+            YarnConfiguration.DEFAULT_NM_GMEM_CHECK_ENABLED);
     LOG.info("Physical memory check enabled: " + pmemCheckEnabled);
     LOG.info("Virtual memory check enabled: " + vmemCheckEnabled);
     LOG.info("GPU memory check enabled: " + gmemCheckEnabled);
@@ -431,7 +431,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit, currentGmemUsage, gmemLimit));
 
-            LOG.info("PID = " + pId +", GPU Memory usage : " + currentGmemUsage + " MiB, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
+            LOG.info("PID = " + pId +", pmemLimit : " + pmemLimit + " B, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;
@@ -526,7 +526,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                                      long currentPmemUsage, long pmemLimit, long currentGmemUsage, long gmemLimit) {
       return String.format("%sB of %sB physical memory used; " +
           "%sB of %sB virtual memory used; " +
-                      "%sMiB of %sMiB GPU memory used; ",
+                      "%sB of %sB GPU memory used; ",
           TraditionalBinaryPrefix.long2String(currentPmemUsage, "", 1),
           TraditionalBinaryPrefix.long2String(pmemLimit, "", 1),
           TraditionalBinaryPrefix.long2String(currentVmemUsage, "", 1),
@@ -561,6 +561,11 @@ public class ContainersMonitorImpl extends AbstractService implements
     return this.maxVCoresAllottedForContainers;
   }
 
+  @Override
+  public long getGmemAllocatedForContainers() {
+    return this.maxGmemAllottedForContainers;
+  }
+
   /**
    * Is the total virtual memory check enabled?
    *
@@ -586,7 +591,7 @@ public class ContainersMonitorImpl extends AbstractService implements
     switch (monitoringEvent.getType()) {
     case START_MONITORING_CONTAINER:
       ContainerStartMonitoringEvent startEvent =
-          (ContainerStartMonitoringEvent) monitoringEvent;
+            (ContainerStartMonitoringEvent) monitoringEvent;
       synchronized (this.containersToBeAdded) {
         ProcessTreeInfo processTreeInfo =
             new ProcessTreeInfo(containerId, null, null,

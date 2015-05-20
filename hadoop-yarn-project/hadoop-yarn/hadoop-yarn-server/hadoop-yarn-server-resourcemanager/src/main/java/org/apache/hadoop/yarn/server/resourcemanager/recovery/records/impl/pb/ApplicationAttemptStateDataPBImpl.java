@@ -261,7 +261,7 @@ public class ApplicationAttemptStateDataPBImpl extends
   @Override
   public void setGpuMemorySeconds(long gpuMemorySeconds) {
     maybeInitBuilder();
-    builder.setMemorySeconds(gpuMemorySeconds);
+    builder.setGpuMemorySeconds(gpuMemorySeconds);
   }
 
   @Override

@@ -78,13 +78,16 @@ public class AppInfo {
   protected String amHostHttpAddress;
   protected int allocatedMB;
   protected int allocatedVCores;
+  protected int allocatedGpuMB;
   protected int runningContainers;
   protected long memorySeconds;
   protected long vcoreSeconds;
+  protected long gpuMemorySeconds;
   
   // preemption info fields
   protected int preemptedResourceMB;
   protected int preemptedResourceVCores;
+  protected int preemptedResourceGpuMB;
   protected int numNonAMContainerPreempted;
   protected int numAMContainerPreempted;
 
@@ -152,6 +155,7 @@ public class AppInfo {
             Resource usedResources = resourceReport.getUsedResources();
             allocatedMB = usedResources.getMemory();
             allocatedVCores = usedResources.getVirtualCores();
+            allocatedGpuMB = usedResources.getGpuMemory();
             runningContainers = resourceReport.getNumUsedContainers();
           }
         }
@@ -167,8 +171,11 @@ public class AppInfo {
           appMetrics.getNumNonAMContainersPreempted();
       preemptedResourceVCores =
           appMetrics.getResourcePreempted().getVirtualCores();
+      preemptedResourceGpuMB =
+        appMetrics.getResourcePreempted().getGpuMemory();
       memorySeconds = appMetrics.getMemorySeconds();
       vcoreSeconds = appMetrics.getVcoreSeconds();
+      gpuMemorySeconds = appMetrics.getGpuMemorySeconds();
     }
   }
 
@@ -298,5 +305,9 @@ public class AppInfo {
 
   public long getVcoreSeconds() {
     return vcoreSeconds;
+  }
+
+  public long getGpuMemorySeconds() {
+    return gpuMemorySeconds;
   }
 }

@@ -115,6 +115,7 @@ public class MRAMSimulator extends AMSimulator {
   // resource for AM container
   private final static int MR_AM_CONTAINER_RESOURCE_MEMORY_MB = 1024;
   private final static int MR_AM_CONTAINER_RESOURCE_VCORES = 1;
+  private final static int MR_AM_CONTAINER_RESOURCE_GPU_MEMORY_MB = 256;
 
   public final Logger LOG = Logger.getLogger(MRAMSimulator.class);
 
@@ -159,7 +160,7 @@ public class MRAMSimulator extends AMSimulator {
     List<ResourceRequest> ask = new ArrayList<ResourceRequest>();
     ResourceRequest amRequest = createResourceRequest(
             BuilderUtils.newResource(MR_AM_CONTAINER_RESOURCE_MEMORY_MB,
-                    MR_AM_CONTAINER_RESOURCE_VCORES),
+                    MR_AM_CONTAINER_RESOURCE_VCORES, MR_AM_CONTAINER_RESOURCE_GPU_MEMORY_MB),
             ResourceRequest.ANY, 1, 1);
     ask.add(amRequest);
     LOG.debug(MessageFormat.format("Application {0} sends out allocate " +

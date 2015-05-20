@@ -52,6 +52,8 @@ public class SLSConfiguration {
   public static final int NM_MEMORY_MB_DEFAULT = 10240;
   public static final String NM_VCORES = NM_PREFIX + "vcores";
   public static final int NM_VCORES_DEFAULT = 10;
+  public static final String NM_GPU_MEMORY_MB = NM_PREFIX + "gpu-memory.mb";
+  public static final int NM_GPU_MEMORY_MB_DEFAULT = 1024;
   public static final String NM_HEARTBEAT_INTERVAL_MS = NM_PREFIX
                                                   + "heartbeat.interval.ms";
   public static final int NM_HEARTBEAT_INTERVAL_MS_DEFAULT = 1000;
@@ -69,5 +71,7 @@ public class SLSConfiguration {
   public static final int CONTAINER_MEMORY_MB_DEFAULT = 1024;
   public static final String CONTAINER_VCORES = CONTAINER_PREFIX + "vcores";
   public static final int CONTAINER_VCORES_DEFAULT = 1;
-
+  public static final String CONTAINER_GPU_MEMORY_MB = CONTAINER_PREFIX
+    + "gpu-memory.mb";
+  public static final int CONTAINER_GPU_MEMORY_MB_DEFAULT = 256;
 }

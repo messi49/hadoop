@@ -597,8 +597,8 @@ public class CapacitySchedulerConfiguration extends Configuration {
         YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES,
         YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES);
     int maximumGpuMemory = getInt(
-            YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB,
-            YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB);
+        YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB,
+        YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB);
     return Resources.createResource(maximumMemory, maximumCores, maximumGpuMemory);
   }
 

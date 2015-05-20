@@ -112,12 +112,22 @@ public class TestNMWebServicesContainers extends JerseyTest {
         }
 
         @Override
+        public long getGmemAllocatedForContainers() {
+          return new Long("4000");
+        }
+
+        @Override
         public boolean isVmemCheckEnabled() {
           return true;
         }
 
         @Override
         public boolean isPmemCheckEnabled() {
+          return true;
+        }
+
+        @Override
+        public boolean isGmemCheckEnabled() {
           return true;
         }
       };

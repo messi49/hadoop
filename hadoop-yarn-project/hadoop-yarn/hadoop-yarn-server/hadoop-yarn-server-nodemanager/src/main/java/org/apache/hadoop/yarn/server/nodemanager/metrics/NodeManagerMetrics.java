@@ -44,7 +44,7 @@ public class NodeManagerMetrics {
       MutableGaugeInt allocatedVCores;
   @Metric MutableGaugeInt availableVCores;
   @Metric("Current allocated GPU memory in GB")
-  MutableGaugeInt allocatedGpuGB;
+      MutableGaugeInt allocatedGpuGB;
   @Metric MutableGaugeInt availableGpuGB;
 
   public static NodeManagerMetrics create() {

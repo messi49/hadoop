@@ -122,6 +122,9 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
       int mem1 = arg1.getMemory();
       int cpu0 = arg0.getVirtualCores();
       int cpu1 = arg1.getVirtualCores();
+      int gmem0 = arg0.getGpuMemory();
+      int gmem1 = arg1.getGpuMemory();
+
       if(mem0 == mem1) {
         if(cpu0 == cpu1) {
           return 0;
@@ -143,8 +146,10 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     int mem1 = arg1.getMemory();
     int cpu0 = arg0.getVirtualCores();
     int cpu1 = arg1.getVirtualCores();
+    int gmem0 = arg0.getGpuMemory();
+    int gmem1 = arg1.getGpuMemory();
     
-    if(mem0 <= mem1 && cpu0 <= cpu1) { 
+    if(mem0 <= mem1 && cpu0 <= cpu1 && gmem0 <= gmem1) {
       return true;
     }
     return false; 

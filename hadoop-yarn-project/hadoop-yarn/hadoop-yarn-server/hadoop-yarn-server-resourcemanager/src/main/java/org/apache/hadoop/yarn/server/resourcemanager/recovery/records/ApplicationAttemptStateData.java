@@ -44,7 +44,7 @@ public abstract class ApplicationAttemptStateData {
       ByteBuffer attemptTokens, long startTime, RMAppAttemptState finalState,
       String finalTrackingUrl, String diagnostics,
       FinalApplicationStatus amUnregisteredFinalStatus, int exitStatus,
-      long finishTime, long memorySeconds, long vcoreSeconds) {
+      long finishTime, long memorySeconds, long vcoreSeconds, long gpuMemorySeconds) {
     ApplicationAttemptStateData attemptStateData =
         Records.newRecord(ApplicationAttemptStateData.class);
     attemptStateData.setAttemptId(attemptId);
@@ -59,6 +59,7 @@ public abstract class ApplicationAttemptStateData {
     attemptStateData.setFinishTime(finishTime);
     attemptStateData.setMemorySeconds(memorySeconds);
     attemptStateData.setVcoreSeconds(vcoreSeconds);
+    attemptStateData.setGpuMemorySeconds(gpuMemorySeconds);
     return attemptStateData;
   }
 
@@ -77,7 +78,7 @@ public abstract class ApplicationAttemptStateData {
       attemptState.getFinalTrackingUrl(), attemptState.getDiagnostics(),
       attemptState.getFinalApplicationStatus(),
       attemptState.getAMContainerExitStatus(), attemptState.getFinishTime(),
-      attemptState.getMemorySeconds(), attemptState.getVcoreSeconds());
+      attemptState.getMemorySeconds(), attemptState.getVcoreSeconds(), attemptState.getGpuMemorySeconds());
   }
 
   public abstract ApplicationAttemptStateDataProto getProto();

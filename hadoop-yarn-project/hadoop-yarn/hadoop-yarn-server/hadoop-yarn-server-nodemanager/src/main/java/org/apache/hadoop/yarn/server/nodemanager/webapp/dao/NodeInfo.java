@@ -36,9 +36,11 @@ public class NodeInfo {
   protected String healthReport;
   protected long totalVmemAllocatedContainersMB;
   protected long totalPmemAllocatedContainersMB;
+  protected long totalGmemAllocatedContainersMB;
   protected long totalVCoresAllocatedContainers;
   protected boolean vmemCheckEnabled;
   protected boolean pmemCheckEnabled;
+  protected boolean gmemCheckEnabled;
   protected long lastNodeUpdateTime;
   protected boolean nodeHealthy;
   protected String nodeManagerVersion;
@@ -62,6 +64,9 @@ public class NodeInfo {
     this.vmemCheckEnabled = resourceView.isVmemCheckEnabled();
     this.totalPmemAllocatedContainersMB = resourceView
         .getPmemAllocatedForContainers() / BYTES_IN_MB;
+    this.pmemCheckEnabled = resourceView.isPmemCheckEnabled();
+    this.totalGmemAllocatedContainersMB = resourceView
+        .getGmemAllocatedForContainers() / BYTES_IN_MB;
     this.pmemCheckEnabled = resourceView.isPmemCheckEnabled();
     this.totalVCoresAllocatedContainers = resourceView
         .getVCoresAllocatedForContainers();

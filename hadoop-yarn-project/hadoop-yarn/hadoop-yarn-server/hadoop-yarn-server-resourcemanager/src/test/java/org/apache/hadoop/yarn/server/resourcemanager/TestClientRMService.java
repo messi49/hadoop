@@ -1272,7 +1272,7 @@ public class TestClientRMService {
     rm.start();
     MockNM nm;
     try {
-      nm = rm.registerNode("127.0.0.1:1", 102400, 100);
+      nm = rm.registerNode("127.0.0.1:1", 102400, 100, 256);
       // allow plan follower to synchronize
       Thread.sleep(1050);
     } catch (Exception e) {
