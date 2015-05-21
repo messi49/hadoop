@@ -1103,7 +1103,7 @@ public class TestClientRMService {
     ContainerLaunchContext amContainerSpec = mock(ContainerLaunchContext.class);
 
     Resource resource = Resources.createResource(
-        YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB);
+        YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB, YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB);
 
     ApplicationSubmissionContext submissionContext =
         recordFactory.newRecordInstance(ApplicationSubmissionContext.class);
@@ -1247,10 +1247,10 @@ public class TestClientRMService {
     YarnScheduler yarnScheduler = mock(YarnScheduler.class);
     when(yarnScheduler.getMinimumResourceCapability()).thenReturn(
         Resources.createResource(
-            YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB));
+            YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB, YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB));
     when(yarnScheduler.getMaximumResourceCapability()).thenReturn(
         Resources.createResource(
-            YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_MB));
+            YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_MB, YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB));
     when(yarnScheduler.getAppsInQueue(QUEUE_1)).thenReturn(
         Arrays.asList(getApplicationAttemptId(101), getApplicationAttemptId(102)));
     when(yarnScheduler.getAppsInQueue(QUEUE_2)).thenReturn(

@@ -86,7 +86,7 @@ public abstract class AbstractYarnScheduler
   protected final static List<Container> EMPTY_CONTAINER_LIST =
       new ArrayList<Container>();
   protected static final Allocation EMPTY_ALLOCATION = new Allocation(
-    EMPTY_CONTAINER_LIST, Resources.createResource(0), null, null, null);
+    EMPTY_CONTAINER_LIST, Resources.createResource(0, 0), null, null, null);
 
   /**
    * Construct the service.

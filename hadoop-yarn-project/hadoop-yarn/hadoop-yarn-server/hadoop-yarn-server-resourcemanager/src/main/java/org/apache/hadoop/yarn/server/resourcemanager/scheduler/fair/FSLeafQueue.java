@@ -51,7 +51,7 @@ public class FSLeafQueue extends FSQueue {
   private final List<FSAppAttempt> nonRunnableApps =
       new ArrayList<FSAppAttempt>();
   
-  private Resource demand = Resources.createResource(0);
+  private Resource demand = Resources.createResource(0, 0);
   
   // Variables used for preemption
   private long lastTimeAtMinShare;
@@ -143,7 +143,7 @@ public class FSLeafQueue extends FSQueue {
 
   @Override
   public Resource getResourceUsage() {
-    Resource usage = Resources.createResource(0);
+    Resource usage = Resources.createResource(0, 0);
     for (FSAppAttempt app : runnableApps) {
       Resources.addTo(usage, app.getResourceUsage());
     }
@@ -163,7 +163,7 @@ public class FSLeafQueue extends FSQueue {
     // Limit demand to maxResources
     Resource maxRes = scheduler.getAllocationConfiguration()
         .getMaxResources(getName());
-    demand = Resources.createResource(0);
+    demand = Resources.createResource(0, 0);
     for (FSAppAttempt sched : runnableApps) {
       if (Resources.equals(demand, maxRes)) {
         break;

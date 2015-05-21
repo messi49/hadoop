@@ -71,10 +71,10 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   private long startTime;
   private Priority priority;
   private ResourceWeights resourceWeights;
-  private Resource demand = Resources.createResource(0);
+  private Resource demand = Resources.createResource(0, 0);
   private FairScheduler scheduler;
   private Resource fairShare = Resources.createResource(0, 0, 0);
-  private Resource preemptedResources = Resources.createResource(0);
+  private Resource preemptedResources = Resources.createResource(0, 0);
   private RMContainerComparator comparator = new RMContainerComparator();
   private final Map<RMContainer, Long> preemptionMap = new HashMap<RMContainer, Long>();
 
@@ -399,7 +399,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   }
 
   public void resetPreemptedResources() {
-    preemptedResources = Resources.createResource(0);
+    preemptedResources = Resources.createResource(0, 0);
     for (RMContainer container : getPreemptionContainers()) {
       Resources.addTo(preemptedResources, container.getAllocatedResource());
     }
@@ -750,7 +750,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
   @Override
   public void updateDemand() {
-    demand = Resources.createResource(0);
+    demand = Resources.createResource(0, 0);
     // Demand is current consumption plus outstanding requests
     Resources.addTo(demand, getCurrentConsumption());
 

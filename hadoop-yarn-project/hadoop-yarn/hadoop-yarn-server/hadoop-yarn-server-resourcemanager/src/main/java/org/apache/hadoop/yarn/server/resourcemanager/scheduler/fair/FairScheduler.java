@@ -127,7 +127,7 @@ public class FairScheduler extends
   
   // Value that container assignment methods return when a container is
   // reserved
-  public static final Resource CONTAINER_RESERVED = Resources.createResource(-1);
+  public static final Resource CONTAINER_RESERVED = Resources.createResource(-1, -1);
 
   // How often fair shares are re-calculated (ms)
   protected long updateInterval;

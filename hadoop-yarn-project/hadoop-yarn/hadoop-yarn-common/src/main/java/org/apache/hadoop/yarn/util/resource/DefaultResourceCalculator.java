@@ -58,7 +58,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   @Override
   public Resource divideAndCeil(Resource numerator, int denominator) {
     return Resources.createResource(
-        divideAndCeil(numerator.getMemory(), denominator));
+        divideAndCeil(numerator.getMemory(), denominator), divideAndCeil(numerator.getGpuMemory(), denominator));
   }
 
   @Override
@@ -69,7 +69,12 @@ public class DefaultResourceCalculator extends ResourceCalculator {
             Math.max(r.getMemory(), minimumResource.getMemory()),
             stepFactor.getMemory()),
             maximumResource.getMemory());
-    return Resources.createResource(normalizedMemory);
+    int normalizedGpuMemory = Math.min(
+      roundUp(
+        Math.max(r.getGpuMemory(), minimumResource.getGpuMemory()),
+        stepFactor.getGpuMemory()),
+      maximumResource.getGpuMemory());
+    return Resources.createResource(normalizedMemory, normalizedGpuMemory);
   }
 
   @Override
@@ -81,21 +86,22 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   @Override
   public Resource roundUp(Resource r, Resource stepFactor) {
     return Resources.createResource(
-        roundUp(r.getMemory(), stepFactor.getMemory())
+        roundUp(r.getMemory(), stepFactor.getMemory()), roundUp(r.getGpuMemory(), stepFactor.getGpuMemory())
         );
   }
 
   @Override
   public Resource roundDown(Resource r, Resource stepFactor) {
     return Resources.createResource(
-        roundDown(r.getMemory(), stepFactor.getMemory()));
+        roundDown(r.getMemory(), stepFactor.getMemory()), roundDown(r.getGpuMemory(), stepFactor.getGpuMemory()));
   }
 
   @Override
   public Resource multiplyAndNormalizeUp(Resource r, double by,
       Resource stepFactor) {
     return Resources.createResource(
-        roundUp((int)(r.getMemory() * by + 0.5), stepFactor.getMemory())
+        roundUp((int)(r.getMemory() * by + 0.5), stepFactor.getMemory()),
+        roundUp((int)(r.getGpuMemory() * by + 0.5), stepFactor.getGpuMemory())
         );
   }
 
@@ -106,6 +112,10 @@ public class DefaultResourceCalculator extends ResourceCalculator {
         roundDown(
             (int)(r.getMemory() * by), 
             stepFactor.getMemory()
+            ),
+        roundDown(
+            (int)(r.getGpuMemory() * by),
+            stepFactor.getGpuMemory()
             )
         );
   }

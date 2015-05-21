@@ -210,7 +210,7 @@ public class TestApplicationLimits {
         );
     
     // Add some nodes to the cluster & test new limits
-    clusterResource = Resources.createResource(120 * 16 * GB);
+    clusterResource = Resources.createResource(120 * 16 * GB, 256);
     root.updateClusterResource(clusterResource);
     expectedMaxActiveApps = 
         Math.max(1, 
@@ -267,7 +267,7 @@ public class TestApplicationLimits {
     root = 
         CapacityScheduler.parseQueue(csContext, csConf, null, "root", 
             queues, queues, TestUtils.spyHook);
-    clusterResource = Resources.createResource(100 * 16 * GB);
+    clusterResource = Resources.createResource(100 * 16 * GB, 256);
 
     queue = (LeafQueue)queues.get(A);
     expectedMaxActiveApps = 
@@ -474,9 +474,9 @@ public class TestApplicationLimits {
     when(csContext.getConfiguration()).thenReturn(csConf);
     when(csContext.getConf()).thenReturn(conf);
     when(csContext.getMinimumResourceCapability()).
-        thenReturn(Resources.createResource(GB));
+        thenReturn(Resources.createResource(GB, 256));
     when(csContext.getMaximumResourceCapability()).
-        thenReturn(Resources.createResource(16*GB));
+        thenReturn(Resources.createResource(16*GB, 256));
     when(csContext.getApplicationComparator()).
         thenReturn(CapacityScheduler.applicationComparator);
     when(csContext.getQueueComparator()).
@@ -485,7 +485,7 @@ public class TestApplicationLimits {
     when(csContext.getRMContext()).thenReturn(rmContext);
     
     // Say cluster has 100 nodes of 16G each
-    Resource clusterResource = Resources.createResource(100 * 16 * GB);
+    Resource clusterResource = Resources.createResource(100 * 16 * GB, 256);
     when(csContext.getClusterResource()).thenReturn(clusterResource);
     
     Map<String, CSQueue> queues = new HashMap<String, CSQueue>();
@@ -569,7 +569,7 @@ public class TestApplicationLimits {
     assertEquals(expectedHeadroom, app_1_0.getHeadroom());
 
     // Now reduce cluster size and check for the smaller headroom
-    clusterResource = Resources.createResource(90*16*GB);
+    clusterResource = Resources.createResource(90*16*GB, 256);
     queue.assignContainers(clusterResource, node_0, false); // Schedule to compute
     expectedHeadroom = Resources.createResource(9*16*GB / 2, 1, 1); // changes
     assertEquals(expectedHeadroom, app_0_0.getHeadroom());

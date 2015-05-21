@@ -114,13 +114,13 @@ public class Resources {
     
   };
 
-  public static Resource createResource(int memory) {
-    return createResource(memory, (memory > 0) ? 1 : 0);
-  }
-
   public static Resource createResource(int memory, int gpuMemory) {
     return createResource(memory, (memory > 0) ? 1 : 0, gpuMemory);
   }
+
+//  public static Resource createResource(int memory, int gpuMemory) {
+//    return createResource(memory, (memory > 0) ? 1 : 0, gpuMemory);
+//  }
 
   public static Resource createResource(int memory, int cores, int gpuMemory) {
     Resource resource = Records.newRecord(Resource.class);

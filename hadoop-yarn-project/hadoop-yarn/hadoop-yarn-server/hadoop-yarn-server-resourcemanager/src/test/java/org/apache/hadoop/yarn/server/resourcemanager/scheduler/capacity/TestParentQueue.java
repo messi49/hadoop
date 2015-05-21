@@ -142,7 +142,7 @@ public class TestParentQueue {
           LOG.info("FOOBAR q.assignContainers q=" + queue.getQueueName() + 
               " alloc=" + allocation + " node=" + node.getNodeName());
         }
-        final Resource allocatedResource = Resources.createResource(allocation);
+        final Resource allocatedResource = Resources.createResource(allocation, 256);
         if (queue instanceof ParentQueue) {
           ((ParentQueue)queue).allocateResource(clusterResource, 
               allocatedResource, null);

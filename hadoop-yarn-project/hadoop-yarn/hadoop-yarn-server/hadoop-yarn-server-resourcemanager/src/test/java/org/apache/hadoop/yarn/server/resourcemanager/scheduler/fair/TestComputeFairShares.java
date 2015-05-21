@@ -52,7 +52,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable());
     scheds.add(new FakeSchedulable());
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(40), ResourceType.MEMORY);
+        Resources.createResource(40, 40), ResourceType.MEMORY);
     verifyMemoryShares(10, 10, 10, 10);
   }
   
@@ -70,7 +70,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable(0, 11));
     scheds.add(new FakeSchedulable(0, 3));
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(40), ResourceType.MEMORY);
+        Resources.createResource(40, 40), ResourceType.MEMORY);
     verifyMemoryShares(13, 13, 11, 3);
   }
 
@@ -90,7 +90,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable(0));
     scheds.add(new FakeSchedulable(2));
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(40), ResourceType.MEMORY);
+        Resources.createResource(40, 40), ResourceType.MEMORY);
     verifyMemoryShares(20, 18, 0, 2);
   }
   
@@ -105,7 +105,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable(0, 1.0));
     scheds.add(new FakeSchedulable(0, 0.5));
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(45), ResourceType.MEMORY);
+        Resources.createResource(45, 45), ResourceType.MEMORY);
     verifyMemoryShares(20, 10, 10, 5);
   }
   
@@ -123,7 +123,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable(0, 30, 1.0));
     scheds.add(new FakeSchedulable(0, 20, 0.5));
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(45), ResourceType.MEMORY);
+        Resources.createResource(45, 45), ResourceType.MEMORY);
     verifyMemoryShares(10, 11, 16, 8);
   }
 
@@ -142,7 +142,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable(5, 1.0));
     scheds.add(new FakeSchedulable(15, 0.5));
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(45), ResourceType.MEMORY);
+        Resources.createResource(45, 45), ResourceType.MEMORY);
     verifyMemoryShares(20, 5, 5, 15);
   }
 
@@ -158,7 +158,7 @@ public class TestComputeFairShares {
     scheds.add(new FakeSchedulable());
     scheds.add(new FakeSchedulable());
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(40 * million), ResourceType.MEMORY);
+        Resources.createResource(40 * million, 256), ResourceType.MEMORY);
     verifyMemoryShares(10 * million, 10 * million, 10 * million, 10 * million);
   }
   
@@ -168,7 +168,7 @@ public class TestComputeFairShares {
   @Test
   public void testEmptyList() {
     ComputeFairShares.computeShares(scheds,
-        Resources.createResource(40), ResourceType.MEMORY);
+        Resources.createResource(40, 40), ResourceType.MEMORY);
     verifyMemoryShares();
   }
   

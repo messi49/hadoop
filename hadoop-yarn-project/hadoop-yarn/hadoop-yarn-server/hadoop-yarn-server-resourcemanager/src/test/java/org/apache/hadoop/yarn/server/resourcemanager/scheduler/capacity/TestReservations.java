@@ -238,7 +238,7 @@ public class TestReservations {
     when(csContext.getNode(node_2.getNodeID())).thenReturn(node_2);
 
     final int numNodes = 3;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests
@@ -387,7 +387,7 @@ public class TestReservations {
     when(csContext.getNode(node_2.getNodeID())).thenReturn(node_2);
 
     final int numNodes = 3;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests
@@ -528,7 +528,7 @@ public class TestReservations {
     when(csContext.getNode(node_1.getNodeID())).thenReturn(node_1);
 
     final int numNodes = 2;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests
@@ -645,12 +645,12 @@ public class TestReservations {
         app_0.getApplicationId(), 1);
     ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
     Container container = TestUtils.getMockContainer(containerId,
-        node_1.getNodeID(), Resources.createResource(2*GB), priorityMap);
+        node_1.getNodeID(), Resources.createResource(2*GB, 256), priorityMap);
     RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
         node_1.getNodeID(), "user", rmContext);
 
     Container container_1 = TestUtils.getMockContainer(containerId,
-        node_0.getNodeID(), Resources.createResource(1*GB), priorityMap);
+        node_0.getNodeID(), Resources.createResource(1*GB, 256), priorityMap);
     RMContainer rmContainer_1 = new RMContainerImpl(container_1, appAttemptId,
         node_0.getNodeID(), "user", rmContext);
 
@@ -709,7 +709,7 @@ public class TestReservations {
         app_0.getApplicationId(), 1);
     ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
     Container container = TestUtils.getMockContainer(containerId,
-        node_1.getNodeID(), Resources.createResource(2*GB), priorityMap);
+        node_1.getNodeID(), Resources.createResource(2*GB, 256), priorityMap);
     RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
         node_1.getNodeID(), "user", rmContext);
 
@@ -768,7 +768,7 @@ public class TestReservations {
     when(csContext.getNode(node_2.getNodeID())).thenReturn(node_2);
 
     final int numNodes = 2;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests
@@ -942,7 +942,7 @@ public class TestReservations {
     when(csContext.getNode(node_2.getNodeID())).thenReturn(node_2);
 
     final int numNodes = 2;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests
@@ -1068,7 +1068,7 @@ public class TestReservations {
     when(csContext.getNode(node_2.getNodeID())).thenReturn(node_2);
 
     final int numNodes = 3;
-    Resource clusterResource = Resources.createResource(numNodes * (8 * GB));
+    Resource clusterResource = Resources.createResource(numNodes * (8 * GB), 256);
     when(csContext.getNumClusterNodes()).thenReturn(numNodes);
 
     // Setup resource-requests

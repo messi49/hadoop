@@ -158,7 +158,7 @@ public class Application {
         = Records.newRecord(ContainerLaunchContext.class);
     context.setAMContainerSpec(amContainer);
     context.setResource(Resources.createResource(
-        YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB));
+        YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB, YarnConfiguration.DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB));
     
     SubmitApplicationRequest request = recordFactory
         .newRecordInstance(SubmitApplicationRequest.class);

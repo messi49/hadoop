@@ -366,6 +366,9 @@ public class SchedulerApplicationAttempt {
     if (resourceLimit.getMemory() < 0) {
       resourceLimit.setMemory(0);
     }
+    if (resourceLimit.getGpuMemory() < 0) {
+      resourceLimit.setGpuMemory(0);
+    }
     
     return resourceLimit;
   }

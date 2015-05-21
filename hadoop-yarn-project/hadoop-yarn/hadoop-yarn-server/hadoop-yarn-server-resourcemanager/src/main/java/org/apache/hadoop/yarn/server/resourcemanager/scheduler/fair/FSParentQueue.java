@@ -46,7 +46,7 @@ public class FSParentQueue extends FSQueue {
 
   private final List<FSQueue> childQueues = 
       new ArrayList<FSQueue>();
-  private Resource demand = Resources.createResource(0);
+  private Resource demand = Resources.createResource(0, 0);
   private int runnableApps;
   
   public FSParentQueue(String name, FairScheduler scheduler,
@@ -93,7 +93,7 @@ public class FSParentQueue extends FSQueue {
 
   @Override
   public Resource getResourceUsage() {
-    Resource usage = Resources.createResource(0);
+    Resource usage = Resources.createResource(0, 0);
     for (FSQueue child : childQueues) {
       Resources.addTo(usage, child.getResourceUsage());
     }
@@ -106,7 +106,7 @@ public class FSParentQueue extends FSQueue {
     // Limit demand to maxResources
     Resource maxRes = scheduler.getAllocationConfiguration()
         .getMaxResources(getName());
-    demand = Resources.createResource(0);
+    demand = Resources.createResource(0, 0);
     for (FSQueue childQueue : childQueues) {
       childQueue.updateDemand();
       Resource toAdd = childQueue.getDemand();

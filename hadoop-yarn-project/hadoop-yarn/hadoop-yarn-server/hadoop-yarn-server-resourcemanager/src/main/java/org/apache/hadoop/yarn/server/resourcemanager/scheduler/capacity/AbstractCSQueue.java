@@ -348,14 +348,14 @@ public abstract class AbstractCSQueue implements CSQueue {
     if (nodeLabels == null || nodeLabels.isEmpty()) {
       if (!usedResourcesByNodeLabels.containsKey(RMNodeLabelsManager.NO_LABEL)) {
         usedResourcesByNodeLabels.put(RMNodeLabelsManager.NO_LABEL,
-            Resources.createResource(0));
+            Resources.createResource(0, 0));
       }
       Resources.addTo(usedResourcesByNodeLabels.get(RMNodeLabelsManager.NO_LABEL),
           resource);
     } else {
       for (String label : Sets.intersection(accessibleLabels, nodeLabels)) {
         if (!usedResourcesByNodeLabels.containsKey(label)) {
-          usedResourcesByNodeLabels.put(label, Resources.createResource(0));
+          usedResourcesByNodeLabels.put(label, Resources.createResource(0, 0));
         }
         Resources.addTo(usedResourcesByNodeLabels.get(label), resource);
       }
@@ -375,14 +375,14 @@ public abstract class AbstractCSQueue implements CSQueue {
     if (null == nodeLabels || nodeLabels.isEmpty()) {
       if (!usedResourcesByNodeLabels.containsKey(RMNodeLabelsManager.NO_LABEL)) {
         usedResourcesByNodeLabels.put(RMNodeLabelsManager.NO_LABEL,
-            Resources.createResource(0));
+            Resources.createResource(0, 0));
       }
       Resources.subtractFrom(
           usedResourcesByNodeLabels.get(RMNodeLabelsManager.NO_LABEL), resource);
     } else {
       for (String label : Sets.intersection(accessibleLabels, nodeLabels)) {
         if (!usedResourcesByNodeLabels.containsKey(label)) {
-          usedResourcesByNodeLabels.put(label, Resources.createResource(0));
+          usedResourcesByNodeLabels.put(label, Resources.createResource(0, 0));
         }
         Resources.subtractFrom(usedResourcesByNodeLabels.get(label), resource);
       }

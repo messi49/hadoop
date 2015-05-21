@@ -932,7 +932,7 @@ public class LeafQueue extends AbstractCSQueue {
     boolean canAssign = true;
     for (String label : labelCanAccess) {
       if (!usedResourcesByNodeLabels.containsKey(label)) {
-        usedResourcesByNodeLabels.put(label, Resources.createResource(0));
+        usedResourcesByNodeLabels.put(label, Resources.createResource(0, 0));
       }
       
       Resource potentialTotalCapacity =
@@ -1569,7 +1569,7 @@ public class LeafQueue extends AbstractCSQueue {
 
       LOG.info("assignedContainer" +
           " application attempt=" + application.getApplicationAttemptId() +
-          " container=" + container + 
+          " container=" + container +
           " queue=" + this + 
           " clusterResource=" + clusterResource);
 
@@ -1818,14 +1818,14 @@ public class LeafQueue extends AbstractCSQueue {
       if (nodeLabels == null || nodeLabels.isEmpty()) {
         if (!consumedByLabel.containsKey(RMNodeLabelsManager.NO_LABEL)) {
           consumedByLabel.put(RMNodeLabelsManager.NO_LABEL,
-              Resources.createResource(0));
+              Resources.createResource(0, 0));
         }
         Resources.addTo(consumedByLabel.get(RMNodeLabelsManager.NO_LABEL),
             resource);
       } else {
         for (String label : nodeLabels) {
           if (!consumedByLabel.containsKey(label)) {
-            consumedByLabel.put(label, Resources.createResource(0));
+            consumedByLabel.put(label, Resources.createResource(0, 0));
           }
           Resources.addTo(consumedByLabel.get(label), resource);
         }
@@ -1839,14 +1839,14 @@ public class LeafQueue extends AbstractCSQueue {
       if (nodeLabels == null || nodeLabels.isEmpty()) {
         if (!consumedByLabel.containsKey(RMNodeLabelsManager.NO_LABEL)) {
           consumedByLabel.put(RMNodeLabelsManager.NO_LABEL,
-              Resources.createResource(0));
+              Resources.createResource(0, 0));
         }
         Resources.subtractFrom(
             consumedByLabel.get(RMNodeLabelsManager.NO_LABEL), resource);
       } else {
         for (String label : nodeLabels) {
           if (!consumedByLabel.containsKey(label)) {
-            consumedByLabel.put(label, Resources.createResource(0));
+            consumedByLabel.put(label, Resources.createResource(0, 0));
           }
           Resources.subtractFrom(consumedByLabel.get(label), resource);
         }

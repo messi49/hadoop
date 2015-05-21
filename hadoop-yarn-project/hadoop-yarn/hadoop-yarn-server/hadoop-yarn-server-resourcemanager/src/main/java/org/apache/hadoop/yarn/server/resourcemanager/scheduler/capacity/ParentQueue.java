@@ -509,7 +509,7 @@ public class ParentQueue extends AbstractCSQueue {
     boolean canAssign = true;
     for (String label : labelCanAccess) {
       if (!usedResourcesByNodeLabels.containsKey(label)) {
-        usedResourcesByNodeLabels.put(label, Resources.createResource(0));
+        usedResourcesByNodeLabels.put(label, Resources.createResource(0, 0));
       }
       float currentAbsoluteLabelUsedCapacity =
           Resources.divide(resourceCalculator, clusterResource,

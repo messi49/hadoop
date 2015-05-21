@@ -227,20 +227,20 @@ public class TestAllocationFileLoaderService {
     AllocationConfiguration queueConf = confHolder.allocConf;
     
     assertEquals(6, queueConf.getConfiguredQueues().get(FSQueueType.LEAF).size());
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));
 
     assertEquals(Resources.createResource(1024, 0, 128),
         queueConf.getMinResources("root.queueA"));
     assertEquals(Resources.createResource(2048, 0, 256),
         queueConf.getMinResources("root.queueB"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueC"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueD"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueE"));
 
     assertEquals(15, queueConf.getQueueMaxApps("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));
@@ -400,20 +400,20 @@ public class TestAllocationFileLoaderService {
     AllocationConfiguration queueConf = confHolder.allocConf;
 
     assertEquals(5, queueConf.getConfiguredQueues().get(FSQueueType.LEAF).size());
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));
 
     assertEquals(Resources.createResource(1024, 0, 128),
         queueConf.getMinResources("root.queueA"));
     assertEquals(Resources.createResource(2048, 0, 256),
         queueConf.getMinResources("root.queueB"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueC"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueD"));
-    assertEquals(Resources.createResource(0),
+    assertEquals(Resources.createResource(0, 0),
         queueConf.getMinResources("root.queueE"));
 
     assertEquals(15, queueConf.getQueueMaxApps("root." + YarnConfiguration.DEFAULT_QUEUE_NAME));

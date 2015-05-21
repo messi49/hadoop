@@ -66,7 +66,7 @@ public class FairSharePolicy extends SchedulingPolicy {
   private static class FairShareComparator implements Comparator<Schedulable>,
       Serializable {
     private static final long serialVersionUID = 5564969375856699313L;
-    private static final Resource ONE = Resources.createResource(1);
+    private static final Resource ONE = Resources.createResource(1, 1);
 
     @Override
     public int compare(Schedulable s1, Schedulable s2) {

@@ -58,6 +58,9 @@ public class CapacityHeadroomProvider {
     if (headroom.getMemory() < 0) {
       headroom.setMemory(0);
     }
+    if (headroom.getGpuMemory() < 0) {
+      headroom.setGpuMemory(0);
+    }
     return headroom;
   
   }

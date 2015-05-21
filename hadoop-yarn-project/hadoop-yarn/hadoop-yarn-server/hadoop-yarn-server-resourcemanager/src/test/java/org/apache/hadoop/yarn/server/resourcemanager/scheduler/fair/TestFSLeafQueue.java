@@ -47,7 +47,7 @@ import org.mockito.Mockito;
 public class TestFSLeafQueue extends FairSchedulerTestBase {
   private final static String ALLOC_FILE = new File(TEST_DIR,
       TestFSLeafQueue.class.getName() + ".xml").getAbsolutePath();
-  private Resource maxResource = Resources.createResource(1024 * 8);
+  private Resource maxResource = Resources.createResource(1024 * 8, 256);
 
   @Before
   public void setup() throws IOException {

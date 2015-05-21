@@ -124,7 +124,7 @@ public class TestFifoScheduler {
       int priority, int numContainers) {
     ResourceRequest request = recordFactory
         .newRecordInstance(ResourceRequest.class);
-    request.setCapability(Resources.createResource(memory));
+    request.setCapability(Resources.createResource(memory, 256));
     request.setResourceName(host);
     request.setNumContainers(numContainers);
     Priority prio = recordFactory.newRecordInstance(Priority.class);
@@ -201,7 +201,7 @@ public class TestFifoScheduler {
     scheduler.reinitialize(new Configuration(), rmContext);
 
     RMNode node0 = MockNodes.newNodeInfo(1,
-        Resources.createResource(1024 * 64), 1, "127.0.0.1");
+        Resources.createResource(1024 * 64, 256), 1, "127.0.0.1");
     NodeAddedSchedulerEvent nodeEvent1 = new NodeAddedSchedulerEvent(node0);
     scheduler.handle(nodeEvent1);
 
@@ -379,10 +379,10 @@ public class TestFifoScheduler {
     application_0.addNodeManager(host_0, 1234, nm_0);
     application_0.addNodeManager(host_1, 1234, nm_1);
 
-    Resource capability_0_0 = Resources.createResource(GB);
+    Resource capability_0_0 = Resources.createResource(GB, 256);
     application_0.addResourceRequestSpec(priority_1, capability_0_0);
     
-    Resource capability_0_1 = Resources.createResource(2 * GB);
+    Resource capability_0_1 = Resources.createResource(2 * GB, 256);
     application_0.addResourceRequestSpec(priority_0, capability_0_1);
 
     Task task_0_0 = new Task(application_0, priority_1, 
@@ -396,10 +396,10 @@ public class TestFifoScheduler {
     application_1.addNodeManager(host_0, 1234, nm_0);
     application_1.addNodeManager(host_1, 1234, nm_1);
     
-    Resource capability_1_0 = Resources.createResource(3 * GB);
+    Resource capability_1_0 = Resources.createResource(3 * GB, 256);
     application_1.addResourceRequestSpec(priority_1, capability_1_0);
     
-    Resource capability_1_1 = Resources.createResource(4 * GB);
+    Resource capability_1_1 = Resources.createResource(4 * GB, 256);
     application_1.addResourceRequestSpec(priority_0, capability_1_1);
 
     Task task_1_0 = new Task(application_1, priority_1, 

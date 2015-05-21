@@ -130,7 +130,7 @@ public class TestChildQueueOrder {
           LOG.info("FOOBAR q.assignContainers q=" + queue.getQueueName() + 
               " alloc=" + allocation + " node=" + node.getNodeName());
         }
-        final Resource allocatedResource = Resources.createResource(allocation);
+        final Resource allocatedResource = Resources.createResource(allocation, 256);
         if (queue instanceof ParentQueue) {
           ((ParentQueue)queue).allocateResource(clusterResource, 
               allocatedResource, null);
@@ -261,7 +261,7 @@ public class TestChildQueueOrder {
         app_0.getApplicationId(), 1);
     ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
     Container container=TestUtils.getMockContainer(containerId, 
-        node_0.getNodeID(), Resources.createResource(1*GB), priority);
+        node_0.getNodeID(), Resources.createResource(1*GB, 256), priority);
     RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
         node_0.getNodeID(), "user", rmContext);
 
