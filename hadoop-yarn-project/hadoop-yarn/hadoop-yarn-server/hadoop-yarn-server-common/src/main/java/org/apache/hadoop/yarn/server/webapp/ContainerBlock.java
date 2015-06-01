@@ -106,9 +106,10 @@ public class ContainerBlock extends HtmlBlock {
       ._(
         "Resource:",
         container.getAllocatedMB() + " Memory, "
-            + container.getAllocatedVCores() + " VCores")
+            + container.getAllocatedVCores() + " VCores, "
+            + container.getAllocatedGpuMB() + " GPU Memory")
       ._("Logs:", container.getLogUrl() == null ? "#" : container.getLogUrl(),
-          container.getLogUrl() == null ? "N/A" : "Logs")
+        container.getLogUrl() == null ? "N/A" : "Logs")
       ._("Diagnostics:", container.getDiagnosticsInfo());
 
     html._(InfoBlock.class);

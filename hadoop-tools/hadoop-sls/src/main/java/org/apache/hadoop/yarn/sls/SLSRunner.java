@@ -422,8 +422,8 @@ public class SLSRunner {
       // node
       LOG.info("------------------------------------");
       LOG.info(MessageFormat.format("# nodes = {0}, # racks = {1}, capacity " +
-              "of each node {2} MB memory and {3} vcores.",
-              numNMs, numRacks, nmMemoryMB, nmVCores));
+              "of each node {2} MB memory and {3} vcores and {4} GPU Memory.",
+              numNMs, numRacks, nmMemoryMB, nmVCores, nmGpuMemoryMB));
       LOG.info("------------------------------------");
       // job
       LOG.info(MessageFormat.format("# applications = {0}, # total " +
@@ -451,6 +451,7 @@ public class SLSRunner {
     simulateInfoMap.put("Number of nodes", numNMs);
     simulateInfoMap.put("Node memory (MB)", nmMemoryMB);
     simulateInfoMap.put("Node VCores", nmVCores);
+    simulateInfoMap.put("Node GPU memory (MB)", nmGpuMemoryMB);
     simulateInfoMap.put("Number of applications", numAMs);
     simulateInfoMap.put("Number of tasks", numTasks);
     simulateInfoMap.put("Average tasks per applicaion",

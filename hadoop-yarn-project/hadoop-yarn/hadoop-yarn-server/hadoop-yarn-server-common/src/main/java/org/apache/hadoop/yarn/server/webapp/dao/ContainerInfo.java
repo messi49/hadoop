@@ -80,6 +80,10 @@ public class ContainerInfo {
     return allocatedVCores;
   }
 
+  public int getAllocatedGpuMB() {
+    return allocatedGpuMB;
+  }
+
   public String getAssignedNodeId() {
     return assignedNodeId;
   }

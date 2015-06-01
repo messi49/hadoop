@@ -175,9 +175,9 @@ public class QueueMetrics implements MetricsSource {
       metrics = new QueueMetrics(metricsSystem, queueName, null, false, conf);
       users.put(userName, metrics);
       metricsSystem.register(
-              sourceName(queueName).append(",user=").append(userName).toString(),
-              "Metrics for user '" + userName + "' in queue '" + queueName + "'",
-              metrics.tag(QUEUE_INFO, queueName).tag(USER_INFO, userName));
+        sourceName(queueName).append(",user=").append(userName).toString(),
+        "Metrics for user '" + userName + "' in queue '" + queueName + "'",
+        metrics.tag(QUEUE_INFO, queueName).tag(USER_INFO, userName));
     }
     return metrics;
   }
@@ -509,6 +509,10 @@ public class QueueMetrics implements MetricsSource {
     return allocatedVCores.value();
   }
 
+  public int getAllocatedGpuMB() {
+    return allocatedGpuMB.value();
+  }
+
   public int getAllocatedContainers() {
     return allocatedContainers.value();
   }
@@ -517,7 +521,7 @@ public class QueueMetrics implements MetricsSource {
     return availableMB.value();
   }
 
-  public int getAvailableGpuMemory() {
+  public int getAvailableGpuMB() {
     return availableGpuMB.value();
   }
   
@@ -531,6 +535,10 @@ public class QueueMetrics implements MetricsSource {
   
   public int getPendingVirtualCores() {
     return pendingVCores.value();
+  }
+
+  public int getPendingGpuMB() {
+    return pendingGpuMB.value();
   }
 
   public int getPendingContainers() {

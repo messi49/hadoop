@@ -35,30 +35,41 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
 
   private int totalMemoryMB = Integer.MAX_VALUE;
   private int totalVCores = Integer.MAX_VALUE;
+  private int totalGpuMemoryMB = Integer.MAX_VALUE;
   private boolean maxReset = false;
 
   public FairSchedulerMetrics() {
     super();
     appTrackedMetrics.add("demand.memory");
     appTrackedMetrics.add("demand.vcores");
+    appTrackedMetrics.add("demand.gpu-memory");
     appTrackedMetrics.add("usage.memory");
     appTrackedMetrics.add("usage.vcores");
+    appTrackedMetrics.add("usage.gpu-memory");
     appTrackedMetrics.add("minshare.memory");
     appTrackedMetrics.add("minshare.vcores");
+    appTrackedMetrics.add("minshare.gpu-memory");
     appTrackedMetrics.add("maxshare.memory");
     appTrackedMetrics.add("maxshare.vcores");
+    appTrackedMetrics.add("maxshare.gpu-memory");
     appTrackedMetrics.add("fairshare.memory");
     appTrackedMetrics.add("fairshare.vcores");
+    appTrackedMetrics.add("fairshare.gpu-memory");
     queueTrackedMetrics.add("demand.memory");
     queueTrackedMetrics.add("demand.vcores");
+    queueTrackedMetrics.add("demand.gpu-memory");
     queueTrackedMetrics.add("usage.memory");
     queueTrackedMetrics.add("usage.vcores");
+    queueTrackedMetrics.add("usage.gpu-memory");
     queueTrackedMetrics.add("minshare.memory");
     queueTrackedMetrics.add("minshare.vcores");
+    queueTrackedMetrics.add("minshare.gpu-memory");
     queueTrackedMetrics.add("maxshare.memory");
     queueTrackedMetrics.add("maxshare.vcores");
+    queueTrackedMetrics.add("maxshare.gpu-memory");
     queueTrackedMetrics.add("fairshare.memory");
     queueTrackedMetrics.add("fairshare.vcores");
+    queueTrackedMetrics.add("fairshare.gpu-memory");
   }
   
   @Override
@@ -82,6 +93,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.app." + oldAppId + ".demand.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return app.getDemand().getGpuMemory();
+        }
+      }
+    );
     metrics.register("variable.app." + oldAppId + ".usage.memory",
       new Gauge<Integer>() {
         @Override
@@ -95,6 +114,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         @Override
         public Integer getValue() {
           return app.getResourceUsage().getVirtualCores();
+        }
+      }
+    );
+    metrics.register("variable.app." + oldAppId + ".usage.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return app.getResourceUsage().getGpuMemory();
         }
       }
     );
@@ -114,6 +141,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.app." + oldAppId + ".minshare.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return app.getMinShare().getGpuMemory();
+        }
+      }
+    );
     metrics.register("variable.app." + oldAppId + ".maxshare.memory",
       new Gauge<Integer>() {
         @Override
@@ -130,6 +165,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.app." + oldAppId + ".maxshare.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return Math.min(app.getMaxShare().getGpuMemory(), totalGpuMemoryMB);
+        }
+      }
+    );
     metrics.register("variable.app." + oldAppId + ".fairshare.memory",
       new Gauge<Integer>() {
         @Override
@@ -139,6 +182,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
       }
     );
     metrics.register("variable.app." + oldAppId + ".fairshare.vcores",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return app.getFairShare().getVirtualCores();
+        }
+      }
+    );
+    metrics.register("variable.app." + oldAppId + ".fairshare.gpu-memory",
       new Gauge<Integer>() {
         @Override
         public Integer getValue() {
@@ -169,6 +220,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.queue." + queueName + ".demand.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return queue.getDemand().getGpuMemory();
+        }
+      }
+    );
     metrics.register("variable.queue." + queueName + ".usage.memory",
       new Gauge<Integer>() {
         @Override
@@ -182,6 +241,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         @Override
         public Integer getValue() {
           return queue.getResourceUsage().getVirtualCores();
+        }
+      }
+    );
+    metrics.register("variable.queue." + queueName + ".usage.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return queue.getResourceUsage().getGpuMemory();
         }
       }
     );
@@ -201,6 +268,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.queue." + queueName + ".minshare.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return queue.getMinShare().getGpuMemory();
+        }
+      }
+    );
     metrics.register("variable.queue." + queueName + ".maxshare.memory",
       new Gauge<Integer>() {
         @Override
@@ -208,16 +283,20 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
           if (! maxReset &&
                   SLSRunner.simulateInfoMap.containsKey("Number of nodes") &&
                   SLSRunner.simulateInfoMap.containsKey("Node memory (MB)") &&
-                  SLSRunner.simulateInfoMap.containsKey("Node VCores")) {
+                  SLSRunner.simulateInfoMap.containsKey("Node VCores") &&
+                  SLSRunner.simulateInfoMap.containsKey("Node GPU memory (MB)")) {
             int numNMs = Integer.parseInt(
                   SLSRunner.simulateInfoMap.get("Number of nodes").toString());
             int numMemoryMB = Integer.parseInt(
                   SLSRunner.simulateInfoMap.get("Node memory (MB)").toString());
             int numVCores = Integer.parseInt(
                   SLSRunner.simulateInfoMap.get("Node VCores").toString());
+            int numGpuMemoryMB = Integer.parseInt(
+                  SLSRunner.simulateInfoMap.get("Node GPU memory (MB)").toString());
 
             totalMemoryMB = numNMs * numMemoryMB;
             totalVCores = numNMs * numVCores;
+            totalGpuMemoryMB = numNMs * numGpuMemoryMB;
             maxReset = false;
           }
 
@@ -230,6 +309,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         @Override
         public Integer getValue() {
           return Math.min(queue.getMaxShare().getVirtualCores(), totalVCores);
+        }
+      }
+    );
+    metrics.register("variable.queue." + queueName + ".maxshare.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return Math.min(queue.getMaxShare().getGpuMemory(), totalGpuMemoryMB);
         }
       }
     );
@@ -249,6 +336,14 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
         }
       }
     );
+    metrics.register("variable.queue." + queueName + ".fairshare.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          return queue.getFairShare().getGpuMemory();
+        }
+      }
+    );
   }
 
   @Override
@@ -256,13 +351,18 @@ public class FairSchedulerMetrics extends SchedulerMetrics {
     trackedQueues.remove(queueName);
     metrics.remove("variable.queue." + queueName + ".demand.memory");
     metrics.remove("variable.queue." + queueName + ".demand.vcores");
+    metrics.remove("variable.queue." + queueName + ".demand.gpu-memory");
     metrics.remove("variable.queue." + queueName + ".usage.memory");
     metrics.remove("variable.queue." + queueName + ".usage.vcores");
+    metrics.remove("variable.queue." + queueName + ".usage.gpu-memory");
     metrics.remove("variable.queue." + queueName + ".minshare.memory");
     metrics.remove("variable.queue." + queueName + ".minshare.vcores");
+    metrics.remove("variable.queue." + queueName + ".minshare.gpu-memory");
     metrics.remove("variable.queue." + queueName + ".maxshare.memory");
     metrics.remove("variable.queue." + queueName + ".maxshare.vcores");
+    metrics.remove("variable.queue." + queueName + ".maxshare.gpu-memory");
     metrics.remove("variable.queue." + queueName + ".fairshare.memory");
     metrics.remove("variable.queue." + queueName + ".fairshare.vcores");
+    metrics.remove("variable.queue." + queueName + ".fairshare.gpu-memory");
   }
 }

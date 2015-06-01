@@ -78,6 +78,8 @@ class NodesPage extends RmView {
           th(".mem", "Mem Avail").
           th(".vcores", "VCores Used").
           th(".vcores", "VCores Avail").
+          th(".gmem", "GPU Mem Used").
+          th(".gmem", "GPU Mem Avail").
           th(".nodeManagerVersion", "Version").
           _()._().
           tbody();
@@ -113,6 +115,9 @@ class NodesPage extends RmView {
         NodeInfo info = new NodeInfo(ni, sched);
         int usedMemory = (int)info.getUsedMemory();
         int availableMemory = (int)info.getAvailableMemory();
+        int usedGpuMemory = (int)info.getUsedGpuMemory();
+        int availableGpuMemory = (int)info.getAvailableGpuMemory();
+
         TR<TBODY<TABLE<Hamlet>>> row = tbody.tr().
             td(StringUtils.join(",", info.getNodeLabels())).
             td(info.getRack()).
@@ -135,6 +140,10 @@ class NodesPage extends RmView {
               _(StringUtils.byteDesc(availableMemory * BYTES_IN_MB))._().
               td(String.valueOf(info.getUsedVirtualCores())).
               td(String.valueOf(info.getAvailableVirtualCores())).
+          td().br().$title(String.valueOf(usedGpuMemory))._().
+              _(StringUtils.byteDesc(usedGpuMemory * BYTES_IN_MB))._().
+          td().br().$title(String.valueOf(availableGpuMemory))._().
+              _(StringUtils.byteDesc(availableGpuMemory * BYTES_IN_MB))._().
             td(ni.getNodeManagerVersion()).
             _();
       }

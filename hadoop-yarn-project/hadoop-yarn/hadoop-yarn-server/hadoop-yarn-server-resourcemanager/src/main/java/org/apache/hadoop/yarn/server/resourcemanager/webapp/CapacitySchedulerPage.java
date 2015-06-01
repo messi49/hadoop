@@ -86,6 +86,15 @@ class CapacitySchedulerPage extends RmView {
           .append(StringUtils.format("%.2f", numerator.getvCores() * 100.0 /
           denominator.getvCores()) + "%</span>)");
       }
+      percentString = new StringBuilder("GPU Memory: ");
+      if (numerator != null) {
+        percentString.append(numerator.getGpuMemory());
+      }
+      if (denominator.getGpuMemory() < 0) {
+        percentString.append(" (<span title='of used resources in this queue'>")
+          .append(StringUtils.format("%.2f", numerator.getGpuMemory() * 100.0 /
+            denominator.getGpuMemory()) + "%</span>)");
+      }
       return percentString.toString();
     }
 

@@ -540,7 +540,7 @@ public class ParentQueue extends AbstractCSQueue {
 
       Resource reservedResources = Resources.createResource(getMetrics()
           .getReservedMB(), getMetrics().getReservedVirtualCores(), getMetrics()
-              .getReservedMB());
+              .getReservedGpuMB());
       float capacityWithoutReservedCapacity = Resources.divide(
           resourceCalculator, clusterResource,
           Resources.subtract(usedResources, reservedResources),

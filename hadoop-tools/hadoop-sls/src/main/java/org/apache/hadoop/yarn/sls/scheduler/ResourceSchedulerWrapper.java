@@ -262,7 +262,8 @@ public class ResourceSchedulerWrapper
           RMContainer rmc = app.getLiveContainers().iterator().next();
           updateQueueMetrics(queue,
                   rmc.getContainer().getResource().getMemory(),
-                  rmc.getContainer().getResource().getVirtualCores());
+                  rmc.getContainer().getResource().getVirtualCores(),
+                  rmc.getContainer().getResource().getGpuMemory());
         }
       }
 
@@ -313,13 +314,14 @@ public class ResourceSchedulerWrapper
         String queue =
             appQueueMap.get(containerId.getApplicationAttemptId()
               .getApplicationId());
-        int releasedMemory = 0, releasedVCores = 0;
+        int releasedMemory = 0, releasedVCores = 0, releasedGpuMemory = 0;
         if (status.getExitStatus() == ContainerExitStatus.SUCCESS) {
           for (RMContainer rmc : app.getLiveContainers()) {
             if (rmc.getContainerId() == containerId) {
               releasedMemory += rmc.getContainer().getResource().getMemory();
               releasedVCores += rmc.getContainer()
                       .getResource().getVirtualCores();
+              releasedGpuMemory += rmc.getContainer().getResource().getGpuMemory();
               break;
             }
           }
@@ -328,11 +330,12 @@ public class ResourceSchedulerWrapper
             Resource preResource = preemptionContainerMap.get(containerId);
             releasedMemory += preResource.getMemory();
             releasedVCores += preResource.getVirtualCores();
+            releasedGpuMemory += preResource.getGpuMemory();
             preemptionContainerMap.remove(containerId);
           }
         }
         // update queue counters
-        updateQueueMetrics(queue, releasedMemory, releasedVCores);
+        updateQueueMetrics(queue, releasedMemory, releasedVCores, releasedGpuMemory);
       }
     }
   }
@@ -415,11 +418,15 @@ public class ResourceSchedulerWrapper
     String names[] = new String[]{
             "counter.queue." + queueName + ".pending.memory",
             "counter.queue." + queueName + ".pending.cores",
+            "counter.queue." + queueName + ".pending.gpu-memory",
             "counter.queue." + queueName + ".allocated.memory",
-            "counter.queue." + queueName + ".allocated.cores"};
+            "counter.queue." + queueName + ".allocated.cores",
+            "counter.queue." + queueName + ".allocated.gpu-memory",
+    };
     int values[] = new int[]{pendingResource.getMemory(),
             pendingResource.getVirtualCores(),
-            allocatedResource.getMemory(), allocatedResource.getVirtualCores()};
+            pendingResource.getGpuMemory(),
+            allocatedResource.getMemory(), allocatedResource.getVirtualCores(), allocatedResource.getGpuMemory()};
     for (int i = names.length - 1; i >= 0; i --) {
       if (! counterMap.containsKey(names[i])) {
         metrics.counter(names[i]);
@@ -547,6 +554,18 @@ public class ResourceSchedulerWrapper
         }
       }
     );
+    metrics.register("variable.cluster.allocated.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          if(scheduler == null || scheduler.getRootQueueMetrics() == null) {
+            return 0;
+          } else {
+            return scheduler.getRootQueueMetrics().getAllocatedGpuMB();
+          }
+        }
+      }
+    );
     metrics.register("variable.cluster.available.memory",
       new Gauge<Integer>() {
         @Override
@@ -567,6 +586,18 @@ public class ResourceSchedulerWrapper
             return 0;
           } else {
             return scheduler.getRootQueueMetrics().getAvailableVirtualCores();
+          }
+        }
+      }
+    );
+    metrics.register("variable.cluster.available.gpu-memory",
+      new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+          if(scheduler == null || scheduler.getRootQueueMetrics() == null) {
+            return 0;
+          } else {
+            return scheduler.getRootQueueMetrics().getAvailableGpuMB();
           }
         }
       }
@@ -741,7 +772,7 @@ public class ResourceSchedulerWrapper
   }
 
   private void updateQueueMetrics(String queue,
-                                  int releasedMemory, int releasedVCores) {
+                                  int releasedMemory, int releasedVCores, int releasedGpuMemory) {
     // update queue counters
     SortedMap<String, Counter> counterMap = metrics.getCounters();
     if (releasedMemory != 0) {
@@ -759,6 +790,14 @@ public class ResourceSchedulerWrapper
         counterMap = metrics.getCounters();
       }
       counterMap.get(name).inc(-releasedVCores);
+    }
+    if (releasedGpuMemory != 0) {
+      String name = "counter.queue." + queue + ".allocated.gpu-memory";
+      if (! counterMap.containsKey(name)) {
+        metrics.counter(name);
+        counterMap = metrics.getCounters();
+      }
+      counterMap.get(name).inc(-releasedMemory);
     }
   }
 

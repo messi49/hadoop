@@ -46,12 +46,17 @@ public class ClusterMetricsInfo {
   protected long availableVirtualCores;
   protected long allocatedVirtualCores;
 
+  protected long reservedGpuMB;
+  protected long availableGpuMB;
+  protected long allocatedGpuMB;
+
   protected int containersAllocated;
   protected int containersReserved;
   protected int containersPending;
 
   protected long totalMB;
   protected long totalVirtualCores;
+  protected long totalGpuMB;
   protected int totalNodes;
   protected int lostNodes;
   protected int unhealthyNodes;
@@ -82,12 +87,17 @@ public class ClusterMetricsInfo {
     this.availableVirtualCores = metrics.getAvailableVirtualCores();
     this.allocatedVirtualCores = metrics.getAllocatedVirtualCores();
 
+    this.reservedGpuMB = metrics.getReservedGpuMB();
+    this.availableGpuMB = metrics.getAvailableGpuMB();
+    this.allocatedGpuMB = metrics.getAllocatedGpuMB();
+
     this.containersAllocated = metrics.getAllocatedContainers();
     this.containersPending = metrics.getPendingContainers();
     this.containersReserved = metrics.getReservedContainers();
 
     this.totalMB = availableMB + allocatedMB;
     this.totalVirtualCores = availableVirtualCores + allocatedVirtualCores;
+    this.totalGpuMB = availableGpuMB + allocatedGpuMB;
     this.activeNodes = clusterMetrics.getNumActiveNMs();
     this.lostNodes = clusterMetrics.getNumLostNMs();
     this.unhealthyNodes = clusterMetrics.getUnhealthyNMs();
@@ -145,6 +155,18 @@ public class ClusterMetricsInfo {
     return this.allocatedVirtualCores;
   }
 
+  public long getReservedGpuMB() {
+    return this.reservedGpuMB;
+  }
+
+  public long getAvailableGpuMB() {
+    return this.availableGpuMB;
+  }
+
+  public long getAllocatedGpuMB() {
+    return this.allocatedGpuMB;
+  }
+
   public int getContainersAllocated() {
     return this.containersAllocated;
   }
@@ -163,6 +185,10 @@ public class ClusterMetricsInfo {
 
   public long getTotalVirtualCores() {
     return this.totalVirtualCores;
+  }
+
+  public long getTotalGpuMB() {
+    return this.totalGpuMB;
   }
 
   public int getTotalNodes() {

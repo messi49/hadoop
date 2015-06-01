@@ -136,6 +136,10 @@ public class NodeInfo {
     return this.totalVCoresAllocatedContainers;
   }
 
+  public long getTotalGmemAllocated() {
+    return this.totalGmemAllocatedContainersMB;
+  }
+
   public boolean isVmemCheckEnabled() {
     return this.vmemCheckEnabled;
   }

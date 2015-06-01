@@ -103,6 +103,9 @@ public class MetricsOverviewTable extends HtmlBlock {
         td(String.valueOf(clusterMetrics.getAllocatedVirtualCores())).
         td(String.valueOf(clusterMetrics.getTotalVirtualCores())).
         td(String.valueOf(clusterMetrics.getReservedVirtualCores())).
+        td(StringUtils.byteDesc(clusterMetrics.getAllocatedGpuMB() * BYTES_IN_MB)).
+        td(StringUtils.byteDesc(clusterMetrics.getTotalGpuMB() * BYTES_IN_MB)).
+        td(StringUtils.byteDesc(clusterMetrics.getReservedGpuMB() * BYTES_IN_MB)).
         td().a(url("nodes"),String.valueOf(clusterMetrics.getActiveNodes()))._().
         td().a(url("nodes/decommissioned"),String.valueOf(clusterMetrics.getDecommissionedNodes()))._().
         td().a(url("nodes/lost"),String.valueOf(clusterMetrics.getLostNodes()))._().

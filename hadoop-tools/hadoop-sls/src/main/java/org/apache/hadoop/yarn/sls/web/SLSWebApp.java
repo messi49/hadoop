@@ -65,13 +65,16 @@ public class SLSWebApp extends HttpServlet {
   private transient Gauge numRunningContainersGauge;
   private transient Gauge allocatedMemoryGauge;
   private transient Gauge allocatedVCoresGauge;
+  private transient Gauge allocatedGpuMemoryGauge;
   private transient Gauge availableMemoryGauge;
   private transient Gauge availableVCoresGauge;
+  private transient Gauge availableGpuMemoryGauge;
   private transient Histogram allocateTimecostHistogram;
   private transient Histogram handleTimecostHistogram;
   private Map<SchedulerEventType, Histogram> handleOperTimecostHistogramMap;
   private Map<String, Counter> queueAllocatedMemoryCounterMap;
   private Map<String, Counter> queueAllocatedVCoresCounterMap;
+  private Map<String, Counter> queueAllocatedGpuMemoryCounterMap;
   private int port;
   private int ajaxUpdateTimeMS = 1000;
   // html page templates
@@ -101,6 +104,7 @@ public class SLSWebApp extends HttpServlet {
             new HashMap<SchedulerEventType, Histogram>();
     queueAllocatedMemoryCounterMap = new HashMap<String, Counter>();
     queueAllocatedVCoresCounterMap = new HashMap<String, Counter>();
+    queueAllocatedGpuMemoryCounterMap = new HashMap<String, Counter>();
     schedulerMetrics = wrapper.getSchedulerMetrics();
     port = metricsAddressPort;
   }
@@ -221,6 +225,8 @@ public class SLSWebApp extends HttpServlet {
               .append(queue).append(".allocated.memory';");
       queueInfo.append("legends[5][").append(i).append("] = 'queue.")
               .append(queue).append(".allocated.vcores';");
+      queueInfo.append("legends[6][").append(i).append("] = 'queue.")
+              .append(queue).append(".allocated.gpu-memory';");
       i ++;
     }
 
@@ -337,8 +343,8 @@ public class SLSWebApp extends HttpServlet {
             numRunningContainersGauge.getValue().toString();
 
     // cluster available/allocate resource
-    double allocatedMemoryGB, allocatedVCoresGB,
-            availableMemoryGB, availableVCoresGB;
+    double allocatedMemoryGB, allocatedVCoresGB, allocatedGpuMemoryGB,
+            availableMemoryGB, availableVCoresGB, availableGpuMemoryGB;
     if (allocatedMemoryGauge == null &&
             metrics.getGauges()
                     .containsKey("variable.cluster.allocated.memory")) {
@@ -350,6 +356,12 @@ public class SLSWebApp extends HttpServlet {
                     .containsKey("variable.cluster.allocated.vcores")) {
       allocatedVCoresGauge = metrics.getGauges()
               .get("variable.cluster.allocated.vcores");
+    }
+    if (allocatedGpuMemoryGauge == null &&
+            metrics.getGauges()
+                    .containsKey("variable.cluster.allocated.gpu-memory")) {
+      allocatedGpuMemoryGauge = metrics.getGauges()
+              .get("variable.cluster.allocated.gpu-memory");
     }
     if (availableMemoryGauge == null &&
             metrics.getGauges()
@@ -363,14 +375,24 @@ public class SLSWebApp extends HttpServlet {
       availableVCoresGauge = metrics.getGauges()
               .get("variable.cluster.available.vcores");
     }
+    if (availableGpuMemoryGauge == null &&
+            metrics.getGauges()
+                    .containsKey("variable.cluster.available.gpu-memory")) {
+      availableGpuMemoryGauge = metrics.getGauges()
+              .get("variable.cluster.available.gpu-memory");
+    }
     allocatedMemoryGB = allocatedMemoryGauge == null ? 0 :
             Double.parseDouble(allocatedMemoryGauge.getValue().toString())/1024;
     allocatedVCoresGB = allocatedVCoresGauge == null ? 0 :
             Double.parseDouble(allocatedVCoresGauge.getValue().toString());
+    allocatedGpuMemoryGB = allocatedGpuMemoryGauge == null ? 0 :
+            Double.parseDouble(allocatedGpuMemoryGauge.getValue().toString())/1024;
     availableMemoryGB = availableMemoryGauge == null ? 0 :
             Double.parseDouble(availableMemoryGauge.getValue().toString())/1024;
     availableVCoresGB = availableVCoresGauge == null ? 0 :
             Double.parseDouble(availableVCoresGauge.getValue().toString());
+    availableGpuMemoryGB = availableGpuMemoryGauge == null ? 0 :
+            Double.parseDouble(availableGpuMemoryGauge.getValue().toString())/1024;
 
     // scheduler operation
     double allocateTimecost, handleTimecost;
@@ -408,6 +430,8 @@ public class SLSWebApp extends HttpServlet {
     // allocated resource for each queue
     Map<String, Double> queueAllocatedMemoryMap = new HashMap<String, Double>();
     Map<String, Long> queueAllocatedVCoresMap = new HashMap<String, Long>();
+    Map<String, Double> queueAllocatedGpuMemoryMap = new HashMap<String, Double>();
+
     for (String queue : wrapper.getQueueSet()) {
       // memory
       String key = "counter.queue." + queue + ".allocated.memory";
@@ -432,12 +456,24 @@ public class SLSWebApp extends HttpServlet {
               queueAllocatedVCoresCounterMap.containsKey(queue) ?
                       queueAllocatedVCoresCounterMap.get(queue).getCount(): 0;
       queueAllocatedVCoresMap.put(queue, queueAllocatedVCores);
+      // GPU memory
+      key = "counter.queue." + queue + ".allocated.gpu-memory";
+      if (! queueAllocatedGpuMemoryCounterMap.containsKey(queue) &&
+              metrics.getCounters().containsKey(key)) {
+        queueAllocatedGpuMemoryCounterMap.put(queue,
+                metrics.getCounters().get(key));
+      }
+      double queueAllocatedGpuMemoryGB =
+              queueAllocatedGpuMemoryCounterMap.containsKey(queue) ?
+                  queueAllocatedGpuMemoryCounterMap.get(queue).getCount()/1024.0
+                      : 0;
+      queueAllocatedMemoryMap.put(queue, queueAllocatedGpuMemoryGB);
     }
 
     // package results
     StringBuilder sb = new StringBuilder();
     sb.append("{");
-    sb.append("\"time\":" ).append(System.currentTimeMillis())
+    sb.append("\"time\":").append(System.currentTimeMillis())
             .append(",\"jvm.free.memory\":").append(jvmFreeMemoryGB)
             .append(",\"jvm.max.memory\":").append(jvmMaxMemoryGB)
             .append(",\"jvm.total.memory\":").append(jvmTotalMemoryGB)
@@ -445,14 +481,18 @@ public class SLSWebApp extends HttpServlet {
             .append(",\"running.containers\":").append(numRunningContainers)
             .append(",\"cluster.allocated.memory\":").append(allocatedMemoryGB)
             .append(",\"cluster.allocated.vcores\":").append(allocatedVCoresGB)
+            .append(",\"cluster.allocated.gpu-memory\":").append(allocatedGpuMemoryGB)
             .append(",\"cluster.available.memory\":").append(availableMemoryGB)
-            .append(",\"cluster.available.vcores\":").append(availableVCoresGB);
+            .append(",\"cluster.available.vcores\":").append(availableVCoresGB)
+            .append(",\"cluster.available.gpu-memory\":").append(availableGpuMemoryGB);
 
     for (String queue : wrapper.getQueueSet()) {
       sb.append(",\"queue.").append(queue).append(".allocated.memory\":")
               .append(queueAllocatedMemoryMap.get(queue));
       sb.append(",\"queue.").append(queue).append(".allocated.vcores\":")
               .append(queueAllocatedVCoresMap.get(queue));
+      sb.append(",\"queue.").append(queue).append(".allocated.gpu-memory\":")
+              .append(queueAllocatedGpuMemoryMap.get(queue));
     }
     // scheduler allocate & handle
     sb.append(",\"scheduler.allocate.timecost\":").append(allocateTimecost);

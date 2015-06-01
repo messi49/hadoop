@@ -530,8 +530,6 @@ public class ApplicationMasterService extends AbstractService implements
           this.rScheduler.allocate(appAttemptId, ask, release, 
               blacklistAdditions, blacklistRemovals);
 
-      LOG.info("messi: Send new requests to appAttempt");
-
       if (!blacklistAdditions.isEmpty() || !blacklistRemovals.isEmpty()) {
         LOG.info("blacklist are updated in Scheduler." +
             "blacklistAdditions: " + blacklistAdditions + ", " +

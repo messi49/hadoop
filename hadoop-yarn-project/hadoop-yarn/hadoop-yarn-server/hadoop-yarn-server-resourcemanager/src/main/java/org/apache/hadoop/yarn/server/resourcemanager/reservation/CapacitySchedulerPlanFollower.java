@@ -208,7 +208,8 @@ public class CapacitySchedulerPlanFollower implements PlanFollower {
         Resource capToAssign = res.getResourcesAtTime(now);
         float targetCapacity = 0f;
         if (planResources.getMemory() > 0
-            && planResources.getVirtualCores() > 0) {
+            && planResources.getVirtualCores() > 0
+            && planResources.getGpuMemory() >= 0) {
           targetCapacity =
               Resources.divide(scheduler.getResourceCalculator(),
                   clusterResources, capToAssign, planResources);

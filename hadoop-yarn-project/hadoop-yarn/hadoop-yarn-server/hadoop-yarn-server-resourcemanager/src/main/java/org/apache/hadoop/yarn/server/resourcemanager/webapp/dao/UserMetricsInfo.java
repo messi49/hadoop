@@ -46,6 +46,9 @@ public class UserMetricsInfo {
   protected long reservedVirtualCores;
   protected long pendingVirtualCores;
   protected long allocatedVirtualCores;
+  protected long reservedGpuMB;
+  protected long pendingGpuMB;
+  protected long allocatedGpuMB;
 
   @XmlTransient
   protected boolean userMetricsAvailable;
@@ -81,6 +84,10 @@ public class UserMetricsInfo {
       this.reservedVirtualCores = userMetrics.getReservedVirtualCores();
       this.pendingVirtualCores = userMetrics.getPendingVirtualCores();
       this.allocatedVirtualCores = userMetrics.getAllocatedVirtualCores();
+
+      this.reservedGpuMB = userMetrics.getReservedGpuMB();
+      this.pendingGpuMB = userMetrics.getPendingGpuMB();
+      this.allocatedGpuMB = userMetrics.getAllocatedGpuMB();
     }
   }
 
