@@ -515,9 +515,9 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
       if (mat) {
         // Set (name) (ppid) (pgrpId) (session) (utime) (stime) (vsize) (rss)
         pinfo.updateProcessInfo(m.group(2), m.group(3),
-                Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
-                Long.parseLong(m.group(7)), new BigInteger(m.group(8)),
-                Long.parseLong(m.group(10)), Long.parseLong(m.group(11)), getGpuMemoryUsage(pinfo.getPid()));
+          Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
+          Long.parseLong(m.group(7)), new BigInteger(m.group(8)),
+          Long.parseLong(m.group(10)), Long.parseLong(m.group(11)), GpuResourceMonitor.getGpuMemory(pinfo.getPid()));
       } else {
         LOG.warn("Unexpected: procfs stat file is not in the expected format"
             + " for process with pid " + pinfo.getPid());
@@ -602,7 +602,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     private Integer sessionId; // session-id
     private Long vmem; // virtual memory usage
     private Long rssmemPage; // rss memory usage in # of pages
-    private Long gmem; // virtual memory usage
+    private Long gmem; // gpu memory usage
     private Long utime = 0L; // # of jiffies in user mode
     private final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
     private BigInteger stime = new BigInteger("0"); // # of jiffies in kernel mode

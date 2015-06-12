@@ -38,6 +38,7 @@ import org.apache.hadoop.yarn.event.Dispatcher;
 import org.apache.hadoop.yarn.server.nodemanager.ContainerExecutor;
 import org.apache.hadoop.yarn.server.nodemanager.Context;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerKillEvent;
+import org.apache.hadoop.yarn.util.GpuResourceMonitor;
 import org.apache.hadoop.yarn.util.ResourceCalculatorProcessTree;
 import org.apache.hadoop.yarn.util.ResourceCalculatorPlugin;
 
@@ -51,6 +52,8 @@ public class ContainersMonitorImpl extends AbstractService implements
 
   private long monitoringInterval;
   private MonitoringThread monitoringThread;
+
+  private GpuResourceMonitor gpuResourceMonitor;
 
   final List<ContainerId> containersToBeRemoved;
   final Map<ContainerId, ProcessTreeInfo> containersToBeAdded;
@@ -87,6 +90,7 @@ public class ContainersMonitorImpl extends AbstractService implements
     this.containersToBeAdded = new HashMap<ContainerId, ProcessTreeInfo>();
     this.containersToBeRemoved = new ArrayList<ContainerId>();
     this.monitoringThread = new MonitoringThread();
+    this.gpuResourceMonitor = new GpuResourceMonitor();
   }
 
   @Override
@@ -212,6 +216,7 @@ public class ContainersMonitorImpl extends AbstractService implements
         ;
       }
     }
+    gpuResourceMonitor.stopMonitorThread();
     super.serviceStop();
   }
 
@@ -431,7 +436,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit, currentGmemUsage, gmemLimit));
 
-            LOG.info("PID = " + pId +", pmemLimit : " + pmemLimit + " B, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
+            //LOG.info("PID = " + pId +", pmemLimit : " + pmemLimit + " B, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;
@@ -526,7 +531,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                                      long currentPmemUsage, long pmemLimit, long currentGmemUsage, long gmemLimit) {
       return String.format("%sB of %sB physical memory used; " +
           "%sB of %sB virtual memory used; " +
-                      "%sB of %sB GPU memory used; ",
+          "%sB of %sB GPU memory used; ",
           TraditionalBinaryPrefix.long2String(currentPmemUsage, "", 1),
           TraditionalBinaryPrefix.long2String(pmemLimit, "", 1),
           TraditionalBinaryPrefix.long2String(currentVmemUsage, "", 1),
