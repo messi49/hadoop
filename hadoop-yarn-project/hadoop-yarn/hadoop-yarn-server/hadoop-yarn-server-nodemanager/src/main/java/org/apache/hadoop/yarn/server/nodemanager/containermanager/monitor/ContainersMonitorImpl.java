@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +54,7 @@ public class ContainersMonitorImpl extends AbstractService implements
   private long monitoringInterval;
   private MonitoringThread monitoringThread;
 
-  private GpuResourceMonitor gpuResourceMonitor;
+  private Timer gpuResourceMonitorTimer;
 
   final List<ContainerId> containersToBeRemoved;
   final Map<ContainerId, ProcessTreeInfo> containersToBeAdded;
@@ -90,7 +91,7 @@ public class ContainersMonitorImpl extends AbstractService implements
     this.containersToBeAdded = new HashMap<ContainerId, ProcessTreeInfo>();
     this.containersToBeRemoved = new ArrayList<ContainerId>();
     this.monitoringThread = new MonitoringThread();
-    this.gpuResourceMonitor = new GpuResourceMonitor();
+    gpuResourceMonitorTimer = new Timer();
   }
 
   @Override
@@ -204,6 +205,8 @@ public class ContainersMonitorImpl extends AbstractService implements
       this.monitoringThread.start();
     }
     super.serviceStart();
+    // GPU Resuorce Monior launch
+    gpuResourceMonitorTimer.schedule(new GpuResourceMonitor(), 0, 100);
   }
 
   @Override
@@ -216,8 +219,8 @@ public class ContainersMonitorImpl extends AbstractService implements
         ;
       }
     }
-    gpuResourceMonitor.stopMonitorThread();
     super.serviceStop();
+    gpuResourceMonitorTimer.cancel();
   }
 
   private static class ProcessTreeInfo {
@@ -436,7 +439,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit, currentGmemUsage, gmemLimit));
 
-            //LOG.info("PID = " + pId +", pmemLimit : " + pmemLimit + " B, curGMemUsageOfAgedProcesses : " + curGMemUsageOfAgedProcesses + " MiB, gmemLimit : " + gmemLimit);
+            LOG.info("MonitoringThread PID = " + pId);
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;

@@ -514,6 +514,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
       boolean mat = m.find();
       if (mat) {
         // Set (name) (ppid) (pgrpId) (session) (utime) (stime) (vsize) (rss)
+        LOG.info("ProcessInfo PID = " + ret.getPid());
         pinfo.updateProcessInfo(m.group(2), m.group(3),
           Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
           Long.parseLong(m.group(7)), new BigInteger(m.group(8)),
