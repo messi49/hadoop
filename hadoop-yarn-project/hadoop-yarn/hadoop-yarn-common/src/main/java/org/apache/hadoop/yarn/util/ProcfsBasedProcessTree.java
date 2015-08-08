@@ -518,7 +518,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
         pinfo.updateProcessInfo(m.group(2), m.group(3),
           Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
           Long.parseLong(m.group(7)), new BigInteger(m.group(8)),
-          Long.parseLong(m.group(10)), Long.parseLong(m.group(11)), GpuResourceMonitor.getGpuMemory(pinfo.getPid()));
+          Long.parseLong(m.group(10)), Long.parseLong(m.group(11)), GpuResourceMonitor.getGpuProcessMemory(pinfo.getPid()));
       } else {
         LOG.warn("Unexpected: procfs stat file is not in the expected format"
             + " for process with pid " + pinfo.getPid());
