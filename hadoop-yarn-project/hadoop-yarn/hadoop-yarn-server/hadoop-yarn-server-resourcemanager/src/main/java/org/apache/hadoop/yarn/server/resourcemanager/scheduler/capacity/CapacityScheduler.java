@@ -195,7 +195,7 @@ public class CapacityScheduler extends
       YarnConfiguration.RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB,
       YarnConfiguration.DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPU_MB);
 
-    if (minGpuMem <= 0 || minGpuMem > maxGpuMem) {
+    if (minGpuMem < 0 || minGpuMem > maxGpuMem) {
       throw new YarnRuntimeException("Invalid resource scheduler GPU memory"
         + " allocation configuration"
         + ", " + YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB

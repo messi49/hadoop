@@ -48,7 +48,7 @@ public class FairSchedulerConfiguration extends Configuration {
   public static final int DEFAULT_RM_SCHEDULER_INCREMENT_ALLOCATION_VCORES = 1;
   public static final String RM_SCHEDULER_INCREMENT_ALLOCATION_GPU_MB =
           YarnConfiguration.YARN_PREFIX + "scheduler.increment-allocation-gpu-mb";
-  public static final int DEFAULT_RM_SCHEDULER_INCREMENT_ALLOCATION_GPU_MB = 128;
+  public static final int DEFAULT_RM_SCHEDULER_INCREMENT_ALLOCATION_GPU_MB = 0;
   
   private static final String CONF_PREFIX =  "yarn.scheduler.fair.";
 

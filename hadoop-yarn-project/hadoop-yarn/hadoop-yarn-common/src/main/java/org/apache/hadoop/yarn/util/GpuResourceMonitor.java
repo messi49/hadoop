@@ -25,7 +25,15 @@ public class GpuResourceMonitor extends TimerTask {
   Pattern gpuUtilizationPattern = Pattern.compile("(|)([\\x20\\t]+)([\\d]+)(%)([\\x20\\t]+)(Default)([\\x20\\t]+)(|)");
 
   // key = pid, value = gpu memory
-  static HashMap<String, Long> map = new HashMap<String, Long>();
+  static HashMap<String, Long> gpuProcessMemoryUsage = new HashMap<String, Long>();
+  //GPU Memory Usage
+  static HashMap<Integer, Long> gpuMemoryUsage = new HashMap<Integer, Long>();
+  // GPU Memory Size
+  static HashMap<Integer, Long> gpuMemorySize = new HashMap<Integer, Long>();
+  //GPU Memory Usage
+  static HashMap<Integer, Integer> gpuUtilization = new HashMap<Integer, Integer>();
+
+  boolean initFlag = false;
 
   @Override
   public void run() {
@@ -58,13 +66,23 @@ public class GpuResourceMonitor extends TimerTask {
 
         //Get Memory Usage
         if (MemMatcher.find()){
-          LOG.info("GPU Memory Usage(Device " + memCounter + "): " + MemMatcher.group(3) + " / " + MemMatcher.group(8));
+          //LOG.info("GPU Memory Usage(Device " + memCounter + "): " + MemMatcher.group(3) + " / " + MemMatcher.group(8));
+          //Set GPU Memory Size
+          if(initFlag == false){
+            if(gpuMemorySize.containsKey(memCounter) == true){
+              initFlag = true;
+            }
+            gpuMemorySize.put(memCounter, Long.parseLong(MemMatcher.group(3)));
+          }
+
+          setGpuMemoryUsage(memCounter, Long.parseLong(MemMatcher.group(3)));
           memCounter++;
         }
 
         //Get Utilization
         if (utilMatcher.find()){
-          LOG.info("GPU Util(Device " + utilCounter + "): " + utilMatcher.group(3) + "%");
+          //LOG.info("GPU Util(Device " + utilCounter + "): " + utilMatcher.group(3) + "%");
+          setGpuUtilization(utilCounter, Integer.parseInt(utilMatcher.group(3)));
           utilCounter++;
         }
       }
@@ -74,26 +92,38 @@ public class GpuResourceMonitor extends TimerTask {
   }
 
   static synchronized void clearMap(){
-    LOG.info("clearMap");
-    GpuResourceMonitor.map.clear();
+    //LOG.info("clearMap");
+    GpuResourceMonitor.gpuProcessMemoryUsage.clear();
+    GpuResourceMonitor.gpuMemoryUsage.clear();
+    GpuResourceMonitor.gpuUtilization.clear();
   }
 
   static synchronized void setGpuProcessMemory(String pid, long gpuMemory){
-    GpuResourceMonitor.map.put(pid, gpuMemory);
-    LOG.info("setGpuProcessMemory PID = " + pid + "GPU Memory = " + gpuMemory);
+    GpuResourceMonitor.gpuProcessMemoryUsage.put(pid, gpuMemory);
+    //LOG.info("setGpuProcessMemory PID = " + pid + "GPU Memory = " + gpuMemory);
   }
 
   static synchronized long getGpuProcessMemory(String pid){
-    if (!GpuResourceMonitor.map.isEmpty() && GpuResourceMonitor.map.size() > 0) {
-      LOG.info("getGpuProcessMemory PID = " + pid + ", map size = " + GpuResourceMonitor.map.size());
+    if (!GpuResourceMonitor.gpuProcessMemoryUsage.isEmpty() && GpuResourceMonitor.gpuProcessMemoryUsage.size() > 0) {
+      //LOG.info("getGpuProcessMemory PID = " + pid + ", map size = " + GpuResourceMonitor.gpuProcessMemoryUsage.size());
 
-      if(GpuResourceMonitor.map.containsKey(pid) == true)
-        return GpuResourceMonitor.map.get(pid);
+      if(GpuResourceMonitor.gpuProcessMemoryUsage.containsKey(pid) == true)
+        return GpuResourceMonitor.gpuProcessMemoryUsage.get(pid);
       else
         return 0;
     }
     else{
       return 0;
     }
+  }
+
+  static synchronized void setGpuMemoryUsage(int deviceId, long gpuMemory){
+    GpuResourceMonitor.gpuMemoryUsage.put(deviceId, gpuMemory);
+    //LOG.info("GPU Memory Usage(Device " + deviceId + "): " + gpuMemory);
+  }
+
+  static synchronized void setGpuUtilization(int deviceId, int utilization){
+    GpuResourceMonitor.gpuUtilization.put(deviceId, utilization);
+    //LOG.info("GPU Util(Device " + deviceId + "): " + utilization + "%");
   }
 }

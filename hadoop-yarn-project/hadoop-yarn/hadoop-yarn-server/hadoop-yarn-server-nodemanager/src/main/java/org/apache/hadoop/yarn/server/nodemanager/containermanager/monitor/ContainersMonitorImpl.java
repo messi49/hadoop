@@ -439,7 +439,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                      pId, containerId.toString()) +
                 formatUsageString(currentVmemUsage, vmemLimit, currentPmemUsage, pmemLimit, currentGmemUsage, gmemLimit));
 
-            LOG.info("MonitoringThread PID = " + pId);
+            //LOG.info("MonitoringThread PID = " + pId);
             boolean isMemoryOverLimit = false;
             String msg = "";
             int containerExitStatus = ContainerExitStatus.INVALID;
