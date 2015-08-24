@@ -34,6 +34,9 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   @Override
   public int computeAvailableContainers(Resource available, Resource required) {
     // Only consider memory
+    if(required.getMemory() == 0){
+      return available.getMemory();
+    }
     return available.getMemory() / required.getMemory();
   }
 
@@ -52,6 +55,9 @@ public class DefaultResourceCalculator extends ResourceCalculator {
 
   @Override
   public float ratio(Resource a, Resource b) {
+    if(b.getMemory() == 0){
+      return (float)a.getMemory();
+    }
     return (float)a.getMemory() / b.getMemory();
   }
 
@@ -69,11 +75,8 @@ public class DefaultResourceCalculator extends ResourceCalculator {
             Math.max(r.getMemory(), minimumResource.getMemory()),
             stepFactor.getMemory()),
             maximumResource.getMemory());
-    int normalizedGpuMemory = Math.min(
-      roundUp(
-        Math.max(r.getGpuMemory(), minimumResource.getGpuMemory()),
-        stepFactor.getGpuMemory()),
-      maximumResource.getGpuMemory());
+
+    int normalizedGpuMemory = Math.min(Math.max(r.getGpuMemory(), minimumResource.getGpuMemory()), maximumResource.getGpuMemory());
     return Resources.createResource(normalizedMemory, normalizedGpuMemory);
   }
 

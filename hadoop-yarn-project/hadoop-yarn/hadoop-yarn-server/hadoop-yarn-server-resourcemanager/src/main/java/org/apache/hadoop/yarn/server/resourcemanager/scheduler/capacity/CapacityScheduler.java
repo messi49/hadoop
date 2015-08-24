@@ -863,7 +863,7 @@ public class CapacityScheduler extends
           "or non existant application " + applicationAttemptId);
       return EMPTY_ALLOCATION;
     }
-    
+
     // Sanity check
     SchedulerUtils.normalizeRequests(
         ask, getResourceCalculator(), getClusterResource(),

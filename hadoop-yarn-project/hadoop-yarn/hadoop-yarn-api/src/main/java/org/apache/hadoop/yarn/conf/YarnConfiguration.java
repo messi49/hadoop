@@ -161,7 +161,7 @@ public class YarnConfiguration extends Configuration {
   public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_MB = 1024;
   public static final String RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES =
       YARN_PREFIX + "scheduler.minimum-allocation-vcores";
-    public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES = 1;
+  public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_VCORES = 1;
   public static final String RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB =
           YARN_PREFIX + "scheduler.minimum-allocation-gpu-mb";
   public static final int DEFAULT_RM_SCHEDULER_MINIMUM_ALLOCATION_GPU_MB = 0;
