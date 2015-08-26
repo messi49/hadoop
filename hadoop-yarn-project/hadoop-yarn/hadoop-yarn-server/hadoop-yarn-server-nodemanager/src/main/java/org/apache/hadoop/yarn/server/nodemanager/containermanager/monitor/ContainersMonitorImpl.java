@@ -430,7 +430,7 @@ public class ContainersMonitorImpl extends AbstractService implements
             // are processes more than 1 iteration old.
             long curMemUsageOfAgedProcesses = pTree.getCumulativeVmem(1);
             long curRssMemUsageOfAgedProcesses = pTree.getCumulativeRssmem(1);
-            long curGMemUsageOfAgedProcesses = pTree.getCumulativeGmem(1);
+            long curGpuMemUsageOfAgedProcesses = pTree.getCumulativeGmem(1);
             long vmemLimit = ptInfo.getVmemLimit();
             long pmemLimit = ptInfo.getPmemLimit();
             long gmemLimit = ptInfo.getGmemLimit();
@@ -470,6 +470,20 @@ public class ContainersMonitorImpl extends AbstractService implements
                   pId, containerId, pTree);
               isMemoryOverLimit = true;
               containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_PMEM;
+            } else if (isGmemCheckEnabled()
+              && isProcessTreeOverLimit(containerId.toString(),
+              currentGmemUsage, curGpuMemUsageOfAgedProcesses,
+              gmemLimit)) {
+              // Container (the root process) is still alive and overflowing
+              // GPU memory.
+              // Dump the process-tree and then clean it up.
+              msg = formatErrorMessage("GPU",
+                currentVmemUsage, vmemLimit,
+                currentPmemUsage, pmemLimit,
+                currentGmemUsage, gmemLimit,
+                pId, containerId, pTree);
+              isMemoryOverLimit = true;
+              containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_GMEM;
             }
 
             if (isMemoryOverLimit) {

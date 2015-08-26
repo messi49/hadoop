@@ -58,18 +58,23 @@ public class ContainerExitStatus {
   public static final int KILLED_EXCEEDED_PMEM = -104;
 
   /**
+   * Container terminated because of exceeding allocated GPU memory.
+   */
+  public static final int KILLED_EXCEEDED_GMEM = -105;
+
+  /**
    * Container was terminated by stop request by the app master.
    */
-  public static final int KILLED_BY_APPMASTER = -105;
+  public static final int KILLED_BY_APPMASTER = -106;
 
   /**
    * Container was terminated by the resource manager.
    */
-  public static final int KILLED_BY_RESOURCEMANAGER = -106;
+  public static final int KILLED_BY_RESOURCEMANAGER = -107;
 
   /**
    * Container was terminated after the application finished.
    */
-  public static final int KILLED_AFTER_APP_COMPLETION = -107;
+  public static final int KILLED_AFTER_APP_COMPLETION = -108;
 
 }
