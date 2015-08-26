@@ -63,11 +63,13 @@ public class Resources {
       int diff = 0 - o.getMemory();
       if (diff == 0) {
         diff = 0 - o.getVirtualCores();
+        if (diff == 0) {
+          diff = 0 - o.getGpuMemory();
+        }
       }
-      diff = 0 - o.getGpuMemory();
       return diff;
     }
-    
+
   };
   
   private static final Resource UNBOUNDED = new Resource() {
@@ -107,8 +109,10 @@ public class Resources {
       int diff = 0 - o.getMemory();
       if (diff == 0) {
         diff = 0 - o.getVirtualCores();
+        if (diff == 0) {
+          diff = 0 - o.getGpuMemory();
+        }
       }
-      diff = 0 - o.getGpuMemory();
       return diff;
     }
     

@@ -127,10 +127,19 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
 
       if(mem0 == mem1) {
         if(cpu0 == cpu1) {
-          return 0;
+          if(gmem0 == gmem1) {
+            return 0;
+          }
+          if(gmem0 < gmem1) {
+            return 1;
+          }
+          return -1;
         }
         if(cpu0 < cpu1) {
-          return 1;
+          if(gmem0 == gmem1 || gmem0 < gmem1) {
+            return 1;
+          }
+          return -1;
         }
         return -1;
       }

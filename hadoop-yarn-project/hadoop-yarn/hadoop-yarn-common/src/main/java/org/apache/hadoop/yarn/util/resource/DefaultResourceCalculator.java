@@ -27,17 +27,23 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   
   @Override
   public int compare(Resource unused, Resource lhs, Resource rhs) {
+    // consider memory and gpu memory
+    return Math.min(lhs.getMemory() - rhs.getMemory(), lhs.getGpuMemory() - rhs.getGpuMemory());
+
     // Only consider memory
-    return lhs.getMemory() - rhs.getMemory();
+    // return lhs.getMemory() - rhs.getMemory();
   }
 
   @Override
   public int computeAvailableContainers(Resource available, Resource required) {
-    // Only consider memory
-    if(required.getMemory() == 0){
-      return available.getMemory();
+    // consider memory and gpu memory
+    if(required.getGpuMemory() == 0){
+      return available.getMemory() / required.getMemory();
     }
-    return available.getMemory() / required.getMemory();
+    return Math.min(available.getMemory() / required.getMemory(), available.getGpuMemory() / required.getGpuMemory());
+
+    // Only consider memory
+    // return available.getMemory() / required.getMemory();
   }
 
   @Override
@@ -55,10 +61,10 @@ public class DefaultResourceCalculator extends ResourceCalculator {
 
   @Override
   public float ratio(Resource a, Resource b) {
-    if(b.getMemory() == 0){
-      return (float)a.getMemory();
+    if(b.getGpuMemory() == 0){
+      return (float)a.getMemory() / b.getMemory();
     }
-    return (float)a.getMemory() / b.getMemory();
+    return Math.min((float)a.getMemory() / b.getMemory(), (float)a.getGpuMemory() / b.getGpuMemory());
   }
 
   @Override

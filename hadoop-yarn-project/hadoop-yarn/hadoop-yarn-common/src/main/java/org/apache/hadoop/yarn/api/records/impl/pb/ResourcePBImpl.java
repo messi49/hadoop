@@ -95,8 +95,10 @@ public class ResourcePBImpl extends Resource {
     int diff = this.getMemory() - other.getMemory();
     if (diff == 0) {
       diff = this.getVirtualCores() - other.getVirtualCores();
+      if (diff == 0) {
+        diff = this.getGpuMemory() - other.getGpuMemory();
+      }
     }
-    diff = this.getGpuMemory() - other.getGpuMemory();
     return diff;
   }
   
