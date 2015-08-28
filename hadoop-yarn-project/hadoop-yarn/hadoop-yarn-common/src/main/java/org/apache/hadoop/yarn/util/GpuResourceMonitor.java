@@ -2,12 +2,16 @@ package org.apache.hadoop.yarn.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.yarn.api.records.GpuStatus;
+import org.apache.hadoop.yarn.api.records.impl.pb.GpuStatusPBImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,5 +129,21 @@ public class GpuResourceMonitor extends TimerTask {
   static synchronized void setGpuUtilization(int deviceId, int utilization){
     GpuResourceMonitor.gpuUtilization.put(deviceId, utilization);
     //LOG.info("GPU Util(Device " + deviceId + "): " + utilization + "%");
+  }
+
+  public static synchronized List<GpuStatus> getGpuStatuses(){
+    List<GpuStatus> gpuStatuses = new ArrayList<GpuStatus>();
+
+    for(Integer deviceId : gpuUtilization.keySet()){
+      GpuStatusPBImpl gpuStatus = new GpuStatusPBImpl();
+
+      gpuStatus.setDeviceId(deviceId);
+      gpuStatus.setGpuUtilization(gpuUtilization.get(deviceId));
+
+      gpuStatuses.add(gpuStatus);
+      //LOG.info("GPU Util(Device " + gpuStatus.getDeviceId() + "): " + gpuStatus.getGpuUtilization() + "%");
+    }
+
+    return gpuStatuses;
   }
 }

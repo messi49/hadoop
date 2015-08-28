@@ -122,8 +122,8 @@ public class ContainersMonitorImpl extends AbstractService implements
         YarnConfiguration.DEFAULT_NM_VCORES);
 
     long configuredGMemForContainers = conf.getLong(
-            YarnConfiguration.NM_GMEM_MB,
-            YarnConfiguration.DEFAULT_NM_GMEM_MB) * 1024 * 1024l;
+        YarnConfiguration.NM_GMEM_MB,
+        YarnConfiguration.DEFAULT_NM_GMEM_MB) * 1024 * 1024l;
 
 
     // Setting these irrespective of whether checks are enabled. Required in

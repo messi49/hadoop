@@ -40,7 +40,6 @@ public class ContainerStatusPBImpl extends ContainerStatus {
   
   private ContainerId containerId = null;
   
-  
   public ContainerStatusPBImpl() {
     builder = ContainerStatusProto.newBuilder();
   }

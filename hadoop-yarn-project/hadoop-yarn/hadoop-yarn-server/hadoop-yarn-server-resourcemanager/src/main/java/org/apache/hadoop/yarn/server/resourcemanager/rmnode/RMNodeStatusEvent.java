@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
 import org.apache.hadoop.yarn.api.records.NodeId;
+import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
 import org.apache.hadoop.yarn.server.api.records.NodeHealthStatus;
 
@@ -32,14 +33,16 @@ public class RMNodeStatusEvent extends RMNodeEvent {
   private final List<ContainerStatus> containersCollection;
   private final NodeHeartbeatResponse latestResponse;
   private final List<ApplicationId> keepAliveAppIds;
+  private final List<GpuStatus> gpusCollection;
 
   public RMNodeStatusEvent(NodeId nodeId, NodeHealthStatus nodeHealthStatus,
       List<ContainerStatus> collection, List<ApplicationId> keepAliveAppIds,
-      NodeHeartbeatResponse latestResponse) {
+      List<GpuStatus> gpusCollection, NodeHeartbeatResponse latestResponse) {
     super(nodeId, RMNodeEventType.STATUS_UPDATE);
     this.nodeHealthStatus = nodeHealthStatus;
     this.containersCollection = collection;
     this.keepAliveAppIds = keepAliveAppIds;
+    this.gpusCollection = gpusCollection;
     this.latestResponse = latestResponse;
   }
 
@@ -58,4 +61,9 @@ public class RMNodeStatusEvent extends RMNodeEvent {
   public List<ApplicationId> getKeepAliveAppIds() {
     return this.keepAliveAppIds;
   }
+
+  public List<GpuStatus> getGpusCollection() {
+    return this.gpusCollection;
+  }
+
 }

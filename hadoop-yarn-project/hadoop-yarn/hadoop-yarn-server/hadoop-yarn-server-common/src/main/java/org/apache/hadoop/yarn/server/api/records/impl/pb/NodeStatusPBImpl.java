@@ -25,13 +25,18 @@ import java.util.List;
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
+import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.impl.pb.ApplicationIdPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.ContainerStatusPBImpl;
+import org.apache.hadoop.yarn.api.records.impl.pb.GpuStatusPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.NodeIdPBImpl;
+import org.apache.hadoop.yarn.proto.YarnProtos;
 import org.apache.hadoop.yarn.proto.YarnProtos.ApplicationIdProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerStatusProto;
+import org.apache.hadoop.yarn.proto.YarnProtos.GpuStatusProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.NodeIdProto;
+import org.apache.hadoop.yarn.proto.YarnServerCommonProtos;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeHealthStatusProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeStatusProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeStatusProtoOrBuilder;
@@ -48,7 +53,8 @@ public class NodeStatusPBImpl extends NodeStatus {
   private List<ContainerStatus> containers = null;
   private NodeHealthStatus nodeHealthStatus = null;
   private List<ApplicationId> keepAliveApplications = null;
-  
+  private List<GpuStatus> gpus = null;
+
   public NodeStatusPBImpl() {
     builder = NodeStatusProto.newBuilder();
   }
@@ -77,6 +83,9 @@ public class NodeStatusPBImpl extends NodeStatus {
     }
     if (this.keepAliveApplications != null) {
       addKeepAliveApplicationsToProto();
+    }
+    if (this.gpus != null) {
+      addGpusToProto();
     }
   }
 
@@ -162,6 +171,40 @@ public class NodeStatusPBImpl extends NodeStatus {
       }
     };
     builder.addAllKeepAliveApplications(iterable);
+  }
+
+  private synchronized void addGpusToProto() {
+    maybeInitBuilder();
+    builder.clearGpuStatuses();
+    if (gpus == null)
+      return;
+    Iterable<GpuStatusProto> iterable = new Iterable<GpuStatusProto>() {
+      @Override
+      public Iterator<GpuStatusProto> iterator() {
+        return new Iterator<GpuStatusProto>() {
+
+          Iterator<GpuStatus> iter = gpus.iterator();
+
+          @Override
+          public boolean hasNext() {
+            return iter.hasNext();
+          }
+
+          @Override
+          public GpuStatusProto next() {
+            return convertToProtoFormat(iter.next());
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+
+          }
+        };
+
+      }
+    };
+    builder.addAllGpuStatuses(iterable);
   }
 
   @Override
@@ -291,6 +334,34 @@ public class NodeStatusPBImpl extends NodeStatus {
     this.nodeHealthStatus = healthStatus;
   }
 
+  private synchronized void initGpus() {
+    if (this.gpus != null) {
+      return;
+    }
+    NodeStatusProtoOrBuilder p = viaProto ? proto : builder;
+    List<GpuStatusProto> list = p.getGpuStatusesList();
+    this.gpus = new ArrayList<GpuStatus>();
+
+    for (GpuStatusProto c : list) {
+      this.gpus.add(convertFromProtoFormat(c));
+    }
+  }
+
+  @Override
+  public synchronized List<GpuStatus> getGpuStatuses() {
+    initGpus();
+    return this.gpus;
+  }
+
+  @Override
+  public synchronized void setGpuStatuses(
+    List<GpuStatus> gpus) {
+    if (gpus == null) {
+      builder.clearGpuStatuses();
+    }
+    this.gpus = gpus;
+  }
+
   private NodeIdProto convertToProtoFormat(NodeId nodeId) {
     return ((NodeIdPBImpl)nodeId).getProto();
   }
@@ -322,5 +393,13 @@ public class NodeStatusPBImpl extends NodeStatus {
   
   private ApplicationIdProto convertToProtoFormat(ApplicationId c) {
     return ((ApplicationIdPBImpl)c).getProto();
+  }
+
+  private GpuStatusPBImpl convertFromProtoFormat(GpuStatusProto c) {
+    return new GpuStatusPBImpl(c);
+  }
+
+  private GpuStatusProto convertToProtoFormat(GpuStatus c) {
+    return ((GpuStatusPBImpl)c).getProto();
   }
 }
