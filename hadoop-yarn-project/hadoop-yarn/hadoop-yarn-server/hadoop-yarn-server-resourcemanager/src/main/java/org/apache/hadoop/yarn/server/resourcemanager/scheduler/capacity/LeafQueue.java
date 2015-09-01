@@ -1526,17 +1526,17 @@ public class LeafQueue extends AbstractCSQueue {
     }
 
     // Check GPU Utilization
-    boolean availabeGpus = true;
+    boolean availableGpus = true;
     if(available.getGpuMemory() > 0 && Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 90){
       LOG.info("GPU Utilization reaching upto " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
-      availabeGpus = false;
+      availableGpus = false;
     }
 
     // Can we allocate a container on this node?
     int availableContainers = 
         resourceCalculator.computeAvailableContainers(available, capability);
 
-    if (availableContainers > 0 && availabeGpus == true) {
+    if (availableContainers > 0 && availableGpus == true) {
       // Allocate...
 
       // Did we previously reserve containers at this 'priority'?
