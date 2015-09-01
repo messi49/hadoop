@@ -733,7 +733,7 @@ public class LeafQueue extends AbstractCSQueue {
         labelManager.getLabelsOnNode(node.getNodeID()))) {
       return NULL_ASSIGNMENT;
     }
-    
+
     // Check for reserved resources
     RMContainer reservedContainer = node.getReservedContainer();
     if (reservedContainer != null) {
@@ -799,19 +799,19 @@ public class LeafQueue extends AbstractCSQueue {
           
           // Check queue max-capacity limit
           if (!canAssignToThisQueue(clusterResource, required,
-              labelManager.getLabelsOnNode(node.getNodeID()), application, true)) {
+            labelManager.getLabelsOnNode(node.getNodeID()), application, true)) {
             return NULL_ASSIGNMENT;
           }
 
           // Check user limit
           if (!assignToUser(clusterResource, application.getUser(), userLimit,
-              application, true, requestedNodeLabels)) {
+            application, true, requestedNodeLabels)) {
             break;
           }
 
           // Inform the application it is about to get a scheduling opportunity
           application.addSchedulingOpportunity(priority);
-          
+
           // Try to schedule
           CSAssignment assignment =  
             assignContainersOnNode(clusterResource, node, application, priority, 
@@ -823,7 +823,7 @@ public class LeafQueue extends AbstractCSQueue {
             application.subtractSchedulingOpportunity(priority);
             continue;
           }
-          
+
           // Did we schedule or reserve a container?
           Resource assigned = assignment.getResource();
           if (Resources.greaterThan(
@@ -1226,9 +1226,10 @@ public class LeafQueue extends AbstractCSQueue {
     ResourceRequest nodeLocalResourceRequest =
         application.getResourceRequest(priority, node.getNodeName());
     if (nodeLocalResourceRequest != null) {
-      assigned = 
+      assigned =
           assignNodeLocalContainers(clusterResource, nodeLocalResourceRequest, 
-              node, application, priority, reservedContainer, needToUnreserve); 
+              node, application, priority, reservedContainer, needToUnreserve);
+
       if (Resources.greaterThan(resourceCalculator, clusterResource, 
           assigned, Resources.none())) {
         return new CSAssignment(assigned, NodeType.NODE_LOCAL);
@@ -1524,10 +1525,18 @@ public class LeafQueue extends AbstractCSQueue {
       }
     }
 
+    // Check GPU Utilization
+    boolean availabeGpus = true;
+    if(available.getGpuMemory() > 0 && Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 90){
+      LOG.info("GPU Utilization reaching upto " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
+      availabeGpus = false;
+    }
+
     // Can we allocate a container on this node?
     int availableContainers = 
         resourceCalculator.computeAvailableContainers(available, capability);
-    if (availableContainers > 0) {
+
+    if (availableContainers > 0 && availabeGpus == true) {
       // Allocate...
 
       // Did we previously reserve containers at this 'priority'?
@@ -1595,7 +1604,7 @@ public class LeafQueue extends AbstractCSQueue {
         // Reserve by 'charging' in advance...
         reserve(application, priority, node, rmContainer, container);
 
-        LOG.info("Reserved container " + 
+        LOG.info("Reserved container " +
             " application=" + application.getApplicationId() + 
             " resource=" + request.getCapability() + 
             " queue=" + this.toString() + 

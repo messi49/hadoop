@@ -31,7 +31,9 @@ import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.factories.RecordFactory;
 import org.apache.hadoop.yarn.factory.providers.RecordFactoryProvider;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
+import org.apache.hadoop.yarn.server.api.records.NodeStatus;
 import org.apache.hadoop.yarn.server.resourcemanager.rmnode.RMNode;
+import org.apache.hadoop.yarn.server.resourcemanager.rmnode.RMNodeStatusEvent;
 import org.apache.hadoop.yarn.server.resourcemanager.rmnode.UpdatedContainerInfo;
 
 import com.google.common.collect.Lists;
@@ -99,6 +101,7 @@ public class MockNodes {
     private String healthReport;
     private long lastHealthReportTime;
     private NodeState state;
+    private NodeStatus nodestatus;
 
     public MockRMNodeImpl(NodeId nodeId, String nodeAddr, String httpAddress,
         Resource perNode, String rackName, String healthReport,
@@ -207,6 +210,16 @@ public class MockNodes {
     @Override
     public Set<String> getNodeLabels() {
       return null;
+    }
+
+    @Override
+    public void setNodeStatus(NodeStatus nodeStatus) {
+      this.nodestatus = nodeStatus;
+    }
+
+    @Override
+    public NodeStatus getNodeStatus() {
+      return this.nodestatus;
     }
   };
 

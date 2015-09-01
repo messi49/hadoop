@@ -421,6 +421,9 @@ public class ResourceTrackerService extends AbstractService implements
             nextHeartBeatInterval);
     rmNode.updateNodeHeartbeatResponseForCleanup(nodeHeartBeatResponse);
 
+    // Update Node Status (RMnode)
+    rmNode.setNodeStatus(remoteNodeStatus);
+
     populateKeys(request, nodeHeartBeatResponse);
 
     ConcurrentMap<ApplicationId, ByteBuffer> systemCredentials =

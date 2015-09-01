@@ -20,8 +20,11 @@ package org.apache.hadoop.yarn.util.resource;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
+import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.util.Records;
+
+import java.util.List;
 
 @InterfaceAudience.LimitedPrivate({"YARN", "MapReduce"})
 @Unstable
@@ -294,5 +297,15 @@ public class Resources {
     return createResource(Math.min(lhs.getMemory(), rhs.getMemory()),
         Math.min(lhs.getVirtualCores(), rhs.getVirtualCores()),
             Math.min(lhs.getGpuMemory(), rhs.getGpuMemory()));
+  }
+
+  public static int minGpuUtilization(List<GpuStatus> gpuStatuses) {
+    int min = 0;
+    for(int i = 0; i < gpuStatuses.size(); i++){
+      if(min > gpuStatuses.get(i).getGpuUtilization()){
+        min = gpuStatuses.get(i).getGpuUtilization();
+      }
+    }
+    return min;
   }
 }

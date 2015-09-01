@@ -50,6 +50,7 @@ import org.apache.hadoop.yarn.nodelabels.CommonNodeLabelsManager;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NMContainerStatus;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
 import org.apache.hadoop.yarn.server.api.records.NodeHealthStatus;
+import org.apache.hadoop.yarn.server.api.records.NodeStatus;
 import org.apache.hadoop.yarn.server.resourcemanager.ClusterMetrics;
 import org.apache.hadoop.yarn.server.resourcemanager.NodesListManagerEvent;
 import org.apache.hadoop.yarn.server.resourcemanager.NodesListManagerEventType;
@@ -99,6 +100,9 @@ public class RMNodeImpl implements RMNode, EventHandler<RMNodeEvent> {
   private String httpAddress;
   private volatile Resource totalCapability;
   private final Node node;
+
+  public static final Object LOCK = new Object();
+  private NodeStatus nodeStatus;
 
   private String healthReport;
   private long lastHealthReportTime;
@@ -863,4 +867,18 @@ public class RMNodeImpl implements RMNode, EventHandler<RMNodeEvent> {
     }
     return context.getNodeLabelManager().getLabelsOnNode(nodeId);
   }
- }
+
+  @Override
+  public void setNodeStatus(NodeStatus nodeStatus) {
+    synchronized(LOCK) {
+      this.nodeStatus = nodeStatus;
+    }
+  }
+
+  @Override
+  public NodeStatus getNodeStatus() {
+    synchronized(LOCK) {
+      return this.nodeStatus;
+    }
+  }
+}
