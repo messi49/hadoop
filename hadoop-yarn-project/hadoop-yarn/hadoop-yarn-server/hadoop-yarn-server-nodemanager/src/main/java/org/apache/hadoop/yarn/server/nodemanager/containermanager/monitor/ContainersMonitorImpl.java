@@ -205,8 +205,8 @@ public class ContainersMonitorImpl extends AbstractService implements
       this.monitoringThread.start();
     }
     super.serviceStart();
-    // GPU Resuorce Monior launch
-    gpuResourceMonitorTimer.schedule(new GpuResourceMonitor(), 0, 100);
+    // GPU Resuorce Monior launch(200ms)
+    gpuResourceMonitorTimer.schedule(new GpuResourceMonitor(), 0, 200);
   }
 
   @Override

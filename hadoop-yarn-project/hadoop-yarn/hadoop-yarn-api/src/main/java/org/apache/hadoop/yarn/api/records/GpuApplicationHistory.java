@@ -22,29 +22,34 @@ import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability.Stable;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
+import org.apache.hadoop.yarn.proto.YarnProtos;
+import org.apache.hadoop.yarn.proto.YarnProtos.ApplicationIdProto;
 import org.apache.hadoop.yarn.util.Records;
 
 /**
- * <p><code>GpuStatus</code> represents the GPU Utilization.</p>
+ * <p><code>GpuApplicationHisory</code> represents the GPU Application Utilization.</p>
  *
  * <p>It provides details such as:
  *   <ul>
  *     <li><em>DeviceID</em> of the device.</li>
  *     <li><em>GPU Utilization</em> of the GPU.</li>
+ *     <li><em>TaskType</em> of the Map or Reduce.</li>
  *   </ul>
  * </p>
  */
 @Public
 @Stable
-public abstract class GpuStatus {
+public abstract class GpuApplicationHistory {
 
   @Private
   @Unstable
-  public static GpuStatus newInstance(int deviceId, int gpuUtilization) {
-    GpuStatus gpuStatus = Records.newRecord(GpuStatus.class);
-    gpuStatus.setDeviceId(deviceId);
-    gpuStatus.setGpuUtilization(gpuUtilization);
-    return gpuStatus;
+  public static GpuApplicationHistory newInstance(int deviceId, ApplicationId applicationId, int gpuUtilization, int taskType) {
+    GpuApplicationHistory gpuApplicationHistory = Records.newRecord(GpuApplicationHistory.class);
+    gpuApplicationHistory.setDeviceId(deviceId);
+    gpuApplicationHistory.setApplicationId(applicationId);
+    gpuApplicationHistory.setGpuUtilization(gpuUtilization);
+    gpuApplicationHistory.setTaskType(taskType);
+    return gpuApplicationHistory;
   }
 
   /**
@@ -60,8 +65,20 @@ public abstract class GpuStatus {
   public abstract void setDeviceId(int deviceId);
 
   /**
-   * Get the <em>GpuStatus</em> of the GPU.
-   * @return <em>GpuStatus</em> of the GPU
+   * Get the <em>ApplicationID</em> of the GPU.
+   * @return <em>ApplicationID</em> of the GPU
+   */
+  @Public
+  @Stable
+  public abstract ApplicationId getApplicationId();
+
+  @Private
+  @Unstable
+  public abstract void setApplicationId(ApplicationId applicationId);
+
+  /**
+   * Get the <em>GPU Utilization</em> of the GPU.
+   * @return <em>GPU Utilization</em> of the GPU
    */
   @Public
   @Stable
@@ -71,4 +88,16 @@ public abstract class GpuStatus {
   @Unstable
   public abstract void setGpuUtilization(int gpuUtilization);
 
+
+  /**
+   * Get the <em>TaskType</em> of the GPU.
+   * @return <em>TaskType</em> of the GPU
+   */
+  @Public
+  @Stable
+  public abstract int getTaskType();
+
+  @Private
+  @Unstable
+  public abstract void setTaskType(int taskType);
 }

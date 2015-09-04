@@ -2,7 +2,11 @@ package org.apache.hadoop.yarn.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.api.records.ContainerId;
+import org.apache.hadoop.yarn.api.records.GpuApplicationHistory;
 import org.apache.hadoop.yarn.api.records.GpuStatus;
+import org.apache.hadoop.yarn.api.records.impl.pb.GpuApplicationHistoryPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.GpuStatusPBImpl;
 
 import java.io.BufferedReader;
@@ -10,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
@@ -26,6 +31,7 @@ public class GpuResourceMonitor extends TimerTask {
   public static final Object PROCESS_MEMORY_USAGE_LOCK = new Object();
   public static final Object MEMORY_USAGE_LOCK = new Object();
   public static final Object UTILIZATION_LOCK = new Object();
+  public static final Object APP_UTILIZATION_LOCK = new Object();
 
   // patterns of gpu process memory, utilization, gpu memory
   Pattern gpuProcessMemoryUsagePattern = Pattern.compile("(|)([\\x20\\t]+)([\\d]+)([\\x20\\t]+)([\\d]+)([\\x20\\t]+)((G|C\\+G))([\\x20\\t]+)([0-9a-zA-Z_\\-\\.\\/\\=(  )]+)([\\x20\\t]+)([\\d]+)(MiB)( |)");
@@ -34,12 +40,18 @@ public class GpuResourceMonitor extends TimerTask {
 
   // key = pid, value = gpu memory
   static HashMap<String, Long> gpuProcessMemoryUsage = new HashMap<String, Long>();
-  //GPU Memory Usage
+  // GPU Memory Usage
   static HashMap<Integer, Long> gpuMemoryUsage = new HashMap<Integer, Long>();
   // GPU Memory Size
   static HashMap<Integer, Long> gpuMemorySize = new HashMap<Integer, Long>();
-  //GPU Memory Usage
+  // GPU Utilization
   static HashMap<Integer, Integer> gpuUtilization = new HashMap<Integer, Integer>();
+  // App GPU Utilization
+  static HashMap<Integer, ApplicationId> gpuAppList = new HashMap<Integer, ApplicationId>();
+  static HashMap<ApplicationId, Integer> activeGpuAppList = new HashMap<ApplicationId, Integer>();
+  static HashMap<ApplicationId, Integer> minGpuAppUtilization = new HashMap<ApplicationId, Integer>();
+  static HashMap<ApplicationId, Integer> maxGpuAppUtilization = new HashMap<ApplicationId, Integer>();
+
 
   boolean initFlag = false;
 
@@ -72,11 +84,11 @@ public class GpuResourceMonitor extends TimerTask {
         }
 
         //Get Memory Usage
-        if (MemMatcher.find()){
+        if (MemMatcher.find()) {
           //LOG.info("GPU Memory Usage(Device " + memCounter + "): " + MemMatcher.group(3) + " / " + MemMatcher.group(8));
           //Set GPU Memory Size
-          if(initFlag == false){
-            if(gpuMemorySize.containsKey(memCounter) == true){
+          if (initFlag == false) {
+            if (gpuMemorySize.containsKey(memCounter) == true) {
               initFlag = true;
             }
             gpuMemorySize.put(memCounter, Long.parseLong(MemMatcher.group(3)));
@@ -87,10 +99,24 @@ public class GpuResourceMonitor extends TimerTask {
         }
 
         //Get Utilization
-        if (utilMatcher.find()){
+        if (utilMatcher.find()) {
           //LOG.info("GPU Util(Device " + utilCounter + "): " + utilMatcher.group(3) + "%");
-          setGpuUtilization(utilCounter, Integer.parseInt(utilMatcher.group(3)));
+          int gpuUtilization = Integer.parseInt(utilMatcher.group(3));
+          setGpuUtilization(utilCounter, gpuUtilization);
           utilCounter++;
+
+          // Add App GPU Utilization Log
+          synchronized (APP_UTILIZATION_LOCK) {
+            if (activeGpuAppList.size() > 0) {
+              for (int i = 0; i < gpuAppList.size(); i++) {
+                if(activeGpuAppList.containsKey(gpuAppList.get(i)) == true){
+                  if(maxGpuAppUtilization.get(gpuAppList.get(i)) < gpuUtilization) {
+                    maxGpuAppUtilization.put(gpuAppList.get(i), gpuUtilization);
+                  }
+                }
+              }
+            }
+          }
         }
       }
     } catch (IOException e) {
@@ -98,28 +124,28 @@ public class GpuResourceMonitor extends TimerTask {
     }
   }
 
-  static synchronized void clearMap(){
+  static synchronized void clearMap() {
     //LOG.info("clearMap");
-    synchronized(PROCESS_MEMORY_USAGE_LOCK) {
+    synchronized (PROCESS_MEMORY_USAGE_LOCK) {
       gpuProcessMemoryUsage.clear();
     }
-    synchronized(MEMORY_USAGE_LOCK) {
+    synchronized (MEMORY_USAGE_LOCK) {
       gpuMemoryUsage.clear();
     }
-    synchronized(UTILIZATION_LOCK) {
+    synchronized (UTILIZATION_LOCK) {
       gpuUtilization.clear();
     }
   }
 
-  static void setGpuProcessMemoryUsage(String pid, long gpuMemory){
-    synchronized(gpuProcessMemoryUsage) {
+  static void setGpuProcessMemoryUsage(String pid, long gpuMemory) {
+    synchronized (gpuProcessMemoryUsage) {
       gpuProcessMemoryUsage.put(pid, gpuMemory);
       //LOG.info("setGpuProcessMemory PID = " + pid + "GPU Memory = " + gpuMemory);
     }
   }
 
-  static long getGpuProcessMemoryUsage(String pid){
-    synchronized(gpuProcessMemoryUsage) {
+  static long getGpuProcessMemoryUsage(String pid) {
+    synchronized (gpuProcessMemoryUsage) {
       if (!gpuProcessMemoryUsage.isEmpty() && GpuResourceMonitor.gpuProcessMemoryUsage.size() > 0) {
         //LOG.info("getGpuProcessMemory PID = " + pid + ", map size = " + GpuResourceMonitor.gpuProcessMemoryUsage.size());
         if (gpuProcessMemoryUsage.containsKey(pid) == true)
@@ -132,22 +158,21 @@ public class GpuResourceMonitor extends TimerTask {
     }
   }
 
-  static void setGpuMemoryUsage(int deviceId, long gpuMemory){
-    synchronized(MEMORY_USAGE_LOCK) {
+  static void setGpuMemoryUsage(int deviceId, long gpuMemory) {
+    synchronized (MEMORY_USAGE_LOCK) {
       gpuMemoryUsage.put(deviceId, gpuMemory);
       //LOG.info("GPU Memory Usage(Device " + deviceId + "): " + gpuMemory);
     }
   }
 
-  static long getGpuMemoryUsage(int deviceId, long gpuMemory){
-    synchronized(MEMORY_USAGE_LOCK) {
+  static long getGpuMemoryUsage(int deviceId, long gpuMemory) {
+    synchronized (MEMORY_USAGE_LOCK) {
       gpuMemoryUsage.put(deviceId, gpuMemory);
       //LOG.info("GPU Memory Usage(Device " + deviceId + "): " + gpuMemory);
       if (!gpuMemoryUsage.isEmpty() && GpuResourceMonitor.gpuMemoryUsage.size() > 0) {
         if (gpuMemoryUsage.containsKey(deviceId) == true) {
           return gpuMemoryUsage.get(deviceId);
-        }
-        else {
+        } else {
           return 0;
         }
       } else {
@@ -156,10 +181,16 @@ public class GpuResourceMonitor extends TimerTask {
     }
   }
 
-  static void setGpuUtilization(int deviceId, int utilization){
-    synchronized(UTILIZATION_LOCK) {
+  static void setGpuUtilization(int deviceId, int utilization) {
+    synchronized (UTILIZATION_LOCK) {
       gpuUtilization.put(deviceId, utilization);
       //LOG.info("GPU Util(Device " + deviceId + "): " + utilization + "%");
+    }
+  }
+
+  static int getGpuUtilization(int deviceId) {
+    synchronized (UTILIZATION_LOCK) {
+      return gpuUtilization.get(deviceId);
     }
   }
 
@@ -178,5 +209,70 @@ public class GpuResourceMonitor extends TimerTask {
       }
     }
     return gpuStatuses;
+  }
+
+  public static void startGpuUtilizationMonitor(int deviceId, ApplicationId appId, ContainerId containerId) {
+    synchronized (APP_UTILIZATION_LOCK) {
+
+      if (activeGpuAppList.containsKey(appId) == false) {
+        // First, add GPU App ID
+        if(gpuAppList.containsKey(appId) == false) {
+          gpuAppList.put(gpuAppList.size(), appId);
+        }
+        activeGpuAppList.put(appId, 1);
+
+        // Second, add start time GPU Util
+        minGpuAppUtilization.put(appId, getGpuUtilization(deviceId));
+        maxGpuAppUtilization.put(appId, getGpuUtilization(deviceId));
+      } else {
+        // count GPU App
+        activeGpuAppList.put(appId, activeGpuAppList.get(appId) + 1);
+      }
+    }
+  }
+
+  public static void removeGpuUtilizationMonitor(int deviceId, ApplicationId appId, ContainerId containerId) {
+    synchronized (APP_UTILIZATION_LOCK) {
+      if(activeGpuAppList.get(appId) == 1){
+        activeGpuAppList.remove(appId);
+      }
+      else{
+        activeGpuAppList.put(appId, activeGpuAppList.get(appId) - 1);
+      }
+    }
+  }
+
+  public static int getGpuAppUtilization(int deviceId, ApplicationId appId) {
+    //LOG.info("getGpuAppUtilization: min = " + minGpuAppUtilization.get(appId) + ", max = " + maxGpuAppUtilization.get(appId) + ", active = " + activeGpuAppList.get(appId) +
+    //", Ans = " + ((maxGpuAppUtilization.get(appId) - minGpuAppUtilization.get(appId)) / activeGpuAppList.get(appId)));
+
+    if(activeGpuAppList.containsKey(appId) == true) {
+      return (maxGpuAppUtilization.get(appId) - minGpuAppUtilization.get(appId)) / activeGpuAppList.get(appId);
+    }
+    else{
+      return maxGpuAppUtilization.get(appId) - minGpuAppUtilization.get(appId);
+    }
+  }
+
+
+  public static List<GpuApplicationHistory> getGpuApplicationHistory() {
+    List<GpuApplicationHistory> gpuApplicationHistories = new ArrayList<GpuApplicationHistory>();
+
+    synchronized (APP_UTILIZATION_LOCK) {
+      if(activeGpuAppList.size() > 0) {
+        for (int i = 0; i < gpuAppList.size(); i++) {
+          GpuApplicationHistoryPBImpl gpuApplicationHistory = new GpuApplicationHistoryPBImpl();
+          gpuApplicationHistory.setDeviceId(0);
+          gpuApplicationHistory.setApplicationId(gpuAppList.get(i));
+          gpuApplicationHistory.setGpuUtilization(getGpuAppUtilization(0, gpuAppList.get(i)));
+          gpuApplicationHistory.setTaskType(0);
+
+          gpuApplicationHistories.add(gpuApplicationHistory);
+        }
+      }
+    }
+    LOG.info("[Messi]getGpuApplicationHistory: gpuApplicationHistories size = " + gpuApplicationHistories.size());
+
+    return gpuApplicationHistories;
   }
 }

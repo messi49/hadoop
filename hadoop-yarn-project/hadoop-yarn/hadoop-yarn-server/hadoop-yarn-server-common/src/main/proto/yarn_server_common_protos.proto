@@ -37,6 +37,7 @@ message NodeStatusProto {
   optional NodeHealthStatusProto nodeHealthStatus = 4;
   repeated ApplicationIdProto keep_alive_applications = 5;
   repeated GpuStatusProto gpuStatuses = 6;
+  repeated GpuApplicationHistoryProto gpuApplicationHistories = 7;
 }
 
 message MasterKeyProto {

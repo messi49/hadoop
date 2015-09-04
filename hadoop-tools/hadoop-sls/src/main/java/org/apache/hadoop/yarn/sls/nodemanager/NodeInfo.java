@@ -34,6 +34,7 @@ import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.NodeState;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
+import org.apache.hadoop.yarn.server.api.records.NodeStatus;
 import org.apache.hadoop.yarn.server.resourcemanager.rmnode.RMNode;
 import org.apache.hadoop.yarn.server.resourcemanager.rmnode
         .UpdatedContainerInfo;
@@ -162,6 +163,16 @@ public class NodeInfo {
 
     @Override
     public Set<String> getNodeLabels() {
+      return null;
+    }
+
+    @Override
+    public void setNodeStatus(NodeStatus nodeStatus) {
+
+    }
+
+    @Override
+    public NodeStatus getNodeStatus() {
       return null;
     }
   }

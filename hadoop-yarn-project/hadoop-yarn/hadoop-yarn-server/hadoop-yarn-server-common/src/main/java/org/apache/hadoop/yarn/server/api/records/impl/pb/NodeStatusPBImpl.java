@@ -25,10 +25,12 @@ import java.util.List;
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
+import org.apache.hadoop.yarn.api.records.GpuApplicationHistory;
 import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.impl.pb.ApplicationIdPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.ContainerStatusPBImpl;
+import org.apache.hadoop.yarn.api.records.impl.pb.GpuApplicationHistoryPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.GpuStatusPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.NodeIdPBImpl;
 import org.apache.hadoop.yarn.proto.YarnProtos;
@@ -36,13 +38,13 @@ import org.apache.hadoop.yarn.proto.YarnProtos.ApplicationIdProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerStatusProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.GpuStatusProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.NodeIdProto;
+import org.apache.hadoop.yarn.proto.YarnProtos.GpuApplicationHistoryProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeHealthStatusProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeStatusProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeStatusProtoOrBuilder;
 import org.apache.hadoop.yarn.server.api.records.NodeHealthStatus;
 import org.apache.hadoop.yarn.server.api.records.NodeStatus;
-    
 
 public class NodeStatusPBImpl extends NodeStatus {
   NodeStatusProto proto = NodeStatusProto.getDefaultInstance();
@@ -54,6 +56,7 @@ public class NodeStatusPBImpl extends NodeStatus {
   private NodeHealthStatus nodeHealthStatus = null;
   private List<ApplicationId> keepAliveApplications = null;
   private List<GpuStatus> gpus = null;
+  private List<GpuApplicationHistory> gpuApplicationHistories = null;
 
   public NodeStatusPBImpl() {
     builder = NodeStatusProto.newBuilder();
@@ -86,6 +89,9 @@ public class NodeStatusPBImpl extends NodeStatus {
     }
     if (this.gpus != null) {
       addGpusToProto();
+    }
+    if (this.gpuApplicationHistories != null) {
+      addGpuApplicationHistoriesToProto();
     }
   }
 
@@ -205,6 +211,40 @@ public class NodeStatusPBImpl extends NodeStatus {
       }
     };
     builder.addAllGpuStatuses(iterable);
+  }
+
+  private synchronized void addGpuApplicationHistoriesToProto() {
+    maybeInitBuilder();
+    builder.clearGpuStatuses();
+    if (gpuApplicationHistories == null)
+      return;
+    Iterable<GpuApplicationHistoryProto> iterable = new Iterable<GpuApplicationHistoryProto>() {
+      @Override
+      public Iterator<GpuApplicationHistoryProto> iterator() {
+        return new Iterator<GpuApplicationHistoryProto>() {
+
+          Iterator<GpuApplicationHistory> iter = gpuApplicationHistories.iterator();
+
+          @Override
+          public boolean hasNext() {
+            return iter.hasNext();
+          }
+
+          @Override
+          public GpuApplicationHistoryProto next() {
+            return convertToProtoFormat(iter.next());
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+
+          }
+        };
+
+      }
+    };
+    builder.addAllGpuApplicationHistories(iterable);
   }
 
   @Override
@@ -362,6 +402,34 @@ public class NodeStatusPBImpl extends NodeStatus {
     this.gpus = gpus;
   }
 
+  private synchronized void initGpuApplicationHistories() {
+    if (this.gpuApplicationHistories != null) {
+      return;
+    }
+    NodeStatusProtoOrBuilder p = viaProto ? proto : builder;
+    List<GpuApplicationHistoryProto> list = p.getGpuApplicationHistoriesList();
+    this.gpuApplicationHistories = new ArrayList<GpuApplicationHistory>();
+
+    for (GpuApplicationHistoryProto c : list) {
+      this.gpuApplicationHistories.add(convertFromProtoFormat(c));
+    }
+  }
+
+  @Override
+  public synchronized List<GpuApplicationHistory> getGpuApplicationHistories() {
+    initGpuApplicationHistories();
+    return this.gpuApplicationHistories;
+  }
+
+  @Override
+  public synchronized void setGpuApplicationHistories(
+    List<GpuApplicationHistory> gpuApplicationHistories) {
+    if (gpuApplicationHistories == null) {
+      builder.clearGpuApplicationHistories();
+    }
+    this.gpuApplicationHistories = gpuApplicationHistories;
+  }
+
   private NodeIdProto convertToProtoFormat(NodeId nodeId) {
     return ((NodeIdPBImpl)nodeId).getProto();
   }
@@ -402,4 +470,13 @@ public class NodeStatusPBImpl extends NodeStatus {
   private GpuStatusProto convertToProtoFormat(GpuStatus c) {
     return ((GpuStatusPBImpl)c).getProto();
   }
+
+  private GpuApplicationHistoryPBImpl convertFromProtoFormat(GpuApplicationHistoryProto c) {
+    return new GpuApplicationHistoryPBImpl(c);
+  }
+
+  private GpuApplicationHistoryProto convertToProtoFormat(GpuApplicationHistory c) {
+    return ((GpuApplicationHistoryPBImpl)c).getProto();
+  }
+
 }

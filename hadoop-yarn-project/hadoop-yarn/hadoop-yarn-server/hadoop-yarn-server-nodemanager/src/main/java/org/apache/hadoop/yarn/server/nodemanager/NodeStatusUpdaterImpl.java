@@ -47,6 +47,7 @@ import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.ContainerState;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
+import org.apache.hadoop.yarn.api.records.GpuApplicationHistory;
 import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.Resource;
@@ -350,10 +351,11 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
     }
     List<ContainerStatus> containersStatuses = getContainerStatuses();
     List<GpuStatus> gpuStatuses = GpuResourceMonitor.getGpuStatuses();
+    List<GpuApplicationHistory> gpuApplicationHistories = GpuResourceMonitor.getGpuApplicationHistory();
 
     NodeStatus nodeStatus =
         NodeStatus.newInstance(nodeId, responseId, containersStatuses,
-          createKeepAliveApplicationList(), gpuStatuses, nodeHealthStatus);
+          createKeepAliveApplicationList(), gpuStatuses, gpuApplicationHistories, nodeHealthStatus);
 
     return nodeStatus;
   }

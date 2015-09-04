@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
+import org.apache.hadoop.yarn.api.records.GpuApplicationHistory;
 import org.apache.hadoop.yarn.api.records.GpuStatus;
 import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.util.Records;
@@ -32,6 +33,7 @@ public abstract class NodeStatus {
       List<ContainerStatus> containerStatuses,
       List<ApplicationId> keepAliveApplications,
       List<GpuStatus> gpuStatuses,
+      List<GpuApplicationHistory> GpuApplicationHistories,
       NodeHealthStatus nodeHealthStatus) {
     NodeStatus nodeStatus = Records.newRecord(NodeStatus.class);
     nodeStatus.setResponseId(responseId);
@@ -40,6 +42,7 @@ public abstract class NodeStatus {
     nodeStatus.setKeepAliveApplications(keepAliveApplications);
     nodeStatus.setNodeHealthStatus(nodeHealthStatus);
     nodeStatus.setGpuStatuses(gpuStatuses);
+    nodeStatus.setGpuApplicationHistories(GpuApplicationHistories);
     return nodeStatus;
   }
 
@@ -62,4 +65,8 @@ public abstract class NodeStatus {
   public abstract List<GpuStatus> getGpuStatuses();
   public abstract void setGpuStatuses(
     List<GpuStatus> gpuStatuses);
+
+  public abstract List<GpuApplicationHistory> getGpuApplicationHistories();
+  public abstract void setGpuApplicationHistories(
+    List<GpuApplicationHistory> GpuApplicationHistories);
 }

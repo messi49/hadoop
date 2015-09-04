@@ -435,6 +435,13 @@ message GpuStatusProto {
   optional int32 gpu_utilization = 2;
 }
 
+message GpuApplicationHistoryProto {
+  optional int32 device_id = 1;
+  optional ApplicationIdProto application_id = 2;
+  optional int32 gpu_utilization = 3;
+  optional int32 task_type = 4;
+}
+
 ////////////////////////////////////////////////////////////////////////
 ////// From common//////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
