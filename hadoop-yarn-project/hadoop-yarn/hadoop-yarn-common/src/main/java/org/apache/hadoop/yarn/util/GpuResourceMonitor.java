@@ -271,7 +271,6 @@ public class GpuResourceMonitor extends TimerTask {
         }
       }
     }
-    LOG.info("[Messi]getGpuApplicationHistory: gpuApplicationHistories size = " + gpuApplicationHistories.size());
 
     return gpuApplicationHistories;
   }

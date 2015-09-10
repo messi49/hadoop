@@ -33,7 +33,7 @@ public abstract class NodeStatus {
       List<ContainerStatus> containerStatuses,
       List<ApplicationId> keepAliveApplications,
       List<GpuStatus> gpuStatuses,
-      List<GpuApplicationHistory> GpuApplicationHistories,
+      List<GpuApplicationHistory> gpuApplicationHistories,
       NodeHealthStatus nodeHealthStatus) {
     NodeStatus nodeStatus = Records.newRecord(NodeStatus.class);
     nodeStatus.setResponseId(responseId);
@@ -42,7 +42,7 @@ public abstract class NodeStatus {
     nodeStatus.setKeepAliveApplications(keepAliveApplications);
     nodeStatus.setNodeHealthStatus(nodeHealthStatus);
     nodeStatus.setGpuStatuses(gpuStatuses);
-    nodeStatus.setGpuApplicationHistories(GpuApplicationHistories);
+    nodeStatus.setGpuApplicationHistories(gpuApplicationHistories);
     return nodeStatus;
   }
 
