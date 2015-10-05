@@ -1530,14 +1530,15 @@ public class LeafQueue extends AbstractCSQueue {
     int appGpuUtilization = 0;
     if(capability.getGpuMemory() > 0) {
       for (int i = 0; i < node.getRMNode().getNodeStatus().getGpuApplicationHistories().size(); i++) {
-        if (application.getApplicationId() == node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getApplicationId()) {
-          LOG.info("[Messi]LeafQueue: app id = " + node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getApplicationId() +
-            "GPU Utilization = " + node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization());
-          appGpuUtilization = node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization();
+        if (application.getApplicationId().toString().equals(node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getApplicationId().toString())) {
+          if(appGpuUtilization < node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization()){
+            appGpuUtilization = node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization();
+          }
+          LOG.info("appGpuUtilization update to " + appGpuUtilization);
         }
       }
       if (Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + appGpuUtilization > 100 || Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 95) {
-        LOG.info("GPU Utilization reaching upto " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
+        LOG.info("GPU Utilization reaches to " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
         availableGpus = false;
       }
     }
@@ -1619,8 +1620,8 @@ public class LeafQueue extends AbstractCSQueue {
             " resource=" + request.getCapability() + 
             " queue=" + this.toString() + 
             " usedCapacity=" + getUsedCapacity() + 
-            " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() + 
-            " used=" + usedResources +
+            " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() +
+          " used=" + usedResources +
             " cluster=" + clusterResource);
 
         return request.getCapability();

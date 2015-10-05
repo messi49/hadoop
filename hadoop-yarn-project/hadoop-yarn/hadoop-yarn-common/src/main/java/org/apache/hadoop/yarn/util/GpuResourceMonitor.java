@@ -40,10 +40,12 @@ public class GpuResourceMonitor extends TimerTask {
 
   // key = pid, value = gpu memory
   static HashMap<String, Long> gpuProcessMemoryUsage = new HashMap<String, Long>();
+  // GPU Device Memory Size
+  static HashMap<Integer, Long> gpuDevicesMemory= new HashMap<Integer, Long>();
   // GPU Memory Usage
   static HashMap<Integer, Long> gpuMemoryUsage = new HashMap<Integer, Long>();
-  // GPU Memory Size
-  static HashMap<Integer, Long> gpuMemorySize = new HashMap<Integer, Long>();
+  // GPU Memory Unusage
+  static HashMap<Integer, Long> gpuMemoryUnusage = new HashMap<Integer, Long>();
   // GPU Utilization
   static HashMap<Integer, Integer> gpuUtilization = new HashMap<Integer, Integer>();
   // App GPU Utilization
@@ -75,25 +77,19 @@ public class GpuResourceMonitor extends TimerTask {
         Matcher MemMatcher = gpuMemoryUsagePattern.matcher(line);
         Matcher utilMatcher = gpuUtilizationPattern.matcher(line);
 
-        //Get Process Memory Usage
+        // Get Process Memory Usage
         if (processMemMatcher.find()) {
-          //System.out.println(memMatcher.group(3) + ": " + memMatcher.group(5)+ ": " + memMatcher.group(7)+ ": " + memMatcher.group(10)+ ": " + memMatcher.group(12));
+          // System.out.println(memMatcher.group(3) + ": " + memMatcher.group(5)+ ": " + memMatcher.group(7)+ ": " + memMatcher.group(10)+ ": " + memMatcher.group(12));
           if (processMemMatcher.group(5).length() != 0 && Long.parseLong(processMemMatcher.group(12)) >= 0) {
             setGpuProcessMemoryUsage(processMemMatcher.group(5), Long.parseLong(processMemMatcher.group(12)));
           }
         }
 
-        //Get Memory Usage
+        // Get Memory Usage
         if (MemMatcher.find()) {
-          //LOG.info("GPU Memory Usage(Device " + memCounter + "): " + MemMatcher.group(3) + " / " + MemMatcher.group(8));
-          //Set GPU Memory Size
-          if (initFlag == false) {
-            if (gpuMemorySize.containsKey(memCounter) == true) {
-              initFlag = true;
-            }
-            gpuMemorySize.put(memCounter, Long.parseLong(MemMatcher.group(3)));
-          }
-
+          // Set GPU Device Memory (only first time)
+          setGpuDeviceMemory(memCounter, Long.parseLong(MemMatcher.group(8)));
+          // Set GPU Memory Usage
           setGpuMemoryUsage(memCounter, Long.parseLong(MemMatcher.group(3)));
           memCounter++;
         }
@@ -158,17 +154,25 @@ public class GpuResourceMonitor extends TimerTask {
     }
   }
 
-  static void setGpuMemoryUsage(int deviceId, long gpuMemory) {
+  static void setGpuDeviceMemory(int deviceId, long gpuMemory) {
     synchronized (MEMORY_USAGE_LOCK) {
-      gpuMemoryUsage.put(deviceId, gpuMemory);
-      //LOG.info("GPU Memory Usage(Device " + deviceId + "): " + gpuMemory);
+      if(gpuDevicesMemory.containsKey(deviceId) == false){
+        gpuDevicesMemory.put(deviceId, gpuMemory);
+      }
     }
   }
 
-  static long getGpuMemoryUsage(int deviceId, long gpuMemory) {
+  static void setGpuMemoryUsage(int deviceId, long gpuMemory) {
     synchronized (MEMORY_USAGE_LOCK) {
       gpuMemoryUsage.put(deviceId, gpuMemory);
-      //LOG.info("GPU Memory Usage(Device " + deviceId + "): " + gpuMemory);
+      gpuMemoryUnusage.put(deviceId, gpuDevicesMemory.get(deviceId) - gpuMemory);
+      //LOG.info("GPU Memory Unusage(Device " + deviceId + "): " + (gpuDevicesMemory.get(deviceId) - gpuMemory));
+    }
+  }
+
+  static long getGpuMemoryUsage(int deviceId) {
+    synchronized (MEMORY_USAGE_LOCK) {
+      //LOG.info("GPU Memory Unusage(Device " + deviceId + "): " + gpuMemory);
       if (!gpuMemoryUsage.isEmpty() && GpuResourceMonitor.gpuMemoryUsage.size() > 0) {
         if (gpuMemoryUsage.containsKey(deviceId) == true) {
           return gpuMemoryUsage.get(deviceId);
@@ -177,6 +181,16 @@ public class GpuResourceMonitor extends TimerTask {
         }
       } else {
         return 0;
+      }
+    }
+  }
+
+  static HashMap<Integer, Long> getGpuMemoryUnusage() {
+    synchronized (MEMORY_USAGE_LOCK) {
+      if (!gpuMemoryUnusage.isEmpty() && GpuResourceMonitor.gpuMemoryUnusage.size() > 0) {
+        return gpuMemoryUnusage;
+      } else {
+        return null;
       }
     }
   }
