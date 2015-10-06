@@ -1525,11 +1525,7 @@ public class LeafQueue extends AbstractCSQueue {
       }
     }
 
-    LOG.info("GPU Status Size = " + node.getRMNode().getNodeStatus().getGpuStatuses().size());
-    for(int i = 0; i < node.getRMNode().getNodeStatus().getGpuStatuses().size(); i++){
-      LOG.info("GPU Util = " + node.getRMNode().getNodeStatus().getGpuStatuses().get(i).getGpuUtilization());
-      LOG.info("GPU Free Memory = " + node.getRMNode().getNodeStatus().getGpuStatuses().get(i).getGpuFreeMemory());
-    }
+    //LOG.info(node.getRMNode().getNodeStatus().getGpuStatuses().toString());
     
     // Check GPU Utilization
     boolean availableGpus = true;
@@ -1540,7 +1536,7 @@ public class LeafQueue extends AbstractCSQueue {
           if(appGpuUtilization < node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization()){
             appGpuUtilization = node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization();
           }
-          LOG.info("appGpuUtilization update to " + appGpuUtilization);
+          //LOG.info("appGpuUtilization update to " + appGpuUtilization);
         }
       }
       if (Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + appGpuUtilization > 100 || Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 95) {

@@ -213,7 +213,7 @@ public class NodeStatusPBImpl extends NodeStatus {
 
   private synchronized void addGpuApplicationHistoriesToProto() {
     maybeInitBuilder();
-    builder.clearGpuStatuses();
+    builder.clearGpuApplicationHistories();
     if (gpuApplicationHistories == null)
       return;
     Iterable<GpuApplicationHistoryProto> iterable = new Iterable<GpuApplicationHistoryProto>() {

@@ -216,7 +216,6 @@ public class GpuResourceMonitor extends TimerTask {
           gpuStatus.setGpuUtilization(gpuUtilization.get(deviceId));
           gpuStatus.setGpuFreeMemory(gpuFreeMemory.get(deviceId).intValue());
 
-          LOG.info(gpuStatus.toString());
           gpuStatuses.add(gpuStatus);
         }
       }
