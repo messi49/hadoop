@@ -55,7 +55,7 @@ public class NodeStatusPBImpl extends NodeStatus {
   private List<ContainerStatus> containers = null;
   private NodeHealthStatus nodeHealthStatus = null;
   private List<ApplicationId> keepAliveApplications = null;
-  private List<GpuStatus> gpus = null;
+  private List<GpuStatus> gpuStatuses = null;
   private List<GpuApplicationHistory> gpuApplicationHistories = null;
 
   public NodeStatusPBImpl() {
@@ -87,8 +87,8 @@ public class NodeStatusPBImpl extends NodeStatus {
     if (this.keepAliveApplications != null) {
       addKeepAliveApplicationsToProto();
     }
-    if (this.gpus != null) {
-      addGpusToProto();
+    if (this.gpuStatuses != null) {
+      addGpuStatusesToProto();
     }
     if (this.gpuApplicationHistories != null) {
       addGpuApplicationHistoriesToProto();
@@ -179,17 +179,17 @@ public class NodeStatusPBImpl extends NodeStatus {
     builder.addAllKeepAliveApplications(iterable);
   }
 
-  private synchronized void addGpusToProto() {
+  private synchronized void addGpuStatusesToProto() {
     maybeInitBuilder();
     builder.clearGpuStatuses();
-    if (gpus == null)
+    if (gpuStatuses == null)
       return;
     Iterable<GpuStatusProto> iterable = new Iterable<GpuStatusProto>() {
       @Override
       public Iterator<GpuStatusProto> iterator() {
         return new Iterator<GpuStatusProto>() {
 
-          Iterator<GpuStatus> iter = gpus.iterator();
+          Iterator<GpuStatus> iter = gpuStatuses.iterator();
 
           @Override
           public boolean hasNext() {
@@ -204,10 +204,8 @@ public class NodeStatusPBImpl extends NodeStatus {
           @Override
           public void remove() {
             throw new UnsupportedOperationException();
-
           }
         };
-
       }
     };
     builder.addAllGpuStatuses(iterable);
@@ -374,32 +372,32 @@ public class NodeStatusPBImpl extends NodeStatus {
     this.nodeHealthStatus = healthStatus;
   }
 
-  private synchronized void initGpus() {
-    if (this.gpus != null) {
+  private synchronized void initGpuStatuses() {
+    if (this.gpuStatuses != null) {
       return;
     }
     NodeStatusProtoOrBuilder p = viaProto ? proto : builder;
     List<GpuStatusProto> list = p.getGpuStatusesList();
-    this.gpus = new ArrayList<GpuStatus>();
+    this.gpuStatuses = new ArrayList<GpuStatus>();
 
     for (GpuStatusProto c : list) {
-      this.gpus.add(convertFromProtoFormat(c));
+      this.gpuStatuses.add(convertFromProtoFormat(c));
     }
   }
 
   @Override
   public synchronized List<GpuStatus> getGpuStatuses() {
-    initGpus();
-    return this.gpus;
+    initGpuStatuses();
+    return this.gpuStatuses;
   }
 
   @Override
   public synchronized void setGpuStatuses(
-    List<GpuStatus> gpus) {
-    if (gpus == null) {
+    List<GpuStatus> gpuStatuses) {
+    if (gpuStatuses == null) {
       builder.clearGpuStatuses();
     }
-    this.gpus = gpus;
+    this.gpuStatuses = gpuStatuses;
   }
 
   private synchronized void initGpuApplicationHistories() {
