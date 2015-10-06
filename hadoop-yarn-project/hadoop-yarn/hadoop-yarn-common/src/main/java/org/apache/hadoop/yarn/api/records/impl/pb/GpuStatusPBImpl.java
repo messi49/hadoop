@@ -70,6 +70,7 @@ public class GpuStatusPBImpl extends GpuStatus {
     sb.append("GPU Status: [");
     sb.append("DeviceID: ").append(getDeviceId()).append(", ");
     sb.append("GPU Utilization: ").append(getGpuUtilization()).append(", ");
+    sb.append("GPU Free Memory: ").append(getGpuFreeMemory()).append(", ");
     sb.append("]");
     return sb.toString();
   }
@@ -110,6 +111,18 @@ public class GpuStatusPBImpl extends GpuStatus {
   public synchronized void setGpuUtilization(int gpuUtilization) {
     maybeInitBuilder();
     builder.setGpuUtilization(gpuUtilization);
+  }
+
+  @Override
+  public synchronized int getGpuFreeMemory() {
+    GpuStatusProtoOrBuilder p = viaProto ? proto : builder;
+    return p.getGpuFreeMemory();
+  }
+
+  @Override
+  public synchronized void setGpuFreeMemory(int gpuFreeMemory) {
+    maybeInitBuilder();
+    builder.setGpuFreeMemory(gpuFreeMemory);
   }
 
 }

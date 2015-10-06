@@ -40,10 +40,11 @@ public abstract class GpuStatus {
 
   @Private
   @Unstable
-  public static GpuStatus newInstance(int deviceId, int gpuUtilization) {
+  public static GpuStatus newInstance(int deviceId, int gpuUtilization, int gpuFreeMemory) {
     GpuStatus gpuStatus = Records.newRecord(GpuStatus.class);
     gpuStatus.setDeviceId(deviceId);
     gpuStatus.setGpuUtilization(gpuUtilization);
+    gpuStatus.setGpuFreeMemory(gpuFreeMemory);
     return gpuStatus;
   }
 
@@ -60,8 +61,8 @@ public abstract class GpuStatus {
   public abstract void setDeviceId(int deviceId);
 
   /**
-   * Get the <em>GpuStatus</em> of the GPU.
-   * @return <em>GpuStatus</em> of the GPU
+   * Get the <em>GpuUtilization</em> of the GPU.
+   * @return <em>GpuUtilization</em> of the GPU
    */
   @Public
   @Stable
@@ -70,5 +71,17 @@ public abstract class GpuStatus {
   @Private
   @Unstable
   public abstract void setGpuUtilization(int gpuUtilization);
+
+  /**
+   * Get the <em>GpuFreeMemory</em> of the GPU.
+   * @return <em>GpuFreeMemory</em> of the GPU
+   */
+  @Public
+  @Stable
+  public abstract int getGpuFreeMemory();
+
+  @Private
+  @Unstable
+  public abstract void setGpuFreeMemory(int gpuFreeMemory);
 
 }

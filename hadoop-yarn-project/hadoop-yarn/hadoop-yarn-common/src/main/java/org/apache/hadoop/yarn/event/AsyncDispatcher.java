@@ -182,7 +182,7 @@ public class AsyncDispatcher extends AbstractService implements Dispatcher {
           && (ShutdownHookManager.get().isShutdownInProgress()) == false
           && stopped == false) {
         LOG.info("Exiting, bbye..");
-        //System.exit(-1);
+        System.exit(-1);
       }
     }
   }

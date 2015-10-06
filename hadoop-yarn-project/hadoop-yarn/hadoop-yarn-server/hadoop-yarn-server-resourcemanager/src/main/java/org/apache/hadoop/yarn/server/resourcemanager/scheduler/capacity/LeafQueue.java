@@ -1524,6 +1524,12 @@ public class LeafQueue extends AbstractCSQueue {
         LOG.debug("can alloc container is: " + canAllocContainer);
       }
     }
+
+    LOG.info("GPU Status Size = " + node.getRMNode().getNodeStatus().getGpuStatuses().toString());
+    for(int i = 0; i < node.getRMNode().getNodeStatus().getGpuStatuses().size(); i++){
+      LOG.info("GPU Util = " + node.getRMNode().getNodeStatus().getGpuStatuses().get(i).getGpuUtilization());
+      LOG.info("GPU Free Memory = " + node.getRMNode().getNodeStatus().getGpuStatuses().get(i).getGpuFreeMemory());
+    }
     
     // Check GPU Utilization
     boolean availableGpus = true;

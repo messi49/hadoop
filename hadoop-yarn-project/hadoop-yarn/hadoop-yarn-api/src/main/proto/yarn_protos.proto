@@ -433,6 +433,7 @@ message ContainerResourceDecreaseProto {
 message GpuStatusProto {
   optional int32 device_id = 1;
   optional int32 gpu_utilization = 2;
+  optional int32 gpu_free_memory = 3;
 }
 
 message GpuApplicationHistoryProto {

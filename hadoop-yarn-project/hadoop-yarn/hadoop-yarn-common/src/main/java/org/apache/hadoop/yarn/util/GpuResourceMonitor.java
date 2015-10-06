@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
@@ -44,8 +43,8 @@ public class GpuResourceMonitor extends TimerTask {
   static HashMap<Integer, Long> gpuDevicesMemory= new HashMap<Integer, Long>();
   // GPU Memory Usage
   static HashMap<Integer, Long> gpuMemoryUsage = new HashMap<Integer, Long>();
-  // GPU Memory Unusage
-  static HashMap<Integer, Long> gpuMemoryUnusage = new HashMap<Integer, Long>();
+  // GPU Free Memory
+  static HashMap<Integer, Long> gpuFreeMemory = new HashMap<Integer, Long>();
   // GPU Utilization
   static HashMap<Integer, Integer> gpuUtilization = new HashMap<Integer, Integer>();
   // App GPU Utilization
@@ -53,9 +52,6 @@ public class GpuResourceMonitor extends TimerTask {
   static HashMap<ApplicationId, Integer> activeGpuAppList = new HashMap<ApplicationId, Integer>();
   static HashMap<ApplicationId, Integer> minGpuAppUtilization = new HashMap<ApplicationId, Integer>();
   static HashMap<ApplicationId, Integer> maxGpuAppUtilization = new HashMap<ApplicationId, Integer>();
-
-
-  boolean initFlag = false;
 
   @Override
   public void run() {
@@ -165,7 +161,7 @@ public class GpuResourceMonitor extends TimerTask {
   static void setGpuMemoryUsage(int deviceId, long gpuMemory) {
     synchronized (MEMORY_USAGE_LOCK) {
       gpuMemoryUsage.put(deviceId, gpuMemory);
-      gpuMemoryUnusage.put(deviceId, gpuDevicesMemory.get(deviceId) - gpuMemory);
+      gpuFreeMemory.put(deviceId, gpuDevicesMemory.get(deviceId) - gpuMemory);
       //LOG.info("GPU Memory Unusage(Device " + deviceId + "): " + (gpuDevicesMemory.get(deviceId) - gpuMemory));
     }
   }
@@ -185,10 +181,10 @@ public class GpuResourceMonitor extends TimerTask {
     }
   }
 
-  static HashMap<Integer, Long> getGpuMemoryUnusage() {
+  static HashMap<Integer, Long> getGpuFreeMemory() {
     synchronized (MEMORY_USAGE_LOCK) {
-      if (!gpuMemoryUnusage.isEmpty() && GpuResourceMonitor.gpuMemoryUnusage.size() > 0) {
-        return gpuMemoryUnusage;
+      if (!gpuFreeMemory.isEmpty() && GpuResourceMonitor.gpuFreeMemory.size() > 0) {
+        return gpuFreeMemory;
       } else {
         return null;
       }
@@ -212,14 +208,17 @@ public class GpuResourceMonitor extends TimerTask {
     List<GpuStatus> gpuStatuses = new ArrayList<GpuStatus>();
 
     synchronized (UTILIZATION_LOCK) {
-      for (Integer deviceId : gpuUtilization.keySet()) {
-        GpuStatusPBImpl gpuStatus = new GpuStatusPBImpl();
+      synchronized (MEMORY_USAGE_LOCK) {
+        for (Integer deviceId : gpuUtilization.keySet()) {
+          GpuStatusPBImpl gpuStatus = new GpuStatusPBImpl();
 
-        gpuStatus.setDeviceId(deviceId);
-        gpuStatus.setGpuUtilization(gpuUtilization.get(deviceId));
+          gpuStatus.setDeviceId(deviceId);
+          gpuStatus.setGpuUtilization(gpuUtilization.get(deviceId));
+          gpuStatus.setGpuFreeMemory(gpuFreeMemory.get(deviceId).intValue());
 
-        gpuStatuses.add(gpuStatus);
-        //LOG.info("GPU Util(Device " + gpuStatus.getDeviceId() + "): " + gpuStatus.getGpuUtilization() + "%");
+          LOG.info(gpuStatus.toString());
+          gpuStatuses.add(gpuStatus);
+        }
       }
     }
     return gpuStatuses;
