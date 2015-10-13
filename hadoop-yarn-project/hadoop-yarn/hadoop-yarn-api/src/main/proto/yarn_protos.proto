@@ -86,6 +86,7 @@ message ContainerProto {
   optional ResourceProto resource = 4;
   optional PriorityProto priority = 5;
   optional hadoop.common.TokenProto container_token = 6;
+  optional int32 gpuDeviceId = 7;
 }
 
 message ContainerReportProto {

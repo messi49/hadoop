@@ -1526,7 +1526,7 @@ public class LeafQueue extends AbstractCSQueue {
     }
 
     //LOG.info(node.getRMNode().getNodeStatus().getGpuStatuses().toString());
-    
+
     // Check GPU Utilization
     boolean availableGpus = true;
     int appGpuUtilization = 0;
@@ -1542,6 +1542,10 @@ public class LeafQueue extends AbstractCSQueue {
       if (Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + appGpuUtilization > 100 || Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 95) {
         LOG.info("GPU Utilization reaches to " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
         availableGpus = false;
+      }
+      else{
+        // Set GPU Device ID
+        container.setGpuDeviceId(Resources.getUseGpuId(node.getRMNode().getNodeStatus().getGpuStatuses(), capability.getGpuMemory()));
       }
     }
 

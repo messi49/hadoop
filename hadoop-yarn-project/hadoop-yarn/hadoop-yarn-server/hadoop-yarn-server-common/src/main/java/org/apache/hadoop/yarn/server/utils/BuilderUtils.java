@@ -115,7 +115,7 @@ public class BuilderUtils {
   public static ApplicationId newApplicationId(RecordFactory recordFactory,
       long clustertimestamp, CharSequence id) {
     return ApplicationId.newInstance(clustertimestamp,
-        Integer.valueOf(id.toString()));
+      Integer.valueOf(id.toString()));
   }
 
   public static ApplicationId newApplicationId(RecordFactory recordFactory,
@@ -175,7 +175,7 @@ public class BuilderUtils {
       String httpAddress, String rackName, Resource used, Resource capability,
       int numContainers, String healthReport, long lastHealthReportTime) {
     return newNodeReport(nodeId, nodeState, httpAddress, rackName, used,
-        capability, numContainers, healthReport, lastHealthReportTime, null);
+      capability, numContainers, healthReport, lastHealthReportTime, null);
   }
   
   public static NodeReport newNodeReport(NodeId nodeId, NodeState nodeState,
@@ -210,6 +210,19 @@ public class BuilderUtils {
   public static Container newContainer(ContainerId containerId, NodeId nodeId,
       String nodeHttpAddress, Resource resource, Priority priority,
       Token containerToken) {
+    Container container = recordFactory.newRecordInstance(Container.class);
+    container.setId(containerId);
+    container.setNodeId(nodeId);
+    container.setNodeHttpAddress(nodeHttpAddress);
+    container.setResource(resource);
+    container.setPriority(priority);
+    container.setContainerToken(containerToken);
+    return container;
+  }
+
+  public static Container newContainer(ContainerId containerId, NodeId nodeId,
+                                       String nodeHttpAddress, Resource resource, Priority priority,
+                                       Token containerToken, int gpuDeviceId) {
     Container container = recordFactory.newRecordInstance(Container.class);
     container.setId(containerId);
     container.setNodeId(nodeId);

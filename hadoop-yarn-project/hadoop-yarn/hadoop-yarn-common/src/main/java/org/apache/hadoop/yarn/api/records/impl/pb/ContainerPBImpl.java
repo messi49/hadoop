@@ -47,6 +47,7 @@ public class ContainerPBImpl extends Container {
   private Resource resource = null;
   private Priority priority = null;
   private Token containerToken = null;
+  private int gpuDeviceId = -1;
   
   public ContainerPBImpl() {
     builder = ContainerProto.newBuilder();
@@ -248,6 +249,28 @@ public class ContainerPBImpl extends Container {
     this.containerToken = containerToken;
   }
 
+  @Override
+  public int getGpuDeviceId() {
+    ContainerProtoOrBuilder p = viaProto ? proto : builder;
+    if (this.gpuDeviceId != -1) {
+      return this.gpuDeviceId;
+    }
+    if (!p.hasGpuDeviceId()) {
+      return -1;
+    }
+    this.gpuDeviceId = p.getGpuDeviceId();
+    return this.gpuDeviceId;
+  }
+
+  @Override
+  public void setGpuDeviceId(int gpuDeviceId) {
+    maybeInitBuilder();
+    if (gpuDeviceId == -1) {
+      builder.clearGpuDeviceId();
+    }
+    this.gpuDeviceId = gpuDeviceId;
+  }
+
   private ContainerIdPBImpl convertFromProtoFormat(ContainerIdProto p) {
     return new ContainerIdPBImpl(p);
   }
@@ -297,6 +320,8 @@ public class ContainerPBImpl extends Container {
     sb.append("Resource: ").append(getResource()).append(", ");
     sb.append("Priority: ").append(getPriority()).append(", ");
     sb.append("Token: ").append(getContainerToken()).append(", ");
+    if(getGpuDeviceId() != -1)
+      sb.append("GPU DeviceID: ").append(getGpuDeviceId()).append(", ");
     sb.append("]");
     return sb.toString();
   }

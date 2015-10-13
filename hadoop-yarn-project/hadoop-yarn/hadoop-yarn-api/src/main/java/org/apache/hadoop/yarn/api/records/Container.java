@@ -79,6 +79,22 @@ public abstract class Container implements Comparable<Container> {
     return container;
   }
 
+  @Private
+  @Unstable
+  public static Container newInstance(ContainerId containerId, NodeId nodeId,
+                                      String nodeHttpAddress, Resource resource, Priority priority,
+                                      Token containerToken, int gpuDeviceId) {
+    Container container = Records.newRecord(Container.class);
+    container.setId(containerId);
+    container.setNodeId(nodeId);
+    container.setNodeHttpAddress(nodeHttpAddress);
+    container.setResource(resource);
+    container.setPriority(priority);
+    container.setContainerToken(containerToken);
+    container.setGpuDeviceId(gpuDeviceId);
+    return container;
+  }
+
   /**
    * Get the globally unique identifier for the container.
    * @return globally unique identifier for the container
@@ -166,4 +182,16 @@ public abstract class Container implements Comparable<Container> {
   @Private
   @Unstable
   public abstract void setContainerToken(Token containerToken);
+
+  /**
+   * Get the GPU Device ID for the container.
+   * @return GPU Device ID for the container
+   */
+  @Public
+  @Stable
+  public abstract int getGpuDeviceId();
+
+  @Private
+  @Unstable
+  public abstract void setGpuDeviceId(int gpuDeviceId);
 }

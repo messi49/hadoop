@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.util.resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.GpuStatus;
@@ -29,7 +31,8 @@ import java.util.List;
 @InterfaceAudience.LimitedPrivate({"YARN", "MapReduce"})
 @Unstable
 public class Resources {
-  
+  private static final Log LOG = LogFactory.getLog(Resources.class);
+
   // Java doesn't have const :(
   private static final Resource NONE = new Resource() {
 
@@ -300,12 +303,24 @@ public class Resources {
   }
 
   public static int minGpuUtilization(List<GpuStatus> gpuStatuses) {
-    int min = 0;
+    int min = 100;
     for(int i = 0; i < gpuStatuses.size(); i++){
       if(min > gpuStatuses.get(i).getGpuUtilization()){
         min = gpuStatuses.get(i).getGpuUtilization();
       }
     }
     return min;
+  }
+
+  public static int getUseGpuId(List<GpuStatus> gpuStatuses, int gpuMemory) {
+    int min = 100;
+    int id = 0;
+    for(int i = 0; i < gpuStatuses.size(); i++){
+      if(min > gpuStatuses.get(i).getGpuUtilization() && gpuStatuses.get(i).getGpuFreeMemory() >= gpuMemory){
+        min = gpuStatuses.get(i).getGpuUtilization();
+        id = i;
+      }
+    }
+    return id;
   }
 }
