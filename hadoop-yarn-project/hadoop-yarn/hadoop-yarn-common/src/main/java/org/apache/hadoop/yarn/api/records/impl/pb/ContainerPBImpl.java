@@ -47,8 +47,7 @@ public class ContainerPBImpl extends Container {
   private Resource resource = null;
   private Priority priority = null;
   private Token containerToken = null;
-  private int gpuDeviceId = -1;
-  
+
   public ContainerPBImpl() {
     builder = ContainerProto.newBuilder();
   }
@@ -252,14 +251,10 @@ public class ContainerPBImpl extends Container {
   @Override
   public int getGpuDeviceId() {
     ContainerProtoOrBuilder p = viaProto ? proto : builder;
-    if (this.gpuDeviceId != -1) {
-      return this.gpuDeviceId;
-    }
     if (!p.hasGpuDeviceId()) {
       return -1;
     }
-    this.gpuDeviceId = p.getGpuDeviceId();
-    return this.gpuDeviceId;
+    return (p.getGpuDeviceId());
   }
 
   @Override
@@ -267,8 +262,9 @@ public class ContainerPBImpl extends Container {
     maybeInitBuilder();
     if (gpuDeviceId == -1) {
       builder.clearGpuDeviceId();
+      return;
     }
-    this.gpuDeviceId = gpuDeviceId;
+    builder.setGpuDeviceId(gpuDeviceId);
   }
 
   private ContainerIdPBImpl convertFromProtoFormat(ContainerIdProto p) {
