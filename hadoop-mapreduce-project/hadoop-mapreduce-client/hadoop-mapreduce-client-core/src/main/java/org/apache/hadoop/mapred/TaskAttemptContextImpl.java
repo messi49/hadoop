@@ -88,5 +88,13 @@ public class TaskAttemptContextImpl
     reporter.setStatus(status);
   }
 
+  /**
+   * Get the GpuDeviceID.
+   *
+   * @return GpuDeviceID
+   */
+  public int getGpuDeviceID() {
+    return super.getGpuDeviceID();
+  }
 
 }

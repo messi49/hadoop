@@ -38,6 +38,7 @@ public class TaskAttemptContextImpl extends JobContextImpl
   private final TaskAttemptID taskId;
   private String status = "";
   private StatusReporter reporter;
+  private int gpuDeviceId;
 
   public TaskAttemptContextImpl(Configuration conf, 
                                 TaskAttemptID taskId) {
@@ -48,6 +49,14 @@ public class TaskAttemptContextImpl extends JobContextImpl
       TaskAttemptID taskId, StatusReporter reporter) {
     super(conf, taskId.getJobID());
     this.taskId = taskId;
+    this.reporter = reporter;
+  }
+
+  public TaskAttemptContextImpl(Configuration conf,
+                                TaskAttemptID taskId, int gpuDeviceId, StatusReporter reporter) {
+    super(conf, taskId.getJobID());
+    this.taskId = taskId;
+    this.gpuDeviceId = gpuDeviceId;
     this.reporter = reporter;
   }
 
@@ -117,5 +126,12 @@ public class TaskAttemptContextImpl extends JobContextImpl
   @Override
   public float getProgress() {
     return reporter.getProgress();
+  }
+
+  /**
+   * Get GPU Device ID for this task attempt.
+   */
+  public int getGpuDeviceID() {
+    return gpuDeviceId;
   }
 }

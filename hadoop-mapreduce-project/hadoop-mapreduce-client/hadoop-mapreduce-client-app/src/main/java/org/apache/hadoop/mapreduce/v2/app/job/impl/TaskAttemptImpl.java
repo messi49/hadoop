@@ -1538,6 +1538,8 @@ public abstract class TaskAttemptImpl implements
       taskAttempt.container = container;
       // this is a _real_ Task (classic Hadoop mapred flavor):
       taskAttempt.remoteTask = taskAttempt.createRemoteTask();
+      // set GPU device id
+      taskAttempt.remoteTask.setGpuDeviceID(container.getGpuDeviceId());
       taskAttempt.jvmID =
           new WrappedJvmID(taskAttempt.remoteTask.getTaskID().getJobID(),
               taskAttempt.remoteTask.isMapTask(),

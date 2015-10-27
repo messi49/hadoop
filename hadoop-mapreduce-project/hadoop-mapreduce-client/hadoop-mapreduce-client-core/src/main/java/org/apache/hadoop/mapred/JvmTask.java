@@ -33,20 +33,30 @@ import org.apache.hadoop.io.Writable;
 @InterfaceStability.Unstable
 public class JvmTask implements Writable {
   Task t;
+  int gpuDeviceId;
   boolean shouldDie;
   public JvmTask(Task t, boolean shouldDie) {
     this.t = t;
+    this.shouldDie = shouldDie;
+  }
+  public JvmTask(Task t, int gpuDeviceId, boolean shouldDie) {
+    this.t = t;
+    this.gpuDeviceId = gpuDeviceId;
     this.shouldDie = shouldDie;
   }
   public JvmTask() {}
   public Task getTask() {
     return t;
   }
+  public int getGpuDeviceID() {
+    return gpuDeviceId;
+  }
   public boolean shouldDie() {
     return shouldDie;
   }
   public void write(DataOutput out) throws IOException {
     out.writeBoolean(shouldDie);
+    out.writeInt(gpuDeviceId);
     if (t != null) {
       out.writeBoolean(true);
       out.writeBoolean(t.isMapTask());
@@ -57,6 +67,7 @@ public class JvmTask implements Writable {
   }
   public void readFields(DataInput in) throws IOException {
     shouldDie = in.readBoolean();
+    gpuDeviceId = in.readInt();
     boolean taskComing = in.readBoolean();
     if (taskComing) {
       boolean isMap = in.readBoolean();

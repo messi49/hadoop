@@ -737,6 +737,7 @@ public class MapTask extends Task {
     org.apache.hadoop.mapreduce.TaskAttemptContext taskContext =
       new org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl(job, 
                                                                   getTaskID(),
+                                                                  getGpuDeviceID(),
                                                                   reporter);
     // make a mapper
     org.apache.hadoop.mapreduce.Mapper<INKEY,INVALUE,OUTKEY,OUTVALUE> mapper =

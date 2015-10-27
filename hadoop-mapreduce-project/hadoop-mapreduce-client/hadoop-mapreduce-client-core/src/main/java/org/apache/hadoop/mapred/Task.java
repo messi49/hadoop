@@ -149,6 +149,7 @@ abstract public class Task implements Writable, Configurable {
   private TaskAttemptID taskId;                   // unique, includes job id
   private int partition;                          // id within job
   TaskStatus taskStatus;                          // current status of the task
+  private int gpuDeviceId;                          // GPU device id
   protected JobStatus.State jobRunStateForCleanup;
   protected boolean jobCleanup = false;
   protected boolean jobSetup = false;
@@ -314,6 +315,22 @@ abstract public class Task implements Writable, Configurable {
    */
   protected void setWriteSkipRecs(boolean writeSkipRecs) {
     this.writeSkipRecs = writeSkipRecs;
+  }
+
+  /**
+   * Set the GPU Device ID
+   * @param gpuDeviceId
+   */
+  public void setGpuDeviceID(int gpuDeviceId) {
+    this.gpuDeviceId = gpuDeviceId;
+  }
+
+  /**
+   * Get the GPU Device ID
+   * @return gpuDeviceId
+   */
+  public int getGpuDeviceID() {
+    return this.gpuDeviceId;
   }
   
   /**

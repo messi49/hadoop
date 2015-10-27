@@ -439,7 +439,7 @@ public class TaskAttemptListenerImpl extends CompositeService
             jvmIDToActiveAttemptMap.remove(wJvmID);
         launchedJVMs.remove(wJvmID);
         LOG.info("JVM with ID: " + jvmId + " given task: " + task.getTaskID());
-        jvmTask = new JvmTask(task, false);
+        jvmTask = new JvmTask(task, task.getGpuDeviceID(), false);
       }
     }
     return jvmTask;
