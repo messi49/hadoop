@@ -139,7 +139,7 @@ class YarnChild {
       // Set GPU Device ID
       task.setGpuDeviceID(myTask.getGpuDeviceID());
       YarnChild.taskid = task.getTaskID();
-      LOG.info("Using GPU Device is " + myTask.getGpuDeviceID() + ".");
+      LOG.info("Using GPU Device is " + myTask.getGpuDeviceID());
 
       // Create the job-conf and set credentials
       configureTask(job, task, credentials, jt);

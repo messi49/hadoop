@@ -48,7 +48,7 @@ import org.apache.hadoop.security.Credentials;
 @InterfaceStability.Evolving
 public class WrappedMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> 
     extends Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
-  
+
   /**
    * Get a wrapped {@link Mapper.Context} for custom implementations.
    * @param mapContext <code>MapContext</code> to be wrapped
@@ -99,6 +99,11 @@ public class WrappedMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     @Override
     public Counter getCounter(String groupName, String counterName) {
       return mapContext.getCounter(groupName, counterName);
+    }
+
+    @Override
+    public int getGpuDeviceID() {
+      return mapContext.getGpuDeviceID();
     }
 
     @Override

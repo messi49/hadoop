@@ -78,6 +78,11 @@ class ChainReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT> implements
   }
 
   @Override
+  public int getGpuDeviceID() {
+    return base.getGpuDeviceID();
+  }
+
+  @Override
   public KEYIN getCurrentKey() throws IOException, InterruptedException {
     return base.getCurrentKey();
   }

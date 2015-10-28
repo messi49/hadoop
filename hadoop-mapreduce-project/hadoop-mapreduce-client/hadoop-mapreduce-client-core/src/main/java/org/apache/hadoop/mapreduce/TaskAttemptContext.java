@@ -68,4 +68,10 @@ public interface TaskAttemptContext extends JobContext, Progressable {
    */
   public Counter getCounter(String groupName, String counterName);
 
+  /**
+   * Get the GpuDeviceID.
+   *
+   * @return GpuDeviceID
+   */
+  public int getGpuDeviceID();
 }

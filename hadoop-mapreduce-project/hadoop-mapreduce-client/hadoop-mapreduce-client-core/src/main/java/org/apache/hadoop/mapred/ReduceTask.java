@@ -616,7 +616,7 @@ public class ReduceTask extends Task {
     job.setBoolean("mapred.skip.on", isSkipping());
     job.setBoolean(JobContext.SKIP_RECORDS, isSkipping());
     org.apache.hadoop.mapreduce.Reducer.Context 
-         reducerContext = createReduceContext(reducer, job, getTaskID(),
+         reducerContext = createReduceContext(reducer, job, getTaskID(), getGpuDeviceID(),
                                                rIter, reduceInputKeyCounter, 
                                                reduceInputValueCounter, 
                                                trackedRW,

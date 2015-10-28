@@ -95,6 +95,11 @@ public class WrappedReducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     }
 
     @Override
+    public int getGpuDeviceID() {
+      return reduceContext.getGpuDeviceID();
+    }
+
+    @Override
     public OutputCommitter getOutputCommitter() {
       return reduceContext.getOutputCommitter();
     }

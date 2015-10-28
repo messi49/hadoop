@@ -56,6 +56,15 @@ public abstract class TaskInputOutputContextImpl<KEYIN,VALUEIN,KEYOUT,VALUEOUT>
     this.committer = committer;
   }
 
+  public TaskInputOutputContextImpl(Configuration conf, TaskAttemptID taskid, int gpuDeviceId,
+                                    RecordWriter<KEYOUT,VALUEOUT> output,
+                                    OutputCommitter committer,
+                                    StatusReporter reporter) {
+    super(conf, taskid, gpuDeviceId, reporter);
+    this.output = output;
+    this.committer = committer;
+  }
+
   /**
    * Advance to the next key, value pair, returning null if at end.
    * @return the key object that was read into, or null if no more

@@ -58,6 +58,17 @@ public class MapContextImpl<KEYIN,VALUEIN,KEYOUT,VALUEOUT>
     this.split = split;
   }
 
+  public MapContextImpl(Configuration conf, TaskAttemptID taskid, int gpuDeviceId,
+                        RecordReader<KEYIN,VALUEIN> reader,
+                        RecordWriter<KEYOUT,VALUEOUT> writer,
+                        OutputCommitter committer,
+                        StatusReporter reporter,
+                        InputSplit split) {
+    super(conf, taskid, gpuDeviceId, writer, committer, reporter);
+    this.reader = reader;
+    this.split = split;
+  }
+
   /**
    * Get the input split for this map.
    */

@@ -1485,7 +1485,7 @@ abstract public class Task implements Writable, Configurable {
   ) throws IOException, InterruptedException {
     org.apache.hadoop.mapreduce.ReduceContext<INKEY, INVALUE, OUTKEY, OUTVALUE> 
     reduceContext = 
-      new ReduceContextImpl<INKEY, INVALUE, OUTKEY, OUTVALUE>(job, taskId, 
+      new ReduceContextImpl<INKEY, INVALUE, OUTKEY, OUTVALUE>(job, taskId,
                                                               rIter, 
                                                               inputKeyCounter, 
                                                               inputValueCounter, 
@@ -1500,6 +1500,45 @@ abstract public class Task implements Writable, Configurable {
         reducerContext = 
           new WrappedReducer<INKEY, INVALUE, OUTKEY, OUTVALUE>().getReducerContext(
               reduceContext);
+
+    return reducerContext;
+  }
+
+  @SuppressWarnings("unchecked")
+  protected static <INKEY,INVALUE,OUTKEY,OUTVALUE>
+  org.apache.hadoop.mapreduce.Reducer<INKEY,INVALUE,OUTKEY,OUTVALUE>.Context
+  createReduceContext(org.apache.hadoop.mapreduce.Reducer
+                        <INKEY,INVALUE,OUTKEY,OUTVALUE> reducer,
+                      Configuration job,
+                      org.apache.hadoop.mapreduce.TaskAttemptID taskId,
+                      int gpuDeviceId,
+                      RawKeyValueIterator rIter,
+                      org.apache.hadoop.mapreduce.Counter inputKeyCounter,
+                      org.apache.hadoop.mapreduce.Counter inputValueCounter,
+                      org.apache.hadoop.mapreduce.RecordWriter<OUTKEY,OUTVALUE> output,
+                      org.apache.hadoop.mapreduce.OutputCommitter committer,
+                      org.apache.hadoop.mapreduce.StatusReporter reporter,
+                      RawComparator<INKEY> comparator,
+                      Class<INKEY> keyClass, Class<INVALUE> valueClass
+  ) throws IOException, InterruptedException {
+    org.apache.hadoop.mapreduce.ReduceContext<INKEY, INVALUE, OUTKEY, OUTVALUE>
+      reduceContext =
+      new ReduceContextImpl<INKEY, INVALUE, OUTKEY, OUTVALUE>(job, taskId,
+        gpuDeviceId,
+        rIter,
+        inputKeyCounter,
+        inputValueCounter,
+        output,
+        committer,
+        reporter,
+        comparator,
+        keyClass,
+        valueClass);
+
+    org.apache.hadoop.mapreduce.Reducer<INKEY,INVALUE,OUTKEY,OUTVALUE>.Context
+      reducerContext =
+      new WrappedReducer<INKEY, INVALUE, OUTKEY, OUTVALUE>().getReducerContext(
+        reduceContext);
 
     return reducerContext;
   }
