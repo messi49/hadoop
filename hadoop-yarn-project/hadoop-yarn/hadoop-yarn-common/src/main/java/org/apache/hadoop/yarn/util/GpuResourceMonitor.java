@@ -245,11 +245,8 @@ public class GpuResourceMonitor extends TimerTask {
 
   public static void removeGpuUtilizationMonitor(int deviceId, ApplicationId appId, ContainerId containerId) {
     synchronized (APP_UTILIZATION_LOCK) {
-      if(activeGpuAppList.get(appId) == 1){
+      if(activeGpuAppList.containsKey(appId) == true){
         activeGpuAppList.remove(appId);
-      }
-      else{
-        activeGpuAppList.put(appId, activeGpuAppList.get(appId) - 1);
       }
     }
   }
