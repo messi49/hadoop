@@ -140,14 +140,48 @@ public class GpuResourceMonitor extends TimerTask {
     synchronized (gpuProcessMemoryUsage) {
       if (!gpuProcessMemoryUsage.isEmpty() && GpuResourceMonitor.gpuProcessMemoryUsage.size() > 0) {
         //LOG.info("getGpuProcessMemory PID = " + pid + ", map size = " + GpuResourceMonitor.gpuProcessMemoryUsage.size());
-        if (gpuProcessMemoryUsage.containsKey(pid) == true)
+        // Get GPU Memory Usage of task process
+        if (gpuProcessMemoryUsage.containsKey(pid) == true){
           return gpuProcessMemoryUsage.get(pid);
-        else
+        }
+        // Get GPU Memory Usage of child process
+        else{
+          ArrayList<String> childPid = getChildPid(pid);
+          for (int i = 0; i < childPid.size(); i++){
+            if (gpuProcessMemoryUsage.containsKey(childPid.get(i)) == true){
+              return gpuProcessMemoryUsage.get(pid);
+            }
+          }
           return 0;
+        }
       } else {
         return 0;
       }
     }
+  }
+
+  private static ArrayList<String> getChildPid(String ppid) {
+    String command = "pgrep -P " + ppid;
+    Process process = null;
+    String line = null;
+
+    ArrayList<String> pid = new ArrayList();
+    try {
+      process = Runtime.getRuntime().exec(command);
+
+      InputStream is = process.getInputStream();
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+      while ((line = br.readLine()) != null) {
+        LOG.info("[Messi] PID = " + line);
+        pid.add(line);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return pid;
   }
 
   static void setGpuDeviceMemory(int deviceId, long gpuMemory) {
