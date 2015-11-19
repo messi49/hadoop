@@ -424,7 +424,7 @@ public class ProcfsBasedProcessTree extends ResourceCalculatorProcessTree {
     long total = 0;
     for (ProcessInfo p : processTree.values()) {
       if ((p != null) && (p.getAge() > olderThanAge)) {
-        total += p.getGmem();
+        total = p.getGmem();
       }
     }
     return total;

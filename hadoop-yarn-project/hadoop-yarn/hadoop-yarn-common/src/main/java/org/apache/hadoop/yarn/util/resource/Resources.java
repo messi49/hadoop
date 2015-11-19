@@ -316,6 +316,7 @@ public class Resources {
     int min = 100;
     int id = 0;
     for(int i = 0; i < gpuStatuses.size(); i++){
+      LOG.info("[GPU Resource Calculation]GPU Util: " + gpuStatuses.get(i).getGpuUtilization() + ", GPU Free Memory: " + gpuStatuses.get(i).getGpuFreeMemory() + " on Device(" + i + ")");
       if(min > gpuStatuses.get(i).getGpuUtilization() && gpuStatuses.get(i).getGpuFreeMemory() >= gpuMemory){
         min = gpuStatuses.get(i).getGpuUtilization();
         id = i;

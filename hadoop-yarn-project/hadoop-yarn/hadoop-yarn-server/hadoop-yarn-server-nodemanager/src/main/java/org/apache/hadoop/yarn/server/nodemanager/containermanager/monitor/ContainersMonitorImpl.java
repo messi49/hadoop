@@ -54,7 +54,7 @@ public class ContainersMonitorImpl extends AbstractService implements
   private long monitoringInterval;
   private MonitoringThread monitoringThread;
 
-  private Timer gpuResourceMonitorTimer;
+  private GpuResourceMonitor gpuResourceMonitor;
 
   final List<ContainerId> containersToBeRemoved;
   final Map<ContainerId, ProcessTreeInfo> containersToBeAdded;
@@ -91,7 +91,7 @@ public class ContainersMonitorImpl extends AbstractService implements
     this.containersToBeAdded = new HashMap<ContainerId, ProcessTreeInfo>();
     this.containersToBeRemoved = new ArrayList<ContainerId>();
     this.monitoringThread = new MonitoringThread();
-    gpuResourceMonitorTimer = new Timer();
+    this.gpuResourceMonitor = new GpuResourceMonitor();
   }
 
   @Override
@@ -203,24 +203,24 @@ public class ContainersMonitorImpl extends AbstractService implements
   protected void serviceStart() throws Exception {
     if (this.isEnabled()) {
       this.monitoringThread.start();
+      this.gpuResourceMonitor.start();
     }
     super.serviceStart();
-    // GPU Resuorce Monior launch(200ms)
-    gpuResourceMonitorTimer.schedule(new GpuResourceMonitor(), 0, 200);
   }
 
   @Override
   protected void serviceStop() throws Exception {
     if (this.isEnabled()) {
       this.monitoringThread.interrupt();
+      this.gpuResourceMonitor.interrupt();
       try {
         this.monitoringThread.join();
+        this.gpuResourceMonitor.join();
       } catch (InterruptedException e) {
         ;
       }
     }
     super.serviceStop();
-    gpuResourceMonitorTimer.cancel();
   }
 
   private static class ProcessTreeInfo {
@@ -445,7 +445,8 @@ public class ContainersMonitorImpl extends AbstractService implements
             int containerExitStatus = ContainerExitStatus.INVALID;
             if (isVmemCheckEnabled()
                 && isProcessTreeOverLimit(containerId.toString(),
-                    currentVmemUsage, curMemUsageOfAgedProcesses, vmemLimit)) {
+                    currentVmemUsage, curMemUsageOfAgedProcesses, vmemLimit)
+                && gmemLimit == 0) {
               // Container (the root process) is still alive and overflowing
               // memory.
               // Dump the process-tree and then clean it up.
