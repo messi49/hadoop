@@ -304,24 +304,32 @@ public class Resources {
 
   public static int minGpuUtilization(List<GpuStatus> gpuStatuses) {
     int min = 100;
-    for(int i = 0; i < gpuStatuses.size(); i++){
-      if(min > gpuStatuses.get(i).getGpuUtilization()){
+    for (int i = 0; i < gpuStatuses.size(); i++){
+      if (min > gpuStatuses.get(i).getGpuUtilization()){
         min = gpuStatuses.get(i).getGpuUtilization();
       }
     }
     return min;
   }
 
-  public static int getUseGpuId(List<GpuStatus> gpuStatuses, int gpuMemory) {
-    int min = 100;
+  public static int getUseGpuId(List<GpuStatus> gpuStatuses, int gpuMemory, int[] usedGpuMemory) {
+    int min = Integer.MAX_VALUE;
     int id = 0;
-    for(int i = 0; i < gpuStatuses.size(); i++){
-      LOG.info("[GPU Resource Calculation]GPU Util: " + gpuStatuses.get(i).getGpuUtilization() + ", GPU Free Memory: " + gpuStatuses.get(i).getGpuFreeMemory() + " on Device(" + i + ")");
-      if(min > gpuStatuses.get(i).getGpuUtilization() && gpuStatuses.get(i).getGpuFreeMemory() >= gpuMemory){
-        min = gpuStatuses.get(i).getGpuUtilization();
+
+    for (int i = 0; i < usedGpuMemory.length; i++) {
+      LOG.info("[GPU Resource Calc]Device Id: " + i + ", Used Mem: " + usedGpuMemory[i] + ", Need Mem: " + gpuMemory);
+      if (min > usedGpuMemory[i] && gpuStatuses.get(i).getGpuFreeMemory() >= gpuMemory) {
+        min = usedGpuMemory[i];
         id = i;
       }
     }
+
+//    for(int i = 0; i < gpuStatuses.size(); i++){
+//      if(min > gpuStatuses.get(i).getGpuUtilization() && gpuStatuses.get(i).getGpuFreeMemory() >= gpuMemory){
+//        min = gpuStatuses.get(i).getGpuUtilization();
+//        id = i;
+//      }
+//    }
     return id;
   }
 }
