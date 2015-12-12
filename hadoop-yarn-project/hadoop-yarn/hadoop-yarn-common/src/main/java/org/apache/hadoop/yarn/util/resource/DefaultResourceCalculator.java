@@ -17,6 +17,8 @@
 */
 package org.apache.hadoop.yarn.util.resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
@@ -24,26 +26,28 @@ import org.apache.hadoop.yarn.api.records.Resource;
 @Private
 @Unstable
 public class DefaultResourceCalculator extends ResourceCalculator {
-  
+
   @Override
   public int compare(Resource unused, Resource lhs, Resource rhs) {
     // consider memory and gpu memory
-    return Math.min(lhs.getMemory() - rhs.getMemory(), lhs.getGpuMemory() - rhs.getGpuMemory());
+    // if(lhs.getGpuMemory() > 0 || rhs.getGpuMemory() > 0) {
+    //   return Math.min(lhs.getMemory() - rhs.getMemory(), lhs.getGpuMemory() - rhs.getGpuMemory());
+    // }
 
     // Only consider memory
-    // return lhs.getMemory() - rhs.getMemory();
+    return lhs.getMemory() - rhs.getMemory();
   }
 
   @Override
   public int computeAvailableContainers(Resource available, Resource required) {
+    // Only consider memory
+    // return available.getMemory() / required.getMemory();
+
     // consider memory and gpu memory
     if(required.getGpuMemory() == 0){
       return available.getMemory() / required.getMemory();
     }
     return Math.min(available.getMemory() / required.getMemory(), available.getGpuMemory() / required.getGpuMemory());
-
-    // Only consider memory
-    // return available.getMemory() / required.getMemory();
   }
 
   @Override

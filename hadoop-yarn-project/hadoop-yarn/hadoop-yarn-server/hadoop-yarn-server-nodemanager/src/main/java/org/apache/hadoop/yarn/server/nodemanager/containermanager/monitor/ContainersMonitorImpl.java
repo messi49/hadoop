@@ -455,8 +455,8 @@ public class ContainersMonitorImpl extends AbstractService implements
                   currentPmemUsage, pmemLimit,
                   currentGmemUsage, gmemLimit,
                   pId, containerId, pTree);
-              isMemoryOverLimit = true;
-              containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_VMEM;
+              // isMemoryOverLimit = true;
+              // containerExitStatus = ContainerExitStatus.KILLED_EXCEEDED_VMEM;
             } else if (isPmemCheckEnabled()
                 && isProcessTreeOverLimit(containerId.toString(),
                     currentPmemUsage, curRssMemUsageOfAgedProcesses,
