@@ -68,7 +68,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
     if(b.getGpuMemory() == 0){
       return (float)a.getMemory() / b.getMemory();
     }
-    return Math.min((float)a.getMemory() / b.getMemory(), (float)a.getGpuMemory() / b.getGpuMemory());
+    return Math.max((float)a.getMemory() / b.getMemory(), (float)a.getGpuMemory() / b.getGpuMemory());
   }
 
   @Override
