@@ -515,15 +515,22 @@ public class ParentQueue extends AbstractCSQueue {
           Resources.divide(resourceCalculator, clusterResource,
               usedResourcesByNodeLabels.get(label),
               labelManager.getResourceByLabel(label, clusterResource));
+      float currentAbsoluteLabelUsedGpuCapacity = 0;
+      if(labelManager.getResourceByLabel(label, clusterResource).getGpuMemory() == 0){
+        currentAbsoluteLabelUsedGpuCapacity = (float)usedResourcesByNodeLabels.get(label).getGpuMemory() / labelManager.getResourceByLabel(label, clusterResource).getGpuMemory();
+      }
+
       // if any of the label doesn't beyond limit, we can allocate on this node
       if (currentAbsoluteLabelUsedCapacity >= 
-            getAbsoluteMaximumCapacityByNodeLabel(label)) {
+            getAbsoluteMaximumCapacityByNodeLabel(label)
+              && currentAbsoluteLabelUsedGpuCapacity >= 1) {
         if (LOG.isDebugEnabled()) {
           LOG.debug(getQueueName() + " used=" + usedResources
               + " current-capacity (" + usedResourcesByNodeLabels.get(label) + ") "
               + " >= max-capacity ("
               + labelManager.getResourceByLabel(label, clusterResource) + ")");
         }
+        LOG.info("[Messi]canAssignToThisQueue: false currentAbsoluteLabelUsedCapacity = " + currentAbsoluteLabelUsedCapacity + ", getAbsoluteMaximumCapacityByNodeLabel(label) = " + getAbsoluteMaximumCapacityByNodeLabel(label));
         canAssign = false;
         break;
       }
