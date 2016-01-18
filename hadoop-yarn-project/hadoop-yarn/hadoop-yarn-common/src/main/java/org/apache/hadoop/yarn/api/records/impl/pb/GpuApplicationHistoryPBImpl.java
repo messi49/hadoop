@@ -74,7 +74,7 @@ public class GpuApplicationHistoryPBImpl extends GpuApplicationHistory {
     sb.append("GPU Application: [");
     sb.append("DeviceID: ").append(getDeviceId()).append(", ");
     sb.append("ApplicationID: ").append(getApplicationId()).append(", ");
-    sb.append("GPU Utilization: ").append(getGpuUtilization()).append(", ");
+    sb.append("GPU Execution Time: ").append(getGpuExecutionTime()).append(", ");
     sb.append("Task Type: ").append(getTaskType()).append(", ");
     sb.append("]");
     return sb.toString();
@@ -121,15 +121,15 @@ public class GpuApplicationHistoryPBImpl extends GpuApplicationHistory {
   }
 
   @Override
-  public synchronized int getGpuUtilization() {
+  public synchronized int getGpuExecutionTime() {
     GpuApplicationHistoryProtoOrBuilder p = viaProto ? proto : builder;
-    return p.getGpuUtilization();
+    return p.getGpuExecutionTime();
   }
 
   @Override
-  public synchronized void setGpuUtilization(int gpuUtilization) {
+  public synchronized void setGpuExecutionTime(int gpuExecutionTime) {
     maybeInitBuilder();
-    builder.setGpuUtilization(gpuUtilization);
+    builder.setGpuExecutionTime(gpuExecutionTime);
   }
 
   @Override

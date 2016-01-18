@@ -79,6 +79,9 @@ import com.google.common.collect.Sets;
 public class LeafQueue extends AbstractCSQueue {
   private static final Log LOG = LogFactory.getLog(LeafQueue.class);
 
+  // true = use gpuExecutionTime, false = use gpuMemory
+  private static final boolean SelectGpuExecutionTimeAlgorithm = true;
+
   private float absoluteUsedCapacity = 0.0f;
   private int userLimit;
   private float userLimitFactor;
@@ -116,7 +119,10 @@ public class LeafQueue extends AbstractCSQueue {
   private final QueueHeadroomInfo queueHeadroomInfo = new QueueHeadroomInfo();
 
   // Map of Used Memory for GPU Task
-  private Map<NodeId, int[]> usedGpuMemoryMap = new HashMap<NodeId, int[]>();
+  private static Map<NodeId, int[]> usedGpuMemoryMap = new HashMap<NodeId, int[]>();
+
+  // Map of Execution Time for GPU Task
+  private static Map<NodeId, int[]> usedGpuExecutionTimeMap = new HashMap<NodeId, int[]>();
   
   public LeafQueue(CapacitySchedulerContext cs, 
       String queueName, CSQueue parent, CSQueue old) throws IOException {
@@ -1530,28 +1536,38 @@ public class LeafQueue extends AbstractCSQueue {
 
     // Check GPU Resource
     boolean availableGpus = true;
-    int appGpuUtilization = 0;
+    int appGpuExecution = 0;
     if(capability.getGpuMemory() > 0) {
-      // Check GPU Util Log
-      for (int i = 0; i < node.getRMNode().getNodeStatus().getGpuApplicationHistories().size(); i++) {
-        if (application.getApplicationId().toString().equals(node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getApplicationId().toString())) {
-          if (appGpuUtilization < node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization()){
-            appGpuUtilization = node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuUtilization();
+      if (true) {
+        for (int i = 0; i < node.getRMNode().getNodeStatus().getGpuApplicationHistories().size(); i++) {
+          if (application.getApplicationId().toString().equals(node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getApplicationId().toString())) {
+            appGpuExecution = node.getRMNode().getNodeStatus().getGpuApplicationHistories().get(i).getGpuExecutionTime();
           }
         }
-      }
-      // Check GPU Util
-      if (Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + appGpuUtilization > 100 || Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) > 95) {
-        LOG.info("GPU Utilization reaches to " + Resources.minGpuUtilization(node.getRMNode().getNodeStatus().getGpuStatuses()) + "%. Reserve a container.");
-        availableGpus = false;
-      }
-      else {
-        int[] usedGpuMemory;
+
+        int[] usedGpuMemory= new int[0];
+        int[] usedGpuExecutionTime = new int[0];
+        NodeId nodeId = node.getNodeID();
         int deviceId = 0;
 
+        if(SelectGpuExecutionTimeAlgorithm == true) {
+          // Load usedGpuExecutionTime
+          if (usedGpuExecutionTimeMap.containsKey(nodeId)) {
+            usedGpuExecutionTime = usedGpuExecutionTimeMap.get(nodeId);
+          } else {
+            int gpuDeviceNum = node.getRMNode().getNodeStatus().getGpuStatuses().size();
+            usedGpuExecutionTime = new int[gpuDeviceNum];
+
+            // initialize
+            for (int i = 0; i < gpuDeviceNum; i++) {
+              usedGpuExecutionTime[i] = 0;
+            }
+          }
+        }
+
         // Load usedGpuMemory
-        if (usedGpuMemoryMap.containsKey(node.getNodeID())){
-          usedGpuMemory = usedGpuMemoryMap.get(node.getNodeID());
+        if (usedGpuMemoryMap.containsKey(nodeId)){
+          usedGpuMemory = usedGpuMemoryMap.get(nodeId);
         }
         else {
           int gpuDeviceNum = node.getRMNode().getNodeStatus().getGpuStatuses().size();
@@ -1563,15 +1579,22 @@ public class LeafQueue extends AbstractCSQueue {
           }
         }
 
-        // Get Using GPU Device ID
-        deviceId = Resources.getUseGpuId(node.getRMNode().getNodeStatus().getGpuStatuses(), capability.getGpuMemory(), usedGpuMemory);
-        // Set Using GPU Device ID
-        container.setGpuDeviceId(deviceId);
-        LOG.info("[GPU Resource Calc]Set GPU Device ID >> " + deviceId);
 
+        // Get Using GPU Device ID
+        deviceId = Resources.getUseGpuId(node.getRMNode().getNodeStatus().getGpuStatuses(), capability.getGpuMemory(),
+                usedGpuMemory, appGpuExecution, usedGpuExecutionTime, SelectGpuExecutionTimeAlgorithm);
+        if(SelectGpuExecutionTimeAlgorithm == true) {
+          // Set Used GPU Execution Time Map
+          usedGpuExecutionTime[deviceId] += appGpuExecution;
+          usedGpuExecutionTimeMap.put(node.getNodeID(), usedGpuExecutionTime);
+        }
         // Set Used GPU Memory Map
         usedGpuMemory[deviceId] += capability.getGpuMemory();
         usedGpuMemoryMap.put(node.getNodeID(), usedGpuMemory);
+
+        // Set Using GPU Device ID
+        container.setGpuDeviceId(deviceId);
+        LOG.info("[GPU Resource Calc]Set GPU Device ID >> " + deviceId);
       }
     }
 

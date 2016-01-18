@@ -56,7 +56,6 @@ import org.apache.hadoop.yarn.state.StateMachine;
 import org.apache.hadoop.yarn.state.StateMachineFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.hadoop.yarn.util.GpuResourceMonitor;
 
 /**
  * The state machine for the representation of an Application
@@ -307,9 +306,6 @@ public class ApplicationImpl implements Application {
       
       switch (app.getApplicationState()) {
       case RUNNING:
-        //Start GPU Utilization Monitor
-        GpuResourceMonitor.startGpuUtilizationMonitor(0, app.getAppId(), container.getContainerId());
-
         app.dispatcher.getEventHandler().handle(new ContainerInitEvent(
             container.getContainerId()));
         break;
@@ -351,7 +347,6 @@ public class ApplicationImpl implements Application {
         LOG.info("Removing " + containerEvent.getContainerID() +
             " from application " + app.toString());
       }
-      GpuResourceMonitor.removeGpuUtilizationMonitor(0, app.getAppId(), containerEvent.getContainerID());
     }
   }
 

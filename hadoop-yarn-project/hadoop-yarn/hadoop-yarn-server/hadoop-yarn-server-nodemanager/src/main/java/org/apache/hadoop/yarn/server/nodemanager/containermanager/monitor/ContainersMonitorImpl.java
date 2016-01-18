@@ -378,6 +378,7 @@ public class ContainersMonitorImpl extends AbstractService implements
         synchronized (containersToBeRemoved) {
           for (ContainerId containerId : containersToBeRemoved) {
             trackingContainers.remove(containerId);
+            GpuResourceMonitor.removeMonitorContainerId(containerId);
             LOG.info("Stopping resource-monitoring for " + containerId);
           }
           containersToBeRemoved.clear();
@@ -418,6 +419,9 @@ public class ContainersMonitorImpl extends AbstractService implements
             if (pId == null) {
               continue; // processTree cannot be tracked
             }
+
+            // Set Monitor Container Id
+            GpuResourceMonitor.setMonitorContainerId(containerId, pId);
 
             LOG.debug("Constructing ProcessTree for : PID = " + pId
                     + " ContainerId = " + containerId);

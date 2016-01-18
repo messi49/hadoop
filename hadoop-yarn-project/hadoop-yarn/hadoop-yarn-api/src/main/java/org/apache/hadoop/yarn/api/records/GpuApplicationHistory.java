@@ -43,11 +43,11 @@ public abstract class GpuApplicationHistory {
 
   @Private
   @Unstable
-  public static GpuApplicationHistory newInstance(int deviceId, ApplicationId applicationId, int gpuUtilization, int taskType) {
+  public static GpuApplicationHistory newInstance(int deviceId, ApplicationId applicationId, int gpuExecutionTime, int taskType) {
     GpuApplicationHistory gpuApplicationHistory = Records.newRecord(GpuApplicationHistory.class);
     gpuApplicationHistory.setDeviceId(deviceId);
     gpuApplicationHistory.setApplicationId(applicationId);
-    gpuApplicationHistory.setGpuUtilization(gpuUtilization);
+    gpuApplicationHistory.setGpuExecutionTime(gpuExecutionTime);
     gpuApplicationHistory.setTaskType(taskType);
     return gpuApplicationHistory;
   }
@@ -82,11 +82,11 @@ public abstract class GpuApplicationHistory {
    */
   @Public
   @Stable
-  public abstract int getGpuUtilization();
+  public abstract int getGpuExecutionTime();
 
   @Private
   @Unstable
-  public abstract void setGpuUtilization(int gpuUtilization);
+  public abstract void setGpuExecutionTime(int gpuExecutionTime);
 
 
   /**
